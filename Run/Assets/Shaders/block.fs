@@ -7,10 +7,9 @@ in vec3 outColor;
 in vec3 outNormal;
 in vec3 outRawNormal;
 in vec2 outAtlasPos;
+in vec3 toLight;
 
 uniform sampler2D texture0;
-uniform vec3 uSunPos;
-uniform vec3 uCameraPos;
 uniform vec2 uAtlasCellSize;
 
 vec2 getCoordinateFromNormal()
@@ -31,23 +30,25 @@ vec2 getCoordinateFromNormal()
 
 void main()
 {
+	// Get texture coords
 	vec2 coords = getCoordinateFromNormal();
 	float uPos = mod(coords.x, 1);
 	float vPos = mod(coords.y, 1);
 	vec2 texCoords = vec2(uPos * uAtlasCellSize.x + outAtlasPos.x, vPos * uAtlasCellSize.y + outAtlasPos.y);
-
-	vec3 normal = normalize(outNormal);
-	vec3 lightDir = normalize(uSunPos - outFragPos);
+	
 	// Diffuse light
-	float diffuse = max(dot(normal, lightDir), 0.0);
+	vec3 unitNormal = normalize(outNormal);
+	vec3 unitToLight = normalize(toLight);
+	float diffuse = max(dot(unitNormal, unitToLight), 0.2);
 
 	// Specular
-	vec3 viewDir = normalize(uCameraPos - outFragPos);
-	vec3 reflectDir = reflect(-lightDir, normal);  
+	//vec3 viewDir = normalize(uCameraPos - outFragPos);
+	//vec3 reflectDir = reflect(-lightDir, unitNormal);
 	
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256);
-	vec3 specular = 0.5 * spec * vec3(1.0, 1.0, 1.0);  
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256);
+	//vec3 specular = 0.5 * spec * vec3(1.0, 1.0, 1.0);  
 	
-	vec4 texColor = texture2D(texture0, texCoords);
-    gl_Color = vec4(texColor.rgb * outColor.rgb * (diffuse * (1 - 0.4F) + 0.4F), texColor.a);
+	// Final color
+	vec4 texColor = texture(texture0, texCoords);
+    gl_Color = diffuse * texColor * vec4(outColor, 1.0);
 } 

@@ -10,21 +10,28 @@ out vec3 outNormal;
 out vec3 outRawNormal;
 out vec2 outAtlasPos;
 
+out vec3 toLight;
+
 uniform float uTime;
 uniform mat4 uModel;
 uniform mat4 uViewMat;
 uniform mat4 uViewProj;
 uniform mat3 uNormalMat;
+
 uniform vec3 uSunPos;
+uniform vec3 uCameraPos;
 
 void main()
 {
 	// Set vertex pos
-    gl_Position = uViewProj * uModel * vec4(aPos, 1.0);
+	vec4 worldPosition = uModel * vec4(aPos, 1.0);
+    gl_Position = uViewProj * worldPosition;
 	outFragPos = vec3(uModel * vec4(aPos, 1.0));
 
 	outNormal = uNormalMat * aNormal;
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;
+
+	toLight = uSunPos - worldPosition.xyz;
 }
