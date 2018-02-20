@@ -84,13 +84,23 @@ Texture* TextureLoader::createTexture(void* data, int width, int height, int int
 	Texture* output = new Texture(textureId, width, height, internalFormat, pixelDataFormat);
 
 	// Add texture data
-	reallocateTexture(output, data, width, height);
+	reallocateTexture(output, data, useMipmap, width, height);
 
 	// Texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, repeatModeS);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, repeatModeT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+
+	if (useMipmap)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+	}
+	
 
 	// Register texture into cache
 	TextureCache::addTexture(output);
@@ -99,8 +109,13 @@ Texture* TextureLoader::createTexture(void* data, int width, int height, int int
 	return output;
 }
 
-void TextureLoader::reallocateTexture(Texture* texture, void* data, int width, int height)
+void TextureLoader::reallocateTexture(Texture* texture, void* data, bool useMipmap, int width, int height)
 {
 	texture->bind();
 	glTexImage2D(GL_TEXTURE_2D, 0, texture->getTextureInternalFormat(), width, height, 0, texture->getTexturePixelDataFormat(), GL_UNSIGNED_BYTE, data);
+	
+	if (useMipmap)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 }

@@ -16,7 +16,7 @@
 #define NOISE_MULTIPLIER 100
 #define MAX_HEIGHT (MIN_HEIGHT + NOISE_MULTIPLIER)
 
-AirChunk* ChunkGenerator::generateChunk(World* world, int cX, int cY, int cZ)
+shared_ptr<AirChunk> ChunkGenerator::generateChunk(World* world, int cX, int cY, int cZ)
 {
 	static PerlinNoise perlin = PerlinNoise();
 
@@ -113,5 +113,5 @@ AirChunk* ChunkGenerator::generateChunk(World* world, int cX, int cY, int cZ)
 	}
 	
 
-	return chunk;
+	return shared_ptr<AirChunk>(chunk);
 }

@@ -118,7 +118,7 @@ void FrameBuffer::resizeAttachedTexture(int width, int height)
 {
 	for (AttachedTexture* attachedTex : attachedTextures)
 	{
-		TextureLoader::reallocateTexture(attachedTex->texture, NULL, width, height);
+		TextureLoader::reallocateTexture(attachedTex->texture, NULL, false, width, height);
 	}
 
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);

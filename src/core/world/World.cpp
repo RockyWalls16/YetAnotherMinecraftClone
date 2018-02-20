@@ -10,30 +10,33 @@
 #include <core/entity/Entity.h>
 #include <core/block/Block.h>
 #include <util/Logger.h>
-
+#include <util/TimeManager.h>
 
 World::World()
 {
 	chunkGenerator = new ChunkGenerator();
-	chunksColumns = std::unordered_map<long long, ChunkColumn*>();
+	chunksColumns = std::unordered_map<long long, shared_ptr<ChunkColumn>>();
 }
 
 void World::tick()
 {
 	time++;
 
-	// Update chunks columns
-	for (auto it : chunksColumns)
+	if (TimeManager::isMajorTick())
 	{
-		it.second->tick();
-	}
+		// Update chunks columns
+		for (auto it : chunksColumns)
+		{
+			it.second->tick();
+		}
 
-	// Remove dead chunks
-	for (shared_ptr<AirChunk> chunk : deadChunkQueue)
-	{
-		unloadChunk(chunk);
+		// Remove dead chunks
+		for (shared_ptr<AirChunk> chunk : deadChunkQueue)
+		{
+			unloadChunk(chunk);
+		}
+		deadChunkQueue.clear();
 	}
-	deadChunkQueue.clear();
 
 	// Update all entities
 	for(Entity* entity : entityList)
@@ -57,9 +60,10 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 	{
 		for (int k = z - size; k < z + size; k++)
 		{
+			shared_ptr<ChunkColumn> column = loadColumn(i, k);
 			for (int j = y - size; j < y + size; j++)
 			{
-				loadChunk(i, j, k)->resetTTL();
+				loadChunk(column, i, j, k)->resetTTL();
 			}
 		}
 	}
@@ -67,7 +71,7 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 
 shared_ptr<AirChunk> World::getChunkAt(int x, int y, int z)
 {
-	ChunkColumn* cc = getColumnAt(x, z);
+	shared_ptr<ChunkColumn> cc = getColumnAt(x, z);
 	if (cc == nullptr)
 	{
 		return nullptr;
@@ -116,23 +120,30 @@ int World::getChunkTilePosFromWorld(int pos)
 	}
 }
 
-ChunkColumn * World::getColumnAt(int chunkX, int chunkZ)
+shared_ptr<ChunkColumn> World::getColumnAt(int chunkX, int chunkZ)
 {
 	// Search for chunk in map
 	auto it = chunksColumns.find(ChunkColumn::getColumnIndex(chunkX, chunkZ));
 	return it != chunksColumns.end() ? it->second : nullptr;
 }
 
-shared_ptr<AirChunk> World::loadChunk(int x, int y, int z)
+shared_ptr<ChunkColumn> World::loadColumn(int x, int z)
 {
-	// Find column
-	ChunkColumn* column = getColumnAt(x, z);
-	if (column == nullptr)
+	// Check column already exists
+	shared_ptr<ChunkColumn> column = getColumnAt(x, z);
+	if (column != nullptr)
 	{
-		// Create column if null
-		chunksColumns[ChunkColumn::getColumnIndex(x, z)] = column = new ChunkColumn();
+		return column;
 	}
+	
+	column = make_shared<ChunkColumn>();
+	chunksColumns.insert(make_pair(ChunkColumn::getColumnIndex(x, z), column));
 
+	return column;
+}
+
+shared_ptr<AirChunk> World::loadChunk(shared_ptr<ChunkColumn> column, int x, int y, int z)
+{
 	// Find chunk in column
 	shared_ptr<AirChunk> chunk = column->getChunkAt(y);
 	if (chunk != nullptr)
@@ -142,7 +153,7 @@ shared_ptr<AirChunk> World::loadChunk(int x, int y, int z)
 	}
 	
 	// Generate new chunk & and add it to column
-	chunk = shared_ptr<AirChunk>(chunkGenerator->generateChunk(this, x, y, z));
+	chunk = chunkGenerator->generateChunk(this, x, y, z);
 	column->setChunkAt(chunk, y);
 
 	notifyNeighbours(chunk, NeighbourNotification::LOADED);
@@ -158,14 +169,14 @@ void World::addChunkToUnload(shared_ptr<AirChunk> chunk)
 void World::unloadChunk(shared_ptr<AirChunk> chunk)
 {
 	// Get chunk column
-	ChunkColumn* column = getColumnAt(chunk->getChunkX(), chunk->getChunkZ());
+	shared_ptr<ChunkColumn> column = getColumnAt(chunk->getChunkX(), chunk->getChunkZ());
 	column->removeChunk(chunk);
 
 	// If column is empty remove it
 	if (column->isEmpty())
 	{
 		chunksColumns.erase(ChunkColumn::getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
-		delete(column);
+		column.reset();
 	}
 
 	// Notify neighbour and delete chunk

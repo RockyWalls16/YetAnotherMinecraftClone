@@ -17,6 +17,7 @@ double TimeManager::secondProgress = 0;
 double TimeManager::tickInterpolation = 0;
 double TimeManager::delta = 0;
 double TimeManager::tickTime = 0;
+int TimeManager::majorTickCounter = 0;
 
 void TimeManager::initTimer()
 {
@@ -53,11 +54,17 @@ bool TimeManager::shallTick()
 	{
 		tickTime -= TICK_DELAY;
 		tickInterpolation = tickTime / TICK_DELAY;
+		majorTickCounter = (majorTickCounter + 1) % MAJOR_TICK_DELAY;
 
 		return true;
 	}
 
 	return false;
+}
+
+bool TimeManager::isMajorTick()
+{
+	return majorTickCounter == 0;
 }
 
 struct tm* TimeManager::getTimeOfDay()

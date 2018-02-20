@@ -46,11 +46,10 @@ protected:
 	int neighbourCount;
 	weak_ptr<AirChunk> neighbours[6];
 	int timeToLive;
-	bool ready;
 
 public:
 	AirChunk(World* world, int chX, int chY, int chZ);
-	virtual ~AirChunk() { }
+	virtual ~AirChunk(){}
 
 	void tick();
 
@@ -58,7 +57,6 @@ public:
 	int getChunkY() const;
 	int getChunkZ() const;
 
-	short getBlockAtWithNeighbours(Side side, int x, int y, int z);
 	virtual short getBlockAt(int x, int y, int z);
 	virtual void setBlockAt(short block, int x, int y, int z);
 	void resetTTL();
@@ -66,6 +64,8 @@ public:
 	virtual ChunkType getChunkType();
 
 	bool isReady();
+
+	weak_ptr<AirChunk> getNeighbour(Side fromSide);
 
 	void onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide);
 

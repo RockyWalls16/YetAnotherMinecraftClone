@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <core/world/AirChunk.h>
 #include <memory>
+#include <util/Logger.h>
 
 using namespace std;
 

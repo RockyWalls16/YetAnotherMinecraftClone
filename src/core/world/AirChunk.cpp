@@ -10,10 +10,10 @@
 #include <client/render/ChunkRenderer.h>
 #include <util/Logger.h>
 #include <string>
+#include <util/TimeManager.h>
 
-AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL), ready(false)
-{
-}
+AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL)
+{}
 
 void AirChunk::tick()
 {
@@ -39,31 +39,6 @@ int AirChunk::getChunkZ() const
 	return chunkZ;
 }
 
-short AirChunk::getBlockAtWithNeighbours(Side side, int x, int y, int z)
-{
-	if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && z < CHUNK_SIZE && y < CHUNK_SIZE)
-	{
-		return getBlockAt(x, y, z);
-	}
-
-	shared_ptr<AirChunk> other = neighbours[side].lock();
-	if (other)
-	{
-		switch (side)
-		{
-		case TOP: return other->getBlockAt(x, 0, z); //Y+
-		case BOTTOM: return other->getBlockAt(x, CHUNK_SIZE - 1, z); //Y-
-		case EAST: return other->getBlockAt(0, y, z);  // X+
-		case WEST: return other->getBlockAt(CHUNK_SIZE - 1, y, z); // X-
-		case SOUTH: return other->getBlockAt(x, y, 0); // Z+
-		case NORTH: return other->getBlockAt(x, y, CHUNK_SIZE - 1);  // Z-
-		}
-	}
-
-	//Warning("Trying to mesh a not ready chunk !");
-	return 0;
-}
-
 short AirChunk::getBlockAt(int x, int y, int z)
 {
 	return 0;
@@ -84,7 +59,12 @@ ChunkType AirChunk::getChunkType()
 
 bool AirChunk::isReady()
 {
-	return ready;
+	return neighbourCount;
+}
+
+weak_ptr<AirChunk> AirChunk::getNeighbour(Side fromSide)
+{
+	return neighbours[fromSide];
 }
 
 int AirChunk::getFlatIndex(int x, int z)
@@ -99,29 +79,27 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 		neighbourCount++;
 		neighbours[fromSide] = sender;
 
-		if (neighbourCount == 6)
-		{
-			ready = true;
-			chunkWorld->onChunkReady(shared_from_this());
-		}
-
 		// Notify spawned chunk of this chunk existence
 		if (loaded == NeighbourNotification::LOADED)
 		{
 			sender->onNotifiedByNeighbour(NeighbourNotification::RESPONSE, shared_from_this(), SideUtil::opposite[fromSide]);
 		}
+
+		// Chunk is ready
+		if (neighbourCount == 6)
+		{
+			chunkWorld->onChunkReady(shared_from_this());
+		}
 	}
 	else if(loaded == NeighbourNotification::UNLOADED)
 	{
-		neighbourCount--;
-		neighbours[fromSide].reset();
-		
 		// Unload chunk
-		if (ready)
+		if (neighbourCount == 6)
 		{
 			chunkWorld->onChunkUnReady(shared_from_this());
 		}
 
-		ready = false;
+		neighbourCount--;
+		neighbours[fromSide].reset();
 	}
 }

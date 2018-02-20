@@ -10,6 +10,7 @@
 
 #define TICK_PER_SECOND 20.0
 #define TICK_DELAY (1.0 / TICK_PER_SECOND)
+#define MAJOR_TICK_DELAY 4
 
 #include <time.h>
 
@@ -21,6 +22,7 @@ private:
 	static double tickInterpolation;
 	static double tickTime;
 	static double delta;
+	static int majorTickCounter;
 	struct timespec ts_start;
 
 public:
@@ -31,6 +33,7 @@ public:
 	static void updateTimer();
 
 	static bool shallTick();
+	static bool isMajorTick();
 
 	static struct tm* getTimeOfDay();
 	static double getAliveTime();

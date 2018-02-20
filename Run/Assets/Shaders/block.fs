@@ -7,7 +7,9 @@ in vec3 outColor;
 in vec3 outNormal;
 in vec3 outRawNormal;
 in vec2 outAtlasPos;
+
 in vec3 toLight;
+in vec3 toCamera;
 
 uniform sampler2D texture0;
 uniform vec2 uAtlasCellSize;
@@ -39,16 +41,16 @@ void main()
 	// Diffuse light
 	vec3 unitNormal = normalize(outNormal);
 	vec3 unitToLight = normalize(toLight);
-	float diffuse = max(dot(unitNormal, unitToLight), 0.2);
+	float diffuse = max(dot(unitNormal, unitToLight), 0.4);
 
 	// Specular
-	//vec3 viewDir = normalize(uCameraPos - outFragPos);
-	//vec3 reflectDir = reflect(-lightDir, unitNormal);
+	vec3 unitToCamera = normalize(toCamera);
+	vec3 reflectDir = reflect(-unitToLight, unitNormal);
 	
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256);
-	//vec3 specular = 0.5 * spec * vec3(1.0, 1.0, 1.0);  
+    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), 32);
+	vec3 specular = 0.5 * specAmount * vec3(1.0, 1.0, 1.0);  
 	
 	// Final color
 	vec4 texColor = texture(texture0, texCoords);
-    gl_Color = diffuse * texColor * vec4(outColor, 1.0);
+    gl_Color = diffuse * texColor * vec4(outColor, 1.0) + vec4(specular, 0.0);
 } 

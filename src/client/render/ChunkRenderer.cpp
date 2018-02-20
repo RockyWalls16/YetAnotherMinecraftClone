@@ -130,6 +130,24 @@ VertexBuilder** ChunkRenderer::prepareChunkMesh(shared_ptr<AirChunk> chunk)
  */
 void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirChunk> ch)
 {
+	static std::string sides[]{ "TOP", "BOTTOM", "EAST", "NORTH", "WEST", "SOUTH" };
+
+	// Lock chunk neighbours
+	shared_ptr<AirChunk> neighbours[6];
+	for (int i = 0; i < 6; i++)
+	{
+		neighbours[i] = ch->getNeighbour((Side)i).lock();
+		if (!neighbours[i])
+		{
+			if (ch->getChunkX() == 0 && ch->getChunkY() == 1 && ch->getChunkZ() == 2)
+			{
+				Info("NOT OK " + sides[i]);
+			}
+
+			return;
+		}
+	}
+
 	bool mask[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE][6]{false};
 	int width, height, l;
 	int side;
@@ -149,7 +167,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 					int renderLayer = block->getRenderLayer();
 					for (side = 0; side < 6; side++) // For eachs side
 					{
-						if (!mask[x][y][z][side] && BlockRenderer::isSideVisible(ch, block, x, y, z, (Side) side)) // Check not already meshed and side is visible
+						if (!mask[x][y][z][side] && BlockRenderer::isSideVisible(ch, neighbours, block, x, y, z, (Side) side)) // Check not already meshed and side is visible
 						{
 							if (side == Side::TOP || side == Side::BOTTOM) // Check for near top then bottom face
 							{
@@ -160,7 +178,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 									{
 										for (z2 = z; z2 < CHUNK_SIZE; z2++)
 										{
-											if (!mask[x2][y][z2][side] && ch->getBlockAt(x2, y, z2) == block->getId() && BlockRenderer::isSideVisible(ch, block, x2, y, z2, (Side) side))
+											if (!mask[x2][y][z2][side] && ch->getBlockAt(x2, y, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side) side))
 											{
 												mask[x2][y][z2][side] = true;
 											}
@@ -176,7 +194,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 										l = z + width;
 										for (z2 = z; z2 < l; z2++)
 										{
-											if (mask[x2][y][z2][side] || ch->getBlockAt(x2, y, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, block, x2, y, z2, (Side) side))
+											if (mask[x2][y][z2][side] || ch->getBlockAt(x2, y, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side) side))
 											{
 												goto mainLoopTB;
 											}
@@ -202,7 +220,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 									{
 										for (z2 = z; z2 < CHUNK_SIZE; z2++)
 										{
-											if (!mask[x][y2][z2][side] && ch->getBlockAt(x, y2, z2) == block->getId() && BlockRenderer::isSideVisible(ch, block, x, y2, z2, (Side) side))
+											if (!mask[x][y2][z2][side] && ch->getBlockAt(x, y2, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side) side))
 											{
 												mask[x][y2][z2][side] = true;
 											}
@@ -218,7 +236,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 										l = z + width;
 										for (z2 = z; z2 < l; z2++)
 										{
-											if (mask[x][y2][z2][side] || ch->getBlockAt(x, y2, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, block, x, y2, z2, (Side) side))
+											if (mask[x][y2][z2][side] || ch->getBlockAt(x, y2, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side) side))
 											{
 												goto mainLoopNS;
 											}
@@ -244,7 +262,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 									{
 										for (y2 = y; y2 < CHUNK_SIZE; y2++)
 										{
-											if (!mask[x2][y2][z][side] && ch->getBlockAt(x2, y2, z) == block->getId() && BlockRenderer::isSideVisible(ch, block, x2, y2, z, (Side) side))
+											if (!mask[x2][y2][z][side] && ch->getBlockAt(x2, y2, z) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side) side))
 											{
 												mask[x2][y2][z][side] = true;
 											}
@@ -260,7 +278,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 										l = y + height;
 										for (y2 = y; y2 < l; y2++)
 										{
-											if (mask[x2][y2][z][side] || ch->getBlockAt(x2, y2, z) != block->getId() || !BlockRenderer::isSideVisible(ch, block, x2, y2, z, (Side) side))
+											if (mask[x2][y2][z][side] || ch->getBlockAt(x2, y2, z) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side) side))
 											{
 												goto mainLoopWE;
 											}

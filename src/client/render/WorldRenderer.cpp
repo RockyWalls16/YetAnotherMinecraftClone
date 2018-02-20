@@ -19,7 +19,7 @@ WorldRenderer::WorldRenderer(World* world) : world(world)
 	BlockRenderer::initBlockRenderer();
 
 	chunkRenderer = new ChunkRenderer();
-	sunDirection = glm::vec3(200.0F, 2000.0F, -200.0F);
+	sunDirection = glm::vec3(20000.0F, 20000.0F, -10000.0F);
 
 	skyRenderer = new SkyRenderer(this);
 }

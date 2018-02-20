@@ -20,7 +20,7 @@
 void BlockRenderer::initBlockRenderer()
 {
 	// Load block texture
-	TextureCache::blockTexture = TextureLoader::loadTexture("minecraft", true);
+	TextureCache::blockTexture = TextureLoader::loadTexture("minecraft");
 	int texW = TextureCache::blockTexture->getTextureWidth();
 	int texH = TextureCache::blockTexture->getTextureHeight();
 
@@ -64,15 +64,40 @@ void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, shared_ptr<AirChun
 	}*/
 }
 
-bool BlockRenderer::isSideVisible(shared_ptr<AirChunk> chunk, Block * blockId, int x, int y, int z, Side faceSide)
+bool BlockRenderer::isSideVisible(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
 {
-	return shallRenderFace(chunk, blockId, x + SideUtil::xValue[faceSide], y + SideUtil::yValue[faceSide], z + SideUtil::zValue[faceSide], faceSide);
+	return shallRenderFace(chunk, neighbours, blockId, x + SideUtil::xValue[faceSide], y + SideUtil::yValue[faceSide], z + SideUtil::zValue[faceSide], faceSide);
 }
 
-bool BlockRenderer::shallRenderFace(shared_ptr<AirChunk> chunk, Block * blockId, int x, int y, int z, Side faceSide)
+bool BlockRenderer::shallRenderFace(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
 {
-	Block* neighbour = Block::getBlock(chunk->getBlockAtWithNeighbours(faceSide, x, y, z));
+	Block* neighbour = Block::getBlock(getBlockAtWithNeighbours(chunk, neighbours, faceSide, x, y, z));
 	return blockId->isSideVisible(neighbour, faceSide) && !neighbour->hideNeighbourFace(blockId, faceSide);
+}
+
+short BlockRenderer::getBlockAtWithNeighbours(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z)
+{
+	if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && z < CHUNK_SIZE && y < CHUNK_SIZE)
+	{
+		return chunk->getBlockAt(x, y, z);
+	}
+
+	shared_ptr<AirChunk> other = neighbours[side];
+	if (other)
+	{
+		switch (side)
+		{
+		case TOP: return other->getBlockAt(x, 0, z); //Y+
+		case BOTTOM: return other->getBlockAt(x, CHUNK_SIZE - 1, z); //Y-
+		case EAST: return other->getBlockAt(0, y, z);  // X+
+		case WEST: return other->getBlockAt(CHUNK_SIZE - 1, y, z); // X-
+		case SOUTH: return other->getBlockAt(x, y, 0); // Z+
+		case NORTH: return other->getBlockAt(x, y, CHUNK_SIZE - 1);  // Z-
+		}
+	}
+
+	Warning("Trying to mesh a not ready chunk !");
+	return 0;
 }
 
 void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, int x, int y, int z, int sX, int sY, int sZ, Side faceSide)

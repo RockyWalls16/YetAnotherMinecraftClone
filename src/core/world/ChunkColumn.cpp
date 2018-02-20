@@ -20,7 +20,7 @@ shared_ptr<AirChunk> ChunkColumn::getChunkAt(int chunkY)
 
 void ChunkColumn::setChunkAt(shared_ptr<AirChunk> chunk, int chunkY)
 {
-	chunks[chunkY] = chunk;
+	chunks.insert(make_pair(chunkY, chunk));
 }
 
 void ChunkColumn::removeChunk(shared_ptr<AirChunk> chunk)

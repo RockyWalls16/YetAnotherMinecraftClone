@@ -57,7 +57,7 @@ void GameRenderer::renderGame()
 	{
 		delete(coords);
 	}
-	coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
+	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x >> CHUNK_SHIFT) + " Y: " + std::to_string((int)gameCamera->getLocation().y >> CHUNK_SHIFT) + " Z: " + std::to_string((int)gameCamera->getLocation().z >> CHUNK_SHIFT));
 
 	/* Render here */
 	frameBuffer->bind();
@@ -92,7 +92,7 @@ void GameRenderer::renderGame()
 	frameBuffer->drawOverlay();
 
 	fvao->render2D(4, 28);
-	coords->render2D(4, 58);
+	//coords->render2D(4, 58);
 
 	//checkGLError("Frame");
 

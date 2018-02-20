@@ -25,7 +25,7 @@ class Block;
 class World
 {
 private:
-	std::unordered_map<long long, ChunkColumn*> chunksColumns;
+	std::unordered_map<long long, shared_ptr<ChunkColumn>> chunksColumns;
 	ChunkGenerator* chunkGenerator;
 	std::vector<shared_ptr<AirChunk>> deadChunkQueue;
 	std::vector<Entity*> entityList;
@@ -47,7 +47,8 @@ public:
 
 	int getChunkTilePosFromWorld(int pos);
 
-	shared_ptr<AirChunk> loadChunk(int x, int y, int z);
+	shared_ptr<ChunkColumn> loadColumn(int x, int z);
+	shared_ptr<AirChunk> loadChunk(shared_ptr<ChunkColumn> column, int x, int y, int z);
 	void addChunkToUnload(shared_ptr<AirChunk> chunk);
 
 	void onChunkUnReady(shared_ptr<AirChunk> chunk);
@@ -56,7 +57,7 @@ public:
 	long getTime();
 
 private:
-	ChunkColumn* getColumnAt(int chunkX, int chunkZ);
+	shared_ptr<ChunkColumn> getColumnAt(int chunkX, int chunkZ);
 
 	void notifyNeighbours(shared_ptr<AirChunk> chunk, NeighbourNotification type);
 

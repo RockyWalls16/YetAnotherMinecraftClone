@@ -11,6 +11,7 @@ out vec3 outRawNormal;
 out vec2 outAtlasPos;
 
 out vec3 toLight;
+out vec3 toCamera;
 
 uniform float uTime;
 uniform mat4 uModel;
@@ -34,4 +35,5 @@ void main()
 	outAtlasPos = aAtlasPos;
 
 	toLight = uSunPos - worldPosition.xyz;
+	toCamera = worldPosition.xyz - uSunPos;
 }
