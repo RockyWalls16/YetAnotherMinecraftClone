@@ -33,13 +33,15 @@ unsigned int Texture::getTextureHeight() const
 	return textureHeight;
 }
 
-void Texture::bind()
+void Texture::bind(int id)
 {
+	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
-void Texture::unbind()
+void Texture::unbind(int id)
 {
+	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

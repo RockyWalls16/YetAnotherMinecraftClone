@@ -11,6 +11,7 @@
 
 std::vector<Texture*> TextureCache::textureCache;
 Texture* TextureCache::blockTexture;
+Texture* TextureCache::blockSpecularTexture;
 
 void TextureCache::emptyTextureCache()
 {

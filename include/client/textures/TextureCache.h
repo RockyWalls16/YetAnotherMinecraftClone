@@ -16,6 +16,7 @@ class TextureCache
 {
 public:
 	static Texture* blockTexture;
+	static Texture* blockSpecularTexture;
 
 private:
 	static std::vector<Texture*> textureCache;

@@ -21,6 +21,7 @@ void BlockRenderer::initBlockRenderer()
 {
 	// Load block texture
 	TextureCache::blockTexture = TextureLoader::loadTexture("minecraft");
+	TextureCache::blockSpecularTexture = TextureLoader::loadTexture("minecraft_specular");
 	int texW = TextureCache::blockTexture->getTextureWidth();
 	int texH = TextureCache::blockTexture->getTextureHeight();
 

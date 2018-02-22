@@ -21,8 +21,8 @@ public:
 	Texture(unsigned int textureId, unsigned int width, unsigned int height, int internalFormat, int pixelDataFormat);
 	~Texture();
 
-	void bind();
-	void unbind();
+	void bind(int id = 0);
+	void unbind(int id = 0);
 	unsigned int getTextureId() const;
 	unsigned int getTextureWidth() const;
 	unsigned int getTextureHeight() const;

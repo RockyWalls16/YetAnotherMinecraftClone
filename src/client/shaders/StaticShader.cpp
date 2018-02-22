@@ -28,8 +28,12 @@ void StaticShader::bindAttributesAndUniforms()
 	bindUniformLocation("uCameraPos", &uniformCameraPos);
 	bindUniformLocation("uSunDir", &uniformSunDir);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
+	bindUniformLocation("albedo", &uniformAlbedoTexture);
+	bindUniformLocation("specularMap", &uniformSpecularTexture);
 
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
+	glUniform1i(uniformAlbedoTexture, 0);
+	glUniform1i(uniformSpecularTexture, 1);
 }
 
 void StaticShader::use()

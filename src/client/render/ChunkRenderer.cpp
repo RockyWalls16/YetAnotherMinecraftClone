@@ -48,6 +48,7 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 
 	ShaderCache::blockShader->use();
 	TextureCache::blockTexture->bind();
+	TextureCache::blockSpecularTexture->bind(1);
 
 	fetchReadyChunks();
 
@@ -96,6 +97,8 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 			}
 		}
 	}
+
+	TextureCache::blockTexture->unbind();
 }
 
 void ChunkRenderer::fetchReadyChunks()

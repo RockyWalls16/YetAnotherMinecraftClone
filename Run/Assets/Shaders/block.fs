@@ -11,7 +11,9 @@ in vec2 outAtlasPos;
 in vec3 toLight;
 in vec3 toCamera;
 
-uniform sampler2D texture0;
+uniform sampler2D albedo;
+uniform sampler2D specularMap;
+
 uniform vec2 uAtlasCellSize;
 
 vec2 getCoordinateFromNormal()
@@ -47,18 +49,11 @@ void main()
 	vec3 unitToCamera = normalize(toCamera);
 	vec3 reflectDir = reflect(-unitToLight, unitNormal);
 	
-	float damper = 256;
-	float specMult = 0.0F;
-	if(outAtlasPos.x > 0.5)
-	{
-		damper = 6;
-		specMult = 1.0F;
-	}
-
-    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), damper);
-	vec3 specular = specMult * specAmount * vec3(1.0, 1.0, 1.0);  
+	vec4 specTex = texture(specularMap, texCoords);
+    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specTex.r * 255.0);
+	vec3 specular = specTex.g * specAmount * vec3(1.0, 1.0, 1.0);  
 	
 	// Final color
-	vec4 texColor = texture(texture0, texCoords);
+	vec4 texColor = texture(albedo, texCoords);
     gl_Color = diffuse * texColor * vec4(outColor, 1.0) + vec4(specular, 0.0);
 } 
