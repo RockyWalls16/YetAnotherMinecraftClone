@@ -10,7 +10,7 @@
 
 SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer)
 {
-	createSphere(40, 40);
+	createSphere(6, 6);
 }
 
 void SkyRenderer::render()
@@ -57,6 +57,7 @@ void SkyRenderer::createSphere(int lats, int longs)
 	}
 
 	skySphere = VertexArray::makeVAO();
+	skySphere->disableNormals();
 	skySphere->addVBO(vertices, vertexAmount * sizeof(float), GL_STATIC_DRAW);
 	skySphere->assignPositionAttrib(0, 0, sizeof(float) * 3);
 	skySphere->scale(glm::vec3(FAR_PLANE - 1, FAR_PLANE - 1, FAR_PLANE - 1));

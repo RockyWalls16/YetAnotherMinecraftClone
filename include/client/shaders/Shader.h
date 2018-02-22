@@ -29,7 +29,7 @@ public:
 
 	virtual void use();
 	virtual void stop();
-	virtual void onDraw(glm::mat4& modelMatrix) = 0;
+	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) = 0;
 	const std::string& getShaderName() const;
 
 protected:

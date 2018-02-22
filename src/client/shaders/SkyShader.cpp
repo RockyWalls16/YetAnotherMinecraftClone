@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <client/render/GameRenderer.h>
 
-void SkyShader::onDraw(glm::mat4 & modelMatrix)
+void SkyShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 }

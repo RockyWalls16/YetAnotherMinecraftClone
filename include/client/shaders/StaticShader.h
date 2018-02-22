@@ -17,18 +17,19 @@ private:
 	int uniformModelLocation;
 	int uniformViewProjLocation;
 	int uniformNormalLocation;
-	int uniformSunPos;
+	int uniformCameraPos;
+	int uniformSunDir;
 	int uniformAtlasCellSizeLocation;
 	float cellW;
 	float cellH;
 
 public:
-	StaticShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformNormalLocation(0), uniformSunPos(0), uniformAtlasCellSizeLocation(0), cellW(1.0F), cellH(1.0F){}
+	StaticShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformNormalLocation(0), uniformCameraPos(0), uniformSunDir(0), uniformAtlasCellSizeLocation(0), cellW(1.0F), cellH(1.0F){}
 
 	virtual void use() override;
 	virtual void stop() override;
 	void setAtlasCellSize(float cellW, float cellH);
-	virtual void onDraw(glm::mat4& modelMatrix) override;
+	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 
 private:
 	virtual void bindAttributesAndUniforms() override;

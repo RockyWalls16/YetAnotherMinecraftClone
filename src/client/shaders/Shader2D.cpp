@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <client/render/GameRenderer.h>
 
-void Shader2D::onDraw(glm::mat4 & modelMatrix)
+void Shader2D::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix4fv(uniformOrthoLocation, 1, GL_FALSE, glm::value_ptr(GameRenderer::getInstance().getOrthoMatrix()));

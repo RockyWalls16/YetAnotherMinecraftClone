@@ -19,7 +19,7 @@ uniform mat4 uViewMat;
 uniform mat4 uViewProj;
 uniform mat3 uNormalMat;
 
-uniform vec3 uSunPos;
+uniform vec3 uSunDir;
 uniform vec3 uCameraPos;
 
 void main()
@@ -34,6 +34,6 @@ void main()
     outColor = aColor;
 	outAtlasPos = aAtlasPos;
 
-	toLight = uSunPos - worldPosition.xyz;
-	toCamera = worldPosition.xyz - uSunPos;
+	toLight = -uSunDir;
+	toCamera = uCameraPos - worldPosition.xyz;
 }

@@ -12,7 +12,7 @@ private:
 
 public:
 	SkyShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0){}
-	virtual void onDraw(glm::mat4& modelMatrix) override;
+	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 	virtual void SkyShader::use() override;
 private:
 	virtual void bindAttributesAndUniforms() override;

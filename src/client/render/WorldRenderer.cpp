@@ -19,7 +19,7 @@ WorldRenderer::WorldRenderer(World* world) : world(world)
 	BlockRenderer::initBlockRenderer();
 
 	chunkRenderer = new ChunkRenderer();
-	sunDirection = glm::vec3(20000.0F, 20000.0F, -10000.0F);
+	sunDirection = glm::vec3(-0.75F, -1.0F, -0.5F);
 
 	skyRenderer = new SkyRenderer(this);
 }
@@ -31,7 +31,10 @@ WorldRenderer::~WorldRenderer()
 
 void WorldRenderer::render(RenderLayer renderLayer)
 {
-	skyRenderer->render();
+	if (renderLayer == RenderLayer::RL_OPAQUE)
+	{
+		skyRenderer->render();
+	}
 	chunkRenderer->render(renderLayer);
 }
 

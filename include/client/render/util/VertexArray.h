@@ -15,11 +15,14 @@
 
 class VertexArray
 {
-public:
+private:
 	unsigned int idVAO;
 	unsigned int idEBO;
 	std::vector<unsigned int> vbos;
 	glm::mat4 modelMatrix;
+	glm::mat3 normalMatrix;
+	bool dirty;
+	bool useNormals;
 
 public:
 	static VertexArray* makeVAO();
@@ -42,6 +45,8 @@ public:
 	void translate(const glm::vec3& translation);
 	void rotate(float amount, const glm::vec3& rotation);
 	void scale(const glm::vec3& scale);
+	void processNormalMatrix();
+	void disableNormals();
 
 	~VertexArray();
 

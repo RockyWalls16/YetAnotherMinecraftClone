@@ -50,8 +50,10 @@ public:
 	static void updateFrustumSize(Camera* camera);
 
 	static void computePlanes(Camera* camera);
+	static void computePlanes2(Camera * camera);
 	static bool pointInFrustum(glm::vec3 & p);
 	static bool boxInFrustum(int x, int y, int z, int sX, int sY, int sZ);
+	static bool columnInFrustum(int x, int y, int z, int sX, int sY, int sZ);
 };
 
 #endif

@@ -126,6 +126,7 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 
 	// Generate Vertex data
 	VertexArray* vao = VertexArray::makeVAO();
+	vao->disableNormals();
 	vao->addVBO(vb->getVertexBuffer(), vb->getVBOSize(), GL_STATIC_DRAW);
 	vao->enableEBO(vb->getIndicesBuffer(), vb->getEOBSize(), GL_STATIC_DRAW);
 	vao->assignPositionAttrib(0, 0, sizeof(float) * 5);

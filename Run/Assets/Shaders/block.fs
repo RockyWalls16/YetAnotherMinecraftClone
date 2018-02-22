@@ -41,14 +41,22 @@ void main()
 	// Diffuse light
 	vec3 unitNormal = normalize(outNormal);
 	vec3 unitToLight = normalize(toLight);
-	float diffuse = max(dot(unitNormal, unitToLight), 0.4);
+	float diffuse = max(dot(unitNormal, unitToLight), 0.2);
 
 	// Specular
 	vec3 unitToCamera = normalize(toCamera);
 	vec3 reflectDir = reflect(-unitToLight, unitNormal);
 	
-    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), 32);
-	vec3 specular = 0.5 * specAmount * vec3(1.0, 1.0, 1.0);  
+	float damper = 256;
+	float specMult = 0.0F;
+	if(outAtlasPos.x > 0.5)
+	{
+		damper = 6;
+		specMult = 1.0F;
+	}
+
+    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), damper);
+	vec3 specular = specMult * specAmount * vec3(1.0, 1.0, 1.0);  
 	
 	// Final color
 	vec4 texColor = texture(texture0, texCoords);

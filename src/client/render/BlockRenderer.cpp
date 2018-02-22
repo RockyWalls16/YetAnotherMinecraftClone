@@ -31,7 +31,7 @@ void BlockRenderer::initBlockRenderer()
 	ShaderCache::blockShader->setAtlasCellSize(atlasCellW, atlasCellH);
 }
 
-void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, shared_ptr<AirChunk> chunk, Block* blockId, int x, int y, int z)
+void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, const shared_ptr<AirChunk>& chunk, Block* blockId, int x, int y, int z)
 {
 	/*if(shallRenderFace(chunk, blockId, x, y + 1, z, Side::TOP))
 	{
@@ -64,18 +64,18 @@ void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, shared_ptr<AirChun
 	}*/
 }
 
-bool BlockRenderer::isSideVisible(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
+bool BlockRenderer::isSideVisible(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
 {
 	return shallRenderFace(chunk, neighbours, blockId, x + SideUtil::xValue[faceSide], y + SideUtil::yValue[faceSide], z + SideUtil::zValue[faceSide], faceSide);
 }
 
-bool BlockRenderer::shallRenderFace(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
+bool BlockRenderer::shallRenderFace(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
 {
 	Block* neighbour = Block::getBlock(getBlockAtWithNeighbours(chunk, neighbours, faceSide, x, y, z));
 	return blockId->isSideVisible(neighbour, faceSide) && !neighbour->hideNeighbourFace(blockId, faceSide);
 }
 
-short BlockRenderer::getBlockAtWithNeighbours(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z)
+short BlockRenderer::getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z)
 {
 	if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_SIZE && z < CHUNK_SIZE && y < CHUNK_SIZE)
 	{

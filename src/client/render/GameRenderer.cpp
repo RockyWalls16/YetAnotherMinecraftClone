@@ -57,15 +57,17 @@ void GameRenderer::renderGame()
 	{
 		delete(coords);
 	}
-	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x >> CHUNK_SHIFT) + " Y: " + std::to_string((int)gameCamera->getLocation().y >> CHUNK_SHIFT) + " Z: " + std::to_string((int)gameCamera->getLocation().z >> CHUNK_SHIFT));
+	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
 
 	/* Render here */
 	frameBuffer->bind();
 
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.2F, 0.6F, 1.0F, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+	if (wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
 
 	gameCamera->updateCameraRender();
 

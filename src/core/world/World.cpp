@@ -56,12 +56,16 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 	y = y >> CHUNK_SHIFT;
 	z = z >> CHUNK_SHIFT;
 
-	for (int i = x - size; i < x + size; i++)
+	int xLimit = x + size;
+	int yLimit = y + size;
+	int zLimit = z + size;
+
+	for (int i = x - size; i < xLimit; i++)
 	{
-		for (int k = z - size; k < z + size; k++)
+		for (int k = z - size; k < zLimit; k++)
 		{
 			shared_ptr<ChunkColumn> column = loadColumn(i, k);
-			for (int j = y - size; j < y + size; j++)
+			for (int j = y - size; j < yLimit; j++)
 			{
 				loadChunk(column, i, j, k)->resetTTL();
 			}
@@ -142,7 +146,7 @@ shared_ptr<ChunkColumn> World::loadColumn(int x, int z)
 	return column;
 }
 
-shared_ptr<AirChunk> World::loadChunk(shared_ptr<ChunkColumn> column, int x, int y, int z)
+shared_ptr<AirChunk> World::loadChunk(const shared_ptr<ChunkColumn>& column, int x, int y, int z)
 {
 	// Find chunk in column
 	shared_ptr<AirChunk> chunk = column->getChunkAt(y);
@@ -161,12 +165,12 @@ shared_ptr<AirChunk> World::loadChunk(shared_ptr<ChunkColumn> column, int x, int
 	return chunk;
 }
 
-void World::addChunkToUnload(shared_ptr<AirChunk> chunk)
+void World::addChunkToUnload(const shared_ptr<AirChunk>& chunk)
 {
 	deadChunkQueue.push_back(chunk);
 }
 
-void World::unloadChunk(shared_ptr<AirChunk> chunk)
+void World::unloadChunk(const shared_ptr<AirChunk>& chunk)
 {
 	// Get chunk column
 	shared_ptr<ChunkColumn> column = getColumnAt(chunk->getChunkX(), chunk->getChunkZ());
@@ -184,7 +188,7 @@ void World::unloadChunk(shared_ptr<AirChunk> chunk)
 	onChunkUnReady(chunk);
 }
 
-void World::onChunkUnReady(shared_ptr<AirChunk> chunk)
+void World::onChunkUnReady(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{
@@ -192,7 +196,7 @@ void World::onChunkUnReady(shared_ptr<AirChunk> chunk)
 	}
 }
 
-void World::onChunkReady(shared_ptr<AirChunk> chunk)
+void World::onChunkReady(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{
@@ -200,18 +204,22 @@ void World::onChunkReady(shared_ptr<AirChunk> chunk)
 	}
 }
 
-void World::notifyNeighbours(shared_ptr<AirChunk> chunk, NeighbourNotification type)
+void World::notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type)
 {
 	// Update neighbours state
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX(), chunk->getChunkY() + 1, chunk->getChunkZ()), type, Side::BOTTOM);
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX(), chunk->getChunkY() - 1, chunk->getChunkZ()), type, Side::TOP);
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX() + 1, chunk->getChunkY(), chunk->getChunkZ()), type, Side::WEST);
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX() - 1, chunk->getChunkY(), chunk->getChunkZ()), type, Side::EAST);
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ() + 1), type, Side::NORTH);
-	notifySingleNeighbour(chunk, getChunkAt(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ() - 1), type, Side::SOUTH);
+	int x = chunk->getChunkX();
+	int y = chunk->getChunkY();
+	int z = chunk->getChunkZ();
+
+	notifySingleNeighbour(chunk, getChunkAt(x, y + 1, z), type, Side::BOTTOM);
+	notifySingleNeighbour(chunk, getChunkAt(x, y - 1, z), type, Side::TOP);
+	notifySingleNeighbour(chunk, getChunkAt(x + 1, y, z), type, Side::WEST);
+	notifySingleNeighbour(chunk, getChunkAt(x - 1, y, z), type, Side::EAST);
+	notifySingleNeighbour(chunk, getChunkAt(x, y, z + 1), type, Side::NORTH);
+	notifySingleNeighbour(chunk, getChunkAt(x, y, z - 1), type, Side::SOUTH);
 }
 
-void World::notifySingleNeighbour(shared_ptr<AirChunk> sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide)
+void World::notifySingleNeighbour(const shared_ptr<AirChunk>& sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide)
 {
 	if (chunk != nullptr)
 	{

@@ -9,9 +9,11 @@
 #define CLIENT_RENDER_CHUNKRENDERER_H_
 
 #include <core/world/World.h>
+#include <util/Logger.h>
 #include <client/render/util/VertexArray.h>
 #include <client/render/util/VertexBuilder.h>
 #include <vector>
+#include <unordered_map>
 #include <memory>
 
 using namespace std;
@@ -19,6 +21,25 @@ using namespace std;
 class AirChunk;
 class ChunkRenderQueue;
 enum RenderLayer;
+
+class ChunkRenderColumn
+{
+public:
+	int chunkX;
+	int chunkZ;
+	std::vector<ChunkRenderIndex*> column;
+
+	ChunkRenderColumn(int cX, int cZ) : chunkX(cX), chunkZ(cZ)
+	{
+
+	}
+};
+
+class ChunkRenderContainer
+{
+public:
+	std::unordered_map<long long, shared_ptr<ChunkRenderColumn>> columnsMap;
+};
 
 // Contains mesh data for render
 class ChunkRenderIndex
@@ -37,14 +58,22 @@ public:
 		opaqueVertexAmount(opaqueVertexAmount),
 		transparentVertexAmount(transparentVertexAmount)
 	{};
+
+	~ChunkRenderIndex()
+	{
+		delete(chunkOpaqueMesh);
+		delete(chunkTransparentMesh);
+	}
 };
 
 class ChunkRenderer
 {
 private:
+	int chunkCount;
 	ChunkRenderQueue* chunkRenderQueue;
-	std::vector<ChunkRenderIndex*> opaqueChunks;
-	std::vector<ChunkRenderIndex*> transparentChunks;
+
+	ChunkRenderContainer* opaqueContainer;
+	ChunkRenderContainer* transparentContainer;
 
 public:
 	ChunkRenderer();
@@ -57,6 +86,8 @@ public:
 	VertexBuilder** prepareChunkMesh(shared_ptr<AirChunk> chunk);
 	void applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirChunk> ch);
 	void removeChunk(shared_ptr<AirChunk> chunk);
+	ChunkRenderContainer* getColumnContainer(RenderLayer layer);
+	shared_ptr<ChunkRenderColumn> getRenderColumn(RenderLayer layer, int x, int z);
 
 private:
 	void configureVAO(shared_ptr<AirChunk> chunk, VertexBuilder* builder, VertexArray* vertexArray);

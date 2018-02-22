@@ -6,13 +6,13 @@
  */
 
 #include <util/Logger.h>
-#include <string>
 #include <client/shaders/StaticShader.h>
 #include <client/render/util/VertexArray.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
-VertexArray::VertexArray(unsigned int id) : idVAO(id), idEBO(0)
+VertexArray::VertexArray(unsigned int id) : idVAO(id), idEBO(0), dirty(true), useNormals(true)
 {
 	setIdentity();
 }
@@ -45,20 +45,22 @@ VertexArray* VertexArray::makeVAO()
 
 void VertexArray::drawVAO(int vertexAmount, int offset, int drawShape, bool addModelMatrix)
 {
+	processNormalMatrix();
 	bind();
 	if (addModelMatrix && Shader::currentShader != nullptr)
 	{
-		Shader::currentShader->onDraw(modelMatrix);
+		Shader::currentShader->onDraw(modelMatrix, normalMatrix);
 	}
 	glDrawArrays(drawShape, offset, vertexAmount);
 }
 
 void VertexArray::drawEBO(int vertexAmount, GLvoid* offset, int drawShape, bool addModelMatrix)
 {
+	processNormalMatrix();
 	bind();
 	if (addModelMatrix && Shader::currentShader != nullptr)
 	{
-		Shader::currentShader->onDraw(modelMatrix);
+		Shader::currentShader->onDraw(modelMatrix, normalMatrix);
 	}
 	glDrawElements(drawShape, vertexAmount, GL_UNSIGNED_INT, (void*) 0);
 }
@@ -134,19 +136,37 @@ void VertexArray::unbind()
 void VertexArray::setIdentity()
 {
 	modelMatrix = glm::mat4(1.0F);
+	dirty = true;
 }
 
 void VertexArray::translate(const glm::vec3& translation)
 {
 	modelMatrix = glm::translate(modelMatrix, translation);
+	dirty = true;
 }
 
 void VertexArray::rotate(float amount, const glm::vec3& rotation)
 {
 	modelMatrix = glm::rotate(modelMatrix, amount, rotation);
+	dirty = true;
 }
 
 void VertexArray::scale(const glm::vec3& scale)
 {
 	modelMatrix = glm::scale(modelMatrix, scale);
+	dirty = true;
+}
+
+void VertexArray::processNormalMatrix()
+{
+	if (dirty && useNormals)
+	{
+		normalMatrix = glm::inverseTranspose(glm::mat3(modelMatrix));
+		dirty = false;
+	}
+}
+
+void VertexArray::disableNormals()
+{
+	useNormals = false;
 }

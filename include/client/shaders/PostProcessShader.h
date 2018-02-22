@@ -18,7 +18,7 @@ public:
 
 	virtual void use() override;
 	virtual void stop() override;
-	virtual void onDraw(glm::mat4& modelMatrix) {}
+	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3 & normalMatrix) {}
 
 private:
 	virtual void bindAttributesAndUniforms() override;

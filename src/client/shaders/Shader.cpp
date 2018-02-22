@@ -30,8 +30,11 @@ void Shader::init(unsigned int id)
 
 void Shader::use()
 {
-	Shader::currentShader = this;
-	glUseProgram(programId);
+	if (Shader::currentShader != this)
+	{
+		Shader::currentShader = this;
+		glUseProgram(programId);
+	}
 }
 
 void Shader::stop()

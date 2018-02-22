@@ -25,7 +25,8 @@ void StaticShader::bindAttributesAndUniforms()
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);
 	bindUniformLocation("uNormalMat", &uniformNormalLocation);
-	bindUniformLocation("uSunPos", &uniformSunPos);
+	bindUniformLocation("uCameraPos", &uniformCameraPos);
+	bindUniformLocation("uSunDir", &uniformSunDir);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
 
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
@@ -39,8 +40,11 @@ void StaticShader::use()
 	
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewProjMatrix()));
 	
-	glm::vec3 sunPos = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
-	glUniform3f(uniformSunPos, sunPos.x, sunPos.y, sunPos.z);
+	glm::vec3 camPos = camera->getLocation();
+	glUniform3f(uniformCameraPos, camPos.x, camPos.y, camPos.z);
+
+	glm::vec3 sunDir = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
+	glUniform3f(uniformSunDir, sunDir.x, sunDir.y, sunDir.z);
 }
 
 void StaticShader::stop()
@@ -56,10 +60,8 @@ void StaticShader::setAtlasCellSize(float cellW, float cellH)
 	this->cellH = cellH;
 }
 
-void StaticShader::onDraw(glm::mat4& modelMatrix)
+void StaticShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
-	const float* matrix = glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(modelMatrix))));
-
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	glUniformMatrix3fv(uniformNormalLocation, 1, GL_FALSE, matrix);
+	glUniformMatrix3fv(uniformNormalLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 }

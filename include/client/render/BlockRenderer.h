@@ -28,13 +28,13 @@ private:
 public:
 	static void initBlockRenderer();
 
-	static void renderBlock(VertexBuilder* vertexBuilder, shared_ptr<AirChunk> chunk, Block* blockId, int x, int y, int z);
+	static void renderBlock(VertexBuilder* vertexBuilder, const shared_ptr<AirChunk>& chunk, Block* blockId, int x, int y, int z);
 
-	static bool isSideVisible(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block* blockId, int x, int y, int z, Side faceSide);
+	static bool isSideVisible(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Block* blockId, int x, int y, int z, Side faceSide);
 
-	static bool shallRenderFace(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Block* blockId, int x, int y, int z, Side faceSide);
+	static bool shallRenderFace(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Block* blockId, int x, int y, int z, Side faceSide);
 
-	static short getBlockAtWithNeighbours(shared_ptr<AirChunk> chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z);
+	static short getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z);
 
 	static void renderFace(VertexBuilder* vertexBuilder, Block* blockId, int x, int y, int z, int sX, int sY, int sZ, Side faceSide);
 };

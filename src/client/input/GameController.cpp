@@ -151,7 +151,7 @@ void GameController::updateCameraRotation()
 		glm::vec3 cameraRotation = camera->getRotation();
 
 		// Create new rotation
-		glm::vec3 newRotation = glm::vec3(cameraRotation.x + dY * TimeManager::getFDelta() * 10.0F, cameraRotation.y + dX * TimeManager::getFDelta() * 10.0F, cameraRotation.z);
+		glm::vec3 newRotation = glm::vec3(cameraRotation.x + dY * 0.1F, cameraRotation.y + dX * 0.1F, cameraRotation.z);
 		camera->setRotation(newRotation);
 	}
 }

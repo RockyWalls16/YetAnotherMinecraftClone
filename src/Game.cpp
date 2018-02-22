@@ -54,8 +54,6 @@ void Game::launchGame()
 	{
 		TimeManager::updateTimer();
 
-		GameController::getInstance().processInput();
-
 		while(TimeManager::shallTick())
 		{
 			//Update game logic
@@ -66,6 +64,8 @@ void Game::launchGame()
 
 		/* Poll for and process events */
 		glfwPollEvents();
+
+		GameController::getInstance().processInput();
 	}
 }
 

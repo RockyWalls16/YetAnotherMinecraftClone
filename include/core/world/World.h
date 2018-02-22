@@ -48,22 +48,22 @@ public:
 	int getChunkTilePosFromWorld(int pos);
 
 	shared_ptr<ChunkColumn> loadColumn(int x, int z);
-	shared_ptr<AirChunk> loadChunk(shared_ptr<ChunkColumn> column, int x, int y, int z);
-	void addChunkToUnload(shared_ptr<AirChunk> chunk);
+	shared_ptr<AirChunk> loadChunk(const shared_ptr<ChunkColumn>& column, int x, int y, int z);
+	void addChunkToUnload(const shared_ptr<AirChunk>& chunk);
 
-	void onChunkUnReady(shared_ptr<AirChunk> chunk);
-	void onChunkReady(shared_ptr<AirChunk> chunk);
+	void onChunkUnReady(const shared_ptr<AirChunk>& chunk);
+	void onChunkReady(const shared_ptr<AirChunk>& chunk);
 
 	long getTime();
 
 private:
 	shared_ptr<ChunkColumn> getColumnAt(int chunkX, int chunkZ);
 
-	void notifyNeighbours(shared_ptr<AirChunk> chunk, NeighbourNotification type);
+	void notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type);
 
-	void notifySingleNeighbour(shared_ptr<AirChunk> sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide);
+	void notifySingleNeighbour(const shared_ptr<AirChunk>& sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide);
 
-	void unloadChunk(shared_ptr<AirChunk> chunk);
+	void unloadChunk(const shared_ptr<AirChunk>& chunk);
 
 };
 
