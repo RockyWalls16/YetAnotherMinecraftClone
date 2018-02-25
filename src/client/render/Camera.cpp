@@ -32,10 +32,10 @@ void Camera::updateCameraRender()
 
 	if(trackedEntity)
 	{
-		location = MathUtil::lerpVec3(trackedEntity->getLastPosition(), trackedEntity->getPosition(), TimeManager::getTickInterpolation());
+		location = MathUtil::lerpVec3(trackedEntity->getLastPosition(), trackedEntity->getPosition(), (float) TimeManager::getTickInterpolation());
 		location.y += trackedEntity->getEyeHeight();
 
-		rotation = MathUtil::lerpVec3(trackedEntity->getLastRotation(), trackedEntity->getRotation(), TimeManager::getTickInterpolation());
+		rotation = MathUtil::lerpVec3(trackedEntity->getLastRotation(), trackedEntity->getRotation(), (float) TimeManager::getTickInterpolation());
 	}
 
 	// Calculate matrices

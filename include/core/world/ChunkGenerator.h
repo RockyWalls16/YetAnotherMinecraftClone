@@ -17,8 +17,13 @@ class World;
 
 class ChunkGenerator
 {
+private:
+	World * world;
+
 public:
-	shared_ptr<AirChunk> generateChunk(World* world, int x, int y, int z);
+	ChunkGenerator(World* world);
+
+	shared_ptr<AirChunk> generateChunk(shared_ptr<AirChunk> inputChunk);
 };
 
 #endif /* CORE_WORLD_CHUNKGENERATOR_H_ */

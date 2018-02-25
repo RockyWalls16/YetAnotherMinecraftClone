@@ -62,8 +62,8 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 		for (auto opaqueColumn : opaqueContainer->columnsMap)
 		{
 			shared_ptr<ChunkRenderColumn> column = opaqueColumn.second;
-			float chunkX = column->chunkX * CHUNK_SIZE;
-			float chunkZ = column->chunkZ * CHUNK_SIZE;
+			int chunkX = column->chunkX * CHUNK_SIZE;
+			int chunkZ = column->chunkZ * CHUNK_SIZE;
 			
 			// Check column is in frustum
 			if (Frustum::columnInFrustum(chunkX, camera->getLocation().y - CHUNK_SIZE * 10, chunkZ, CHUNK_SIZE, camera->getLocation().y + CHUNK_SIZE * 10, CHUNK_SIZE))

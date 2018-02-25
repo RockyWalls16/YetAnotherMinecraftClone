@@ -21,12 +21,14 @@ using namespace std;
 
 class Entity;
 class Block;
+class ChunkGeneratorQueue;
 
 class World
 {
 private:
 	std::unordered_map<long long, shared_ptr<ChunkColumn>> chunksColumns;
 	ChunkGenerator* chunkGenerator;
+	ChunkGeneratorQueue* chunkGeneratorQueue;
 	std::vector<shared_ptr<AirChunk>> deadChunkQueue;
 	std::vector<Entity*> entityList;
 	long time;
@@ -54,16 +56,20 @@ public:
 	void onChunkUnReady(const shared_ptr<AirChunk>& chunk);
 	void onChunkReady(const shared_ptr<AirChunk>& chunk);
 
+	ChunkGenerator* getChunkGenerator();
+
 	long getTime();
+
+	void notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type);
 
 private:
 	shared_ptr<ChunkColumn> getColumnAt(int chunkX, int chunkZ);
 
-	void notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type);
-
-	void notifySingleNeighbour(const shared_ptr<AirChunk>& sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide);
+	void notifySingleNeighbour(const shared_ptr<AirChunk>& sender, const shared_ptr<AirChunk>& chunk, NeighbourNotification type, Side fromSide);
 
 	void unloadChunk(const shared_ptr<AirChunk>& chunk);
+
+	void fetchReadyChunks();
 
 };
 

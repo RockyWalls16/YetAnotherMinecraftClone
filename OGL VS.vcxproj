@@ -191,6 +191,7 @@
     <ClCompile Include="src\core\world\AirChunk.cpp" />
     <ClCompile Include="src\core\world\ChunkColumn.cpp" />
     <ClCompile Include="src\core\world\ChunkGenerator.cpp" />
+    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
     <ClCompile Include="src\core\world\LayeredChunk.cpp" />
     <ClCompile Include="src\core\world\World.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -386,6 +387,7 @@
     <ClInclude Include="include\core\entity\Entity.h" />
     <ClInclude Include="include\core\world\AirChunk.h" />
     <ClInclude Include="include\core\world\ChunkGenerator.h" />
+    <ClInclude Include="include\core\world\ChunkGeneratorQueue.h" />
     <ClInclude Include="include\core\world\LayeredChunk.h" />
     <ClInclude Include="include\core\world\World.h" />
     <ClInclude Include="include\Game.h" />

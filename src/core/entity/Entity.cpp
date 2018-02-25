@@ -28,7 +28,7 @@ void Entity::tick()
 	// Add gravity
 	if (velocity.y > -2000)
 	{
-		velocity.y -= GRAVITY;
+		//velocity.y -= GRAVITY;
 	}
 
 	glm::vec3 originalVelocity = velocity + controllerVelocity;

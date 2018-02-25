@@ -14,6 +14,7 @@ private:
 	std::unordered_map<int, shared_ptr<AirChunk>> chunks;
 
 public:
+	~ChunkColumn();
 
 	void tick();
 

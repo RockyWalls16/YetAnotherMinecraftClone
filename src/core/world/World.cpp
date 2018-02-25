@@ -11,11 +11,14 @@
 #include <core/block/Block.h>
 #include <util/Logger.h>
 #include <util/TimeManager.h>
+#include <core/world/ChunkGeneratorQueue.h>
 
 World::World()
 {
-	chunkGenerator = new ChunkGenerator();
+	chunkGenerator = new ChunkGenerator(this);
+	chunkGeneratorQueue = new ChunkGeneratorQueue();
 	chunksColumns = std::unordered_map<long long, shared_ptr<ChunkColumn>>();
+	chunkGeneratorQueue->start();
 }
 
 void World::tick()
@@ -24,6 +27,8 @@ void World::tick()
 
 	if (TimeManager::isMajorTick())
 	{
+		fetchReadyChunks();
+
 		// Update chunks columns
 		for (auto it : chunksColumns)
 		{
@@ -148,6 +153,8 @@ shared_ptr<ChunkColumn> World::loadColumn(int x, int z)
 
 shared_ptr<AirChunk> World::loadChunk(const shared_ptr<ChunkColumn>& column, int x, int y, int z)
 {
+	static int loadedChunk = 0;
+
 	// Find chunk in column
 	shared_ptr<AirChunk> chunk = column->getChunkAt(y);
 	if (chunk != nullptr)
@@ -157,12 +164,11 @@ shared_ptr<AirChunk> World::loadChunk(const shared_ptr<ChunkColumn>& column, int
 	}
 	
 	// Generate new chunk & and add it to column
-	chunk = chunkGenerator->generateChunk(this, x, y, z);
-	column->setChunkAt(chunk, y);
+	shared_ptr<AirChunk> outputChunk = make_shared<AirChunk>(this, x, y, z);
+	column->setChunkAt(outputChunk, y);
+	chunkGeneratorQueue->pushInputChunk(outputChunk);
 
-	notifyNeighbours(chunk, NeighbourNotification::LOADED);
-
-	return chunk;
+	return outputChunk;
 }
 
 void World::addChunkToUnload(const shared_ptr<AirChunk>& chunk)
@@ -188,6 +194,22 @@ void World::unloadChunk(const shared_ptr<AirChunk>& chunk)
 	onChunkUnReady(chunk);
 }
 
+void World::fetchReadyChunks()
+{
+	int chunkAmount = chunkGeneratorQueue->getOutputSize();
+	for (int i = 0; i < chunkAmount; i++)
+	{
+		shared_ptr<AirChunk> chunk = chunkGeneratorQueue->popOutputChunk();
+		shared_ptr<ChunkColumn> column = getColumnAt(chunk->getChunkX(), chunk->getChunkZ());
+		if (column)
+		{
+			chunk->setGenerated();
+			column->setChunkAt(chunk, chunk->getChunkY());
+			notifyNeighbours(chunk, NeighbourNotification::LOADED);
+		}
+	}
+}
+
 void World::onChunkUnReady(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
@@ -202,6 +224,11 @@ void World::onChunkReady(const shared_ptr<AirChunk>& chunk)
 	{
 		GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer()->addChunkToRenderQueue(chunk);
 	}
+}
+
+ChunkGenerator * World::getChunkGenerator()
+{
+	return chunkGenerator;
 }
 
 void World::notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type)
@@ -219,9 +246,9 @@ void World::notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotific
 	notifySingleNeighbour(chunk, getChunkAt(x, y, z - 1), type, Side::SOUTH);
 }
 
-void World::notifySingleNeighbour(const shared_ptr<AirChunk>& sender, shared_ptr<AirChunk> chunk, NeighbourNotification type, Side fromSide)
+void World::notifySingleNeighbour(const shared_ptr<AirChunk>& sender, const shared_ptr<AirChunk>& chunk, NeighbourNotification type, Side fromSide)
 {
-	if (chunk != nullptr)
+	if (chunk != nullptr && chunk->isGenerated())
 	{
 		chunk->onNotifiedByNeighbour(type, sender, fromSide);
 	}

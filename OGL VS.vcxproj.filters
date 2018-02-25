@@ -156,6 +156,9 @@
     <ClCompile Include="src\client\input\CameraRay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\stb_image.h">
@@ -741,6 +744,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\input\CameraRay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\world\ChunkGeneratorQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

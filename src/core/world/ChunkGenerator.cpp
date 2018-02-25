@@ -16,23 +16,37 @@
 #define NOISE_MULTIPLIER 100
 #define MAX_HEIGHT (MIN_HEIGHT + NOISE_MULTIPLIER)
 
-shared_ptr<AirChunk> ChunkGenerator::generateChunk(World* world, int cX, int cY, int cZ)
+ChunkGenerator::ChunkGenerator(World * world) : world(world)
+{
+}
+
+shared_ptr<AirChunk> ChunkGenerator::generateChunk(shared_ptr<AirChunk> inputChunk)
 {
 	static PerlinNoise perlin = PerlinNoise();
 
+	int blockAmount = 0;
+	int cX = inputChunk->getChunkX();
+	int cY = inputChunk->getChunkY();
+	int cZ = inputChunk->getChunkZ();
+
+	// Check generation is not too high
+	int rY = cY * CHUNK_SIZE;
+	if (rY > MAX_HEIGHT)
+	{
+		// Above max height = empty chunk
+		return inputChunk;
+	}
+
 	// Constant buffer
 	short** layers = new short*[CHUNK_SIZE];
-	for(int i = 0; i < CHUNK_SIZE;i++)
+	for (int i = 0; i < CHUNK_SIZE; i++)
 	{
-		layers[i] = new short[CHUNK_SIZE * CHUNK_SIZE] {0};
+		layers[i] = new short[CHUNK_SIZE * CHUNK_SIZE]{ 0 };
 	}
 
 	// Begin generation
 	int rX = cX * CHUNK_SIZE;
-	int rY = cY * CHUNK_SIZE;
 	int rZ = cZ * CHUNK_SIZE;
-
-	int blockAmount = 0;
 
 	int layerIndex;
 	int height;
@@ -40,78 +54,65 @@ shared_ptr<AirChunk> ChunkGenerator::generateChunk(World* world, int cX, int cY,
 	float noise2;
 	int heightDiff;
 
-	// Check generation is not too high
-	if (rY <= MAX_HEIGHT)
+	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int x = 0; x < CHUNK_SIZE; x++)
+		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
+			layerIndex = AirChunk::getFlatIndex(x, z);
+
+			noise = perlin.octaveNoise0_1((rX + x) / 200.0F, (rZ + z) / 200.0F, 2);
+			height = noise * NOISE_MULTIPLIER + MIN_HEIGHT;
+
+			for (int y = 0; y < CHUNK_SIZE; y++)
 			{
-				layerIndex = AirChunk::getFlatIndex(x, z);
+				int wY = rY + y;
+				heightDiff = height - wY;
 
-				noise = perlin.octaveNoise0_1((rX + x) / 200.0F, (rZ + z) / 200.0F, 2);
-				height = noise * NOISE_MULTIPLIER + MIN_HEIGHT;
-
-				for (int y = 0; y < CHUNK_SIZE; y++)
+				if (wY < 46)
 				{
-					int wY = rY + y;
-					heightDiff = height - wY;
+					layers[y][layerIndex] = 12; // Water
+				}
 
-					if (wY < 46)
+				if (wY < height)
+				{
+					if (heightDiff == 1)
 					{
-						layers[y][layerIndex] = 12; // Water
-					}
+						layers[y][layerIndex] = 11; // Grass
 
-					if (wY < height)
-					{
-						if (heightDiff == 1)
+						// Generate sand noise
+						noise2 = perlin.octaveNoise((rX + x) / 50.0F, (rZ + z) / 50.0F);
+						if (wY < 48 + noise2)
 						{
-							layers[y][layerIndex] = 11; // Grass
-
-							// Generate sand noise
-							noise2 = perlin.octaveNoise((rX + x) / 50.0F, (rZ + z) / 50.0F);
-							if (wY < 48 + noise2)
-							{
-								layers[y][layerIndex] = 9; // Sand
-							}
-						}
-						else if (heightDiff < 5)
-						{
-							layers[y][layerIndex] = 2; // Dirt
-						}
-						else
-						{
-							layers[y][layerIndex] = 1; // Stone
+							layers[y][layerIndex] = 9; // Sand
 						}
 					}
-
-					// If block generated
-					if (layers[y][layerIndex] != 0)
+					else if (heightDiff < 5)
 					{
-						blockAmount++;
+						layers[y][layerIndex] = 2; // Dirt
 					}
+					else
+					{
+						layers[y][layerIndex] = 1; // Stone
+					}
+				}
+
+				// If block generated
+				if (layers[y][layerIndex] != 0)
+				{
+					blockAmount++;
 				}
 			}
 		}
 	}
 
-	AirChunk* chunk;
+	// Empty chunk
 	if (blockAmount == 0)
 	{
-		chunk = new AirChunk(world, cX, cY, cZ);
-
-		// Clear unused memory
-		for (int i = 0; i < CHUNK_SIZE; i++)
-		{
-			delete(layers[i]);
-		}
-		delete(layers);
+		return inputChunk;
 	}
 	else
 	{
-		chunk = new LayeredChunk(world, cX, cY, cZ, layers);
+		// Contains blocs
+		return make_shared<LayeredChunk>(world, cX, cY, cZ, layers);
 	}
-	
-
-	return shared_ptr<AirChunk>(chunk);
 }

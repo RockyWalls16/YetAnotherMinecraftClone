@@ -81,10 +81,10 @@ shared_ptr<AirChunk> ChunkRenderQueue::popInputChunk()
 
 	vector<shared_ptr<AirChunk>>::iterator nearestChunk;
 	vector<shared_ptr<AirChunk>>::iterator it = chunkInputQueue.begin();
+	glm::vec3 pos = Game::getInstance().getPlayer()->getPosition();
 	while (it != chunkInputQueue.end())
 	{
 		// Check nearest chunk
-		glm::vec3 pos = Game::getInstance().getPlayer()->getPosition();
 		float x = (pos.x - (*it)->getChunkX() * CHUNK_SIZE + CHUNK_HALF);
 		float y = (pos.y - (*it)->getChunkY() * CHUNK_SIZE + CHUNK_HALF);
 		float z = (pos.z - (*it)->getChunkZ() * CHUNK_SIZE + CHUNK_HALF);

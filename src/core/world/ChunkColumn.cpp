@@ -4,6 +4,11 @@
 
 using namespace std;
 
+ChunkColumn::~ChunkColumn()
+{
+
+}
+
 void ChunkColumn::tick()
 {
 	for (auto it : chunks)
@@ -20,7 +25,7 @@ shared_ptr<AirChunk> ChunkColumn::getChunkAt(int chunkY)
 
 void ChunkColumn::setChunkAt(shared_ptr<AirChunk> chunk, int chunkY)
 {
-	chunks.insert(make_pair(chunkY, chunk));
+	chunks.insert_or_assign(chunkY, chunk);
 }
 
 void ChunkColumn::removeChunk(shared_ptr<AirChunk> chunk)

@@ -12,8 +12,13 @@
 #include <string>
 #include <util/TimeManager.h>
 
-AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL)
+AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL), generated(false)
 {}
+
+AirChunk::~AirChunk()
+{
+
+}
 
 void AirChunk::tick()
 {
@@ -22,6 +27,11 @@ void AirChunk::tick()
 	{
 		chunkWorld->addChunkToUnload(shared_from_this());
 	}
+}
+
+World * AirChunk::getWorld()
+{
+	return chunkWorld;
 }
 
 int AirChunk::getChunkX() const
@@ -59,7 +69,7 @@ ChunkType AirChunk::getChunkType()
 
 bool AirChunk::isReady()
 {
-	return neighbourCount;
+	return neighbourCount == 6;
 }
 
 weak_ptr<AirChunk> AirChunk::getNeighbour(Side fromSide)
@@ -74,6 +84,7 @@ int AirChunk::getFlatIndex(int x, int z)
 
 void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide)
 {
+
 	if (loaded == NeighbourNotification::LOADED || loaded == NeighbourNotification::RESPONSE)
 	{
 		neighbourCount++;
@@ -102,4 +113,14 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 		neighbourCount--;
 		neighbours[fromSide].reset();
 	}
+}
+
+bool AirChunk::isGenerated()
+{
+	return generated;
+}
+
+void AirChunk::setGenerated()
+{
+	generated = true;
 }

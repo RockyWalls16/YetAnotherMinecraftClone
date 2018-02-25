@@ -41,12 +41,12 @@ std::vector<AABB*>* AABB::tilesInBox(World* world)
 {
 	std::vector<AABB*>* aabbs = new std::vector<AABB*>();
 	int x, y, z;
-	int bX = floor(startPos.x);
-	int bY = floor(startPos.y);
-	int bZ = floor(startPos.z);
-	int bX2 = ceil(endPos.x);
-	int bY2 = ceil(endPos.y);
-	int bZ2 = ceil(endPos.z);
+	int bX = (int) floor(startPos.x);
+	int bY = (int) floor(startPos.y);
+	int bZ = (int) floor(startPos.z);
+	int bX2 = (int) ceil(endPos.x);
+	int bY2 = (int) ceil(endPos.y);
+	int bZ2 = (int) ceil(endPos.z);
 	Block* block;
 
 	for (y = bY; y < bY2; y++)

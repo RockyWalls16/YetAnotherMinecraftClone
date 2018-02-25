@@ -46,13 +46,15 @@ protected:
 	int neighbourCount;
 	weak_ptr<AirChunk> neighbours[6];
 	int timeToLive;
+	bool generated;
 
 public:
 	AirChunk(World* world, int chX, int chY, int chZ);
-	virtual ~AirChunk(){}
+	virtual ~AirChunk();
 
 	void tick();
 
+	World* getWorld();
 	int getChunkX() const;
 	int getChunkY() const;
 	int getChunkZ() const;
@@ -68,6 +70,10 @@ public:
 	weak_ptr<AirChunk> getNeighbour(Side fromSide);
 
 	void onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide);
+
+	bool isGenerated();
+
+	void setGenerated();
 
 	static int getFlatIndex(int x, int z);
 };

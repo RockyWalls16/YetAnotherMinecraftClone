@@ -114,7 +114,7 @@ bool Frustum::columnInFrustum(int x, int y, int z, int sX, int sY, int sZ)
 
 		if (planeNormal.y > 0)
 		{
-			origin.y = sY;
+			origin.y = (float) sY;
 		}
 
 		if (planeNormal.z > 0)
