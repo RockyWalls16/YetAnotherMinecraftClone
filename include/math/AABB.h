@@ -6,6 +6,8 @@
 
 class Block;
 class World;
+class BlockAABB;
+
 
 class AABB
 {
@@ -22,15 +24,33 @@ public:
 
 	void move(glm::vec3 amount);
 
-	std::vector<AABB*>* tilesInBox(World* world);
+	void blockInBox(World* world, std::vector<AABB>* aabbVector);
 
-	AABB* expandBox(glm::vec3 expandAABB);
+	void blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector);
+
+	AABB expandBox(glm::vec3 expandAABB);
 
 	void clipX(AABB* hitbox, float* velocityX);
 
 	void clipY(AABB* hitbox, float* velocityY);
 
 	void clipZ(AABB* hitbox, float* velocityZ);
+
+	bool intersectLine(glm::vec3 startVec, glm::vec3 endVector, glm::vec3* outIntersect, glm::vec3* outNormal);
+
+	bool clipLine(float x1, float x2, float startVecX, float endVectorX, float* fLow, float* fHigh);
+};
+
+class BlockAABB
+{
+public:
+	Block * block;
+	AABB aabb;
+	int x;
+	int y;
+	int z;
+
+	BlockAABB(Block* block, AABB aabb, int x, int y, int z) : block(block), aabb(aabb), x(x), y(y), z(z) {}
 };
 
 #endif

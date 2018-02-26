@@ -12,10 +12,7 @@ public:
 
 	virtual bool isVisible() override { return false; }
 
-	virtual AABB* getHitbox(int x, int y, int z) override
-	{
-		return nullptr;
-	}
+	virtual bool canCollide() override { return false; }
 };
 
 #endif

@@ -15,6 +15,8 @@
 #define NEAR_PLANE 0.1F
 #define FAR_PLANE 1000.0F
 
+class CameraRay;
+
 class Camera
 {
 private:
@@ -33,7 +35,11 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjMatrix;
 
+	CameraRay* cameraRay;
+
 public:
+	Camera();
+
 	float yaw;
 	float pitch;
 

@@ -1,7 +1,10 @@
 #include <math/AABB.h>
+#include <math/MathUtil.h>
 #include <core/block/Block.h>
 #include <core/world/World.h>
 #include <cmath>
+#include <algorithm>
+#include <util/Side.h>
 
 AABB::AABB(glm::vec3 startPos, glm::vec3 endPos) : startPos(startPos), endPos(endPos)
 {
@@ -37,9 +40,8 @@ void AABB::move(glm::vec3 amount)
 	endPos += amount;
 }
 
-std::vector<AABB*>* AABB::tilesInBox(World* world)
+void AABB::blockInBox(World* world, std::vector<AABB>* aabbVector)
 {
-	std::vector<AABB*>* aabbs = new std::vector<AABB*>();
 	int x, y, z;
 	int bX = (int) floor(startPos.x);
 	int bY = (int) floor(startPos.y);
@@ -56,51 +58,76 @@ std::vector<AABB*>* AABB::tilesInBox(World* world)
 			for (z = bZ; z < bZ2; z++)
 			{
 				block = world->getBlockAt(x, y, z);
-				AABB* aabb = block->getHitbox(x, y, z);
 
-				if (aabb != nullptr)
+				if (block->canCollide())
 				{
-					aabbs->push_back(aabb);
+					aabbVector->push_back(block->getHitbox(x, y, z));
 				}
 			}
 		}
 	}
-
-	return aabbs;
 }
 
-AABB * AABB::expandBox(glm::vec3 expandAABB)
+void AABB::blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector)
 {
-	AABB* newBox = new AABB(startPos, endPos);
+	int x, y, z;
+	int bX = (int)floor(startPos.x);
+	int bY = (int)floor(startPos.y);
+	int bZ = (int)floor(startPos.z);
+	int bX2 = (int)ceil(endPos.x);
+	int bY2 = (int)ceil(endPos.y);
+	int bZ2 = (int)ceil(endPos.z);
+	Block* block;
+
+	for (y = bY; y < bY2; y++)
+	{
+		for (x = bX; x < bX2; x++)
+		{
+			for (z = bZ; z < bZ2; z++)
+			{
+				block = world->getBlockAt(x, y, z);
+
+				if (block->canCollide())
+				{
+					aabbVector->push_back(new BlockAABB(block, block->getHitbox(x, y, z), x, y, z));
+				}
+			}
+		}
+	}
+}
+
+AABB AABB::expandBox(glm::vec3 expandAABB)
+{
+	AABB newBox = AABB(startPos, endPos);
 
 	// Expand X
 	if (expandAABB.x < 0)
 	{
-		newBox->startPos.x += expandAABB.x;
+		newBox.startPos.x += expandAABB.x;
 	}
 	else
 	{
-		newBox->endPos.x += expandAABB.x;
+		newBox.endPos.x += expandAABB.x;
 	}
 
 	// Expand Y
 	if (expandAABB.y < 0)
 	{
-		newBox->startPos.y += expandAABB.y;
+		newBox.startPos.y += expandAABB.y;
 	}
 	else
 	{
-		newBox->endPos.y += expandAABB.y;
+		newBox.endPos.y += expandAABB.y;
 	}
 
 	// Expand Z
 	if (expandAABB.z < 0)
 	{
-		newBox->startPos.z += expandAABB.z;
+		newBox.startPos.z += expandAABB.z;
 	}
 	else
 	{
-		newBox->endPos.z += expandAABB.z;
+		newBox.endPos.z += expandAABB.z;
 	}
 
 	return newBox;
@@ -170,4 +197,90 @@ void AABB::clipZ(AABB* hitbox, float* velocityZ)
 		float distance = endPos.z - hitbox->startPos.z;
 		*velocityZ = distance > *velocityZ ? distance : *velocityZ;
 	}
+}
+
+bool AABB::intersectLine(glm::vec3 startVec, glm::vec3 endVector, glm::vec3* outIntersect, glm::vec3* outNormal)
+{
+	float fLow = 0;
+	float fHigh = 1;
+
+	//Check line collide onXYZ
+	if (!clipLine(startPos.x, endPos.x, startVec.x, endVector.x, &fLow, &fHigh))
+	{
+		return false;
+	}
+	if (!clipLine(startPos.y, endPos.y, startVec.y, endVector.y, &fLow, &fHigh))
+	{
+		return false;
+	}
+	if (!clipLine(startPos.z, endPos.z, startVec.z, endVector.z, &fLow, &fHigh))
+	{
+		return false;
+	}
+
+	glm::vec3 direction = endVector - startVec;
+	*outIntersect = startVec + direction * fLow;
+	outIntersect->x = MathUtil::lessDecimal(outIntersect->x, 4);
+	outIntersect->y = MathUtil::lessDecimal(outIntersect->y, 4);
+	outIntersect->z = MathUtil::lessDecimal(outIntersect->z, 4);
+
+	// Get normal
+	if (outIntersect->y == startPos.y)
+	{
+		*outNormal = glm::vec3(0, -1, 0);
+	}
+	else if (outIntersect->y == endPos.y)
+	{
+		*outNormal = glm::vec3(0, 1, 0);
+	}
+	else if (outIntersect->x == startPos.x)
+	{
+		*outNormal = glm::vec3(-1, 0, 0);
+	}
+	else if (outIntersect->x == endPos.x)
+	{
+		*outNormal = glm::vec3(1, 0, 0);
+	}
+	else if (outIntersect->z == startPos.z)
+	{
+		*outNormal = glm::vec3(0, 0, -1);
+	}
+	else if (outIntersect->z == endPos.z)
+	{
+		*outNormal = glm::vec3(0, 0, 1);
+	}
+	else
+	{
+		*outNormal = glm::vec3(0, 0, 0);
+	}
+
+	return true;
+}
+
+bool AABB::clipLine(float x1, float x2, float startVecX, float endVectorX, float* fLow, float* fHigh)
+{
+	float fDimLow = (x1 - startVecX) / (endVectorX - startVecX);
+	float fDimHigh = (x2 - startVecX) / (endVectorX - startVecX);
+
+	if (fDimHigh < fDimLow)
+	{
+		float swap = fDimLow;
+		fDimLow = fDimHigh;
+		fDimHigh = swap;
+	}
+
+	if (fDimHigh < *fLow || fDimLow > *fHigh)
+	{
+		return false;
+	}
+
+	*fLow = max(fDimLow, *fLow);
+	*fHigh = min(fDimHigh, *fHigh);
+
+	if (*fLow > *fHigh)
+	{
+		return false;
+	}
+
+	return true;
 }

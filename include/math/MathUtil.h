@@ -20,6 +20,8 @@ public:
 	static glm::vec3 getFlatForwardVector(const glm::vec3& direction);
 
 	static glm::vec3 getFlatStrafingVector(const glm::vec3& direction);
+
+	static float lessDecimal(float value, float decimal);
 };
 
 #endif /* UTIL_MATHUTIL_H_ */

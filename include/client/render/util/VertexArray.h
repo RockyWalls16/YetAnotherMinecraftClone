@@ -30,8 +30,8 @@ public:
 	//void addSingleDataVBO(unsigned int index, float* buffer, unsigned int length);
 	void bind();
 	void unbind();
-	void drawVAO(int opaqueVertexAmount, int offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
-	void drawEBO(int opaqueVertexAmount, GLvoid* offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
+	void drawVAO(int vertexAmount, int offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
+	void drawEBO(int vertexAmount, GLvoid* offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
 	void addVBO(void* buffer, unsigned int bufferSize, int drawType);
 	void enableEBO(unsigned int* indices, unsigned int indicesSize, int drawType);
 	void assignVertexAttrib(unsigned int vboId, unsigned int attribIndex, int componentAmount, int componentType, unsigned int stride, GLvoid* offset = 0, bool normalized = false);

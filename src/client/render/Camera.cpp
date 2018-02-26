@@ -14,6 +14,12 @@
 #include <util/Logger.h>
 #include <string>
 #include <math/Frustum.h>
+#include <client/input/CameraRay.h>
+
+Camera::Camera()
+{
+	cameraRay = new CameraRay(this);
+}
 
 void Camera::setCameraPerspective(float fov, int width, int height)
 {
@@ -46,6 +52,8 @@ void Camera::updateCameraRender()
 	viewProjMatrix = projectionMatrix * viewMatrix;
 
 	Frustum::computePlanes(this);
+
+	cameraRay->tick();
 }
 
 void Camera::updateVectors()

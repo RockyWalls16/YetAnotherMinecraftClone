@@ -47,3 +47,9 @@ glm::vec3 MathUtil::getFlatStrafingVector(const glm::vec3& direction)
 	return strafe;
 }
 
+float MathUtil::lessDecimal(float value, float decimal)
+{
+	float power = decimal * 10;
+	return round(value * power) / power;
+}
+

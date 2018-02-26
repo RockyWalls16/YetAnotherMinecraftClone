@@ -68,7 +68,12 @@ RenderLayer Block::getRenderLayer()
 	return RenderLayer::RL_OPAQUE;
 }
 
-AABB * Block::getHitbox(int x, int y, int z)
+AABB Block::getHitbox(int x, int y, int z)
 {
-	return new AABB(glm::vec3(x, y, z), glm::vec3(1.0F + x, 1.0F + y, 1.0F + z));
+	return AABB(glm::vec3(x, y, z), glm::vec3(1.0F + x, 1.0F + y, 1.0F + z));
+}
+
+bool Block::canCollide()
+{
+	return true;
 }

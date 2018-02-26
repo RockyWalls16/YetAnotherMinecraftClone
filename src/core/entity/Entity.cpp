@@ -22,37 +22,44 @@ Entity::Entity(World& world) : entityWorld(world)
 
 void Entity::tick()
 {
+	shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos(position.x, position.y, position.z);
+	if (chunk == nullptr || (chunk != nullptr && !chunk->isGenerated()))
+	{
+		return;
+	}
+
 	lastPosition = position;
 	lastRotation = rotation;
 
 	// Add gravity
 	if (velocity.y > -2000)
 	{
-		//velocity.y -= GRAVITY;
+		velocity.y -= GRAVITY;
 	}
 
 	glm::vec3 originalVelocity = velocity + controllerVelocity;
 	glm::vec3 totalVelocity = originalVelocity;
 
 	// Get all block surrounding player direction
-	AABB* expandedBox = hitbox->expandBox(totalVelocity);
-	std::vector<AABB*>* blocksAABB = expandedBox->tilesInBox(&entityWorld);
+	AABB expandedBox = hitbox->expandBox(totalVelocity);
+	std::vector<AABB> blocksAABB;
+	expandedBox.blockInBox(&entityWorld, &blocksAABB);
 
-	for (AABB* bAABB : *blocksAABB)
+	for (AABB bAABB : blocksAABB)
 	{
-		bAABB->clipX(hitbox, &totalVelocity.x);
+		bAABB.clipX(hitbox, &totalVelocity.x);
 	}
 	hitbox->move(glm::vec3(totalVelocity.x, 0, 0));
 
-	for (AABB* bAABB : *blocksAABB)
+	for (AABB bAABB : blocksAABB)
 	{
-		bAABB->clipZ(hitbox, &totalVelocity.z);
+		bAABB.clipZ(hitbox, &totalVelocity.z);
 	}
 	hitbox->move(glm::vec3(0, 0, totalVelocity.z));
 
-	for (AABB* bAABB : *blocksAABB)
+	for (AABB bAABB : blocksAABB)
 	{
-		bAABB->clipY(hitbox, &totalVelocity.y);
+		bAABB.clipY(hitbox, &totalVelocity.y);
 	}
 	hitbox->move(glm::vec3(0, totalVelocity.y, 0));
 
@@ -65,14 +72,6 @@ void Entity::tick()
 	}
 
 	position += totalVelocity;
-	
-	// Free memory
-	delete(expandedBox);
-	for (AABB* bAABB : *blocksAABB)
-	{
-		delete(bAABB);
-	}
-	delete(blocksAABB);
 
 	// Update velocities
 	controllerVelocity = glm::vec3(0.0F, 0.0F, 0.0F);
