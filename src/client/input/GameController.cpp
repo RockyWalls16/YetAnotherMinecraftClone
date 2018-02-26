@@ -16,6 +16,9 @@
 #include <client/render/ChunkRenderQueue.h>
 #include <math/Frustum.h>
 #include <glm/vec3.hpp>
+#include <core/block/Block.h>
+#include <client/render/Camera.h>
+#include <client/input/CameraRay.h>
 
 KeyBind::KeyBind(int keyId, InputType inputType) : keyId(keyId), inputType(inputType)
 {
@@ -33,7 +36,8 @@ void GameController::processInput()
 {
 	updateCameraRotation();
 
-	static KeyBind* MOUSE_KEY = new KeyBind(GLFW_MOUSE_BUTTON_1, MOUSE);
+	static KeyBind* MOUSE_1_KEY = new KeyBind(GLFW_MOUSE_BUTTON_1, MOUSE);
+	static KeyBind* MOUSE_2_KEY = new KeyBind(GLFW_MOUSE_BUTTON_2, MOUSE);
 	static KeyBind* F1_KEY = new KeyBind(GLFW_KEY_F1, KEYBOARD);
 	static KeyBind* ESCAPE_KEY = new KeyBind(GLFW_KEY_ESCAPE, KEYBOARD);
 	static KeyBind* F9_KEY = new KeyBind(GLFW_KEY_F9, KEYBOARD);
@@ -48,6 +52,10 @@ void GameController::processInput()
 	static KeyBind* SHIFT_KEY = new KeyBind(GLFW_KEY_LEFT_SHIFT, KEYBOARD);
 	static KeyBind* SPACE_KEY = new KeyBind(GLFW_KEY_SPACE, KEYBOARD);
 	static KeyBind* F2_KEY = new KeyBind(GLFW_KEY_F2, KEYBOARD);
+	static KeyBind* LEFT_KEY = new KeyBind(GLFW_KEY_LEFT, KEYBOARD);
+	static KeyBind* RIGHT_KEY = new KeyBind(GLFW_KEY_RIGHT, KEYBOARD);
+
+	static int selectedBlock = 1;
 
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
 	glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
@@ -103,6 +111,24 @@ void GameController::processInput()
 		
 	}
 
+	if (LEFT_KEY->isPressed())
+	{
+		selectedBlock--;
+		if (selectedBlock < 1)
+		{
+			selectedBlock = 1;
+		}
+	}
+
+	if (RIGHT_KEY->isPressed())
+	{
+		selectedBlock++;
+		if (selectedBlock > 12)
+		{
+			selectedBlock = 12;
+		}
+	}
+
 	// Vsync key
 	if (F10_KEY->isPressed())
 	{
@@ -124,8 +150,33 @@ void GameController::processInput()
 	}
 
 	// Capture mouse
-	if (MOUSE_KEY->isPressed())
+	if (MOUSE_1_KEY->isPressed())
 	{
+		if (isMouseCaptured())
+		{
+			RaycastResult* lookingBlock = camera->getCameraRay()->getLookingBlock();
+
+			if (lookingBlock->blockInfo)
+			{
+				Game::getInstance().getWorld()->setBlockAt(Block::AIR, lookingBlock->blockInfo->x, lookingBlock->blockInfo->y, lookingBlock->blockInfo->z);
+			}
+		}
+
+		setMouseCaptured(true);
+	}
+
+	if (MOUSE_2_KEY->isPressed())
+	{
+		if (isMouseCaptured())
+		{
+			RaycastResult* lookingBlock = camera->getCameraRay()->getLookingBlock();
+
+			if (lookingBlock->blockInfo)
+			{
+				Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock->blockInfo->x + lookingBlock->nX, lookingBlock->blockInfo->y + lookingBlock->nY, lookingBlock->blockInfo->z + lookingBlock->nZ);
+			}
+		}
+
 		setMouseCaptured(true);
 	}
 

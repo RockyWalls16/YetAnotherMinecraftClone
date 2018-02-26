@@ -47,17 +47,19 @@ Texture* TextureLoader::loadTexture(const std::string& path, bool useMipmap, int
 		data = errorTexture;
 	}
 
-	int pixelFormat = GL_RGB;
+	int imagePixelFormat = GL_RGB;
+	int internalPixelFormat = GL_SRGB;
 	if(nrChannels == 4)
 	{
-		pixelFormat = GL_RGBA;
+		imagePixelFormat = GL_RGBA;
+		internalPixelFormat = GL_SRGB_ALPHA;
 	}
 	else if(nrChannels == 1)
 	{
-		pixelFormat = GL_RED;
+		imagePixelFormat = GL_RED;
 	}
 
-	Texture* output = createTexture(data, width, height, pixelFormat, pixelFormat, useMipmap, repeatModeS, repeatModeT, minFilter, maxFilter);
+	Texture* output = createTexture(data, width, height, internalPixelFormat, imagePixelFormat, useMipmap, repeatModeS, repeatModeT, minFilter, maxFilter);
 
 	if(success)
 	{

@@ -11,6 +11,8 @@
 #include <util/Logger.h>
 #include <string>
 #include <util/TimeManager.h>
+#include <core/block/Block.h>
+#include <core/world/ComplexChunk.h>
 
 AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL), generated(false)
 {}
@@ -54,8 +56,24 @@ short AirChunk::getBlockAt(int x, int y, int z)
 	return 0;
 }
 
-void AirChunk::setBlockAt(short block, int x, int y, int z)
-{}
+void AirChunk::setBlockAt(Block* block, int x, int y, int z, bool reDraw)
+{
+	// Transform into ComplexChunk
+	if (block != Block::AIR)
+	{
+		short** layers = new short*[CHUNK_SIZE];
+		for (int i = 0; i < CHUNK_SIZE; i++)
+		{
+			layers[i] = new short[CHUNK_SIZE * CHUNK_SIZE]{ 0 };
+		}
+		layers[y][getFlatIndex(x, z)] = block->getId();
+
+		shared_ptr<ComplexChunk> complexChunk = make_shared<ComplexChunk>(chunkWorld, chunkX, chunkY, chunkZ, layers);
+		complexChunk->setGenerated();
+		complexChunk->chunkWorld->replaceChunkAt(complexChunk, chunkX, chunkY, chunkZ);
+		complexChunk->chunkWorld->notifyNeighbours(complexChunk, NeighbourNotification::REPLACED);
+	}
+}
 
 void AirChunk::resetTTL()
 {
@@ -84,25 +102,28 @@ int AirChunk::getFlatIndex(int x, int z)
 
 void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide)
 {
-
-	if (loaded == NeighbourNotification::LOADED || loaded == NeighbourNotification::RESPONSE)
+	if (loaded != NeighbourNotification::UNLOADED)
 	{
-		neighbourCount++;
+		if (loaded != NeighbourNotification::REPLACED)
+		{
+			neighbourCount++;
+		}
+
 		neighbours[fromSide] = sender;
 
 		// Notify spawned chunk of this chunk existence
-		if (loaded == NeighbourNotification::LOADED)
+		if (loaded != NeighbourNotification::RESPONSE)
 		{
 			sender->onNotifiedByNeighbour(NeighbourNotification::RESPONSE, shared_from_this(), SideUtil::opposite[fromSide]);
 		}
 
 		// Chunk is ready
-		if (neighbourCount == 6)
+		if (neighbourCount == 6 && loaded != NeighbourNotification::REPLACED)
 		{
-			chunkWorld->onChunkReady(shared_from_this());
+			chunkWorld->onChunkDirty(shared_from_this());
 		}
 	}
-	else if(loaded == NeighbourNotification::UNLOADED)
+	else
 	{
 		// Unload chunk
 		if (neighbourCount == 6)
@@ -123,4 +144,46 @@ bool AirChunk::isGenerated()
 void AirChunk::setGenerated()
 {
 	generated = true;
+}
+
+void AirChunk::setDirty(Block* block, int x, int y, int z)
+{
+	refreshChunk();
+
+	// Update neighbour chunks if block is on side
+	if (block == Block::AIR)
+	{
+		shared_ptr<AirChunk> chunk = nullptr;
+		if (x == 0 && (chunk = neighbours[Side::WEST].lock()))
+		{
+			chunk->refreshChunk();
+		}
+		else if (x == CHUNK_SIZE - 1 && (chunk = neighbours[Side::EAST].lock()))
+		{
+			chunk->refreshChunk();
+		}
+
+		if (y == 0 && (chunk = neighbours[Side::BOTTOM].lock()))
+		{
+			chunk->refreshChunk();
+		}
+		else if (y == CHUNK_SIZE - 1 && (chunk = neighbours[Side::TOP].lock()))
+		{
+			chunk->refreshChunk();
+		}
+
+		if (z == 0 && (chunk = neighbours[Side::NORTH].lock()))
+		{
+			chunk->refreshChunk();
+		}
+		else if (z == CHUNK_SIZE - 1 && (chunk = neighbours[Side::SOUTH].lock()))
+		{
+			chunk->refreshChunk();
+		}
+	}
+}
+
+void AirChunk::refreshChunk()
+{
+	chunkWorld->onChunkDirty(shared_from_this());
 }

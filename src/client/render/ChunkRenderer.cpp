@@ -110,22 +110,60 @@ void ChunkRenderer::fetchReadyChunks()
 		ChunkRenderOutput* cru = chunkRenderQueue->popOutputChunk();
 
 		VertexArray* opaqueVAO = VertexArray::makeVAO();
-		configureVAO(cru->chunk, cru->vertexBuilders[0], opaqueVAO);
-
 		VertexArray* transparentVAO = VertexArray::makeVAO();
+		configureVAO(cru->chunk, cru->vertexBuilders[0], opaqueVAO);
 		configureVAO(cru->chunk, cru->vertexBuilders[1], transparentVAO);
 
 		ChunkRenderIndex* cri = new ChunkRenderIndex(cru->chunk, opaqueVAO, transparentVAO, cru->vertexBuilders[0]->getIndicesWriteIndex(), cru->vertexBuilders[1]->getIndicesWriteIndex());
 
+		shared_ptr<ChunkRenderColumn> opaqueColumn = getRenderColumn(RenderLayer::RL_OPAQUE, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
+		shared_ptr<ChunkRenderColumn> transparentColumn = getRenderColumn(RenderLayer::RL_TRANSPARENT, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
+
+		// Remove chunk if already renderer
+		vector<ChunkRenderIndex*>::iterator iter;
+		if (opaqueColumn != nullptr)
+		{
+			for (iter = opaqueColumn->column.begin(); iter != opaqueColumn->column.end();)
+			{
+				if ((*iter)->chunk == cru->chunk)
+				{
+					// Don't delete if also contains transparent vertices
+					if ((*iter)->chunkTransparentMesh == 0)
+					{
+						delete(*iter);
+					}
+					chunkCount--;
+					opaqueColumn->column.erase(iter);
+					break;
+				}
+				iter++;
+			}
+		}
+
+		if (transparentColumn != nullptr)
+		{
+			for (iter = transparentColumn->column.begin(); iter != transparentColumn->column.end();)
+			{
+				if ((*iter)->chunk == cru->chunk)
+				{
+					delete(*iter);
+					chunkCount--;
+					transparentColumn->column.erase(iter);
+					break;
+				}
+				iter++;
+			}
+		}
+
 		// Add chunk to opaque render list
 		if (cri->opaqueVertexAmount > 0)
 		{
-			shared_ptr<ChunkRenderColumn> opaqueColumn = getRenderColumn(RenderLayer::RL_OPAQUE, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
 			if (opaqueColumn == nullptr)
 			{
 				opaqueColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
 				opaqueContainer->columnsMap.insert(make_pair(ChunkColumn::getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), opaqueColumn));
 			}
+
 			opaqueColumn->column.push_back(cri);
 			chunkCount++;
 		}
@@ -133,12 +171,12 @@ void ChunkRenderer::fetchReadyChunks()
 		// Add chunk to transparent render list
 		if (cri->transparentVertexAmount > 0)
 		{
-			shared_ptr<ChunkRenderColumn> transparentColumn = getRenderColumn(RenderLayer::RL_TRANSPARENT, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
 			if (transparentColumn == nullptr)
 			{
 				transparentColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
 				transparentContainer->columnsMap.insert(make_pair(ChunkColumn::getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), transparentColumn));
 			}
+
 			transparentColumn->column.push_back(cri);
 			chunkCount++;
 		}

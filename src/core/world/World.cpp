@@ -89,6 +89,17 @@ shared_ptr<AirChunk> World::getChunkAt(int x, int y, int z)
 	return cc->getChunkAt(y);
 }
 
+void World::replaceChunkAt(shared_ptr<AirChunk> chunk, int x, int y, int z)
+{
+	shared_ptr<ChunkColumn> cc = getColumnAt(x, z);
+	if (cc == nullptr)
+	{
+		return;
+	}
+
+	cc->setChunkAt(chunk, y);
+}
+
 shared_ptr<AirChunk> World::getChunkAtBlockPos(int x, int y, int z)
 {
 	return getChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
@@ -105,7 +116,7 @@ Block * World::getBlockAt(int x, int y, int z)
 	return Block::getBlock(theChunk->getBlockAt(getChunkTilePosFromWorld(x), getChunkTilePosFromWorld(y), getChunkTilePosFromWorld(z)));
 }
 
-void World::setBlockAt(Block * block, int x, int y, int z)
+void World::setBlockAt(Block * block, int x, int y, int z, bool redrawChunk)
 {
 	shared_ptr<AirChunk> theChunk = getChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
 	if (!theChunk)
@@ -113,7 +124,7 @@ void World::setBlockAt(Block * block, int x, int y, int z)
 		return;
 	}
 
-	theChunk->setBlockAt(block->getId(), getChunkTilePosFromWorld(x), getChunkTilePosFromWorld(y), getChunkTilePosFromWorld(z));
+	theChunk->setBlockAt(block, getChunkTilePosFromWorld(x), getChunkTilePosFromWorld(y), getChunkTilePosFromWorld(z), redrawChunk);
 }
 
 int World::getChunkTilePosFromWorld(int pos)
@@ -218,7 +229,7 @@ void World::onChunkUnReady(const shared_ptr<AirChunk>& chunk)
 	}
 }
 
-void World::onChunkReady(const shared_ptr<AirChunk>& chunk)
+void World::onChunkDirty(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{

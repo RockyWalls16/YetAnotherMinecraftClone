@@ -8,7 +8,7 @@
 #include <PerlinNoise.hpp>
 #include <core/world/ChunkGenerator.h>
 #include <core/world/AirChunk.h>
-#include <core/world/LayeredChunk.h>
+#include <core/world/ComplexChunk.h>
 #include <util/Logger.h>
 #include <string>
 
@@ -113,6 +113,6 @@ shared_ptr<AirChunk> ChunkGenerator::generateChunk(shared_ptr<AirChunk> inputChu
 	else
 	{
 		// Contains blocs
-		return make_shared<LayeredChunk>(world, cX, cY, cZ, layers);
+		return make_shared<ComplexChunk>(world, cX, cY, cZ, layers);
 	}
 }

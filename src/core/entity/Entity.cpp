@@ -143,7 +143,7 @@ void Entity::setRotation(const glm::vec3& rotation, bool updateLast)
 
 float Entity::getEyeHeight()
 {
-	return 1.75F;
+	return 1.7F;
 }
 
 const glm::vec3& Entity::getVelocity() const

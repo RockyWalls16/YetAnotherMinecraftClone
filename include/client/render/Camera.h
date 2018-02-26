@@ -68,6 +68,8 @@ public:
 	Entity* getTrackedEntity();
 	void setTrackedEntity(Entity& trackedEntity);
 	void setRotation(const glm::vec3& nRotation);
+
+	CameraRay* getCameraRay();
 };
 
 #endif /* CLIENT_RENDER_CAMERA_H_ */

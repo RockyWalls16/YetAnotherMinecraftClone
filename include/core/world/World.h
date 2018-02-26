@@ -42,10 +42,11 @@ public:
 	void keepAreaAlive(int x, int y, int z, int size);
 
 	shared_ptr<AirChunk> getChunkAt(int x, int y, int z);
+	void replaceChunkAt(shared_ptr<AirChunk> chunk, int x, int y, int z);
 	shared_ptr<AirChunk> getChunkAtBlockPos(int x, int y, int z);
 
 	Block* getBlockAt(int x, int y, int z);
-	void setBlockAt(Block* block, int x, int y, int z);
+	void setBlockAt(Block* block, int x, int y, int z, bool redrawChunk = true);
 
 	int getChunkTilePosFromWorld(int pos);
 
@@ -54,7 +55,7 @@ public:
 	void addChunkToUnload(const shared_ptr<AirChunk>& chunk);
 
 	void onChunkUnReady(const shared_ptr<AirChunk>& chunk);
-	void onChunkReady(const shared_ptr<AirChunk>& chunk);
+	void onChunkDirty(const shared_ptr<AirChunk>& chunk);
 
 	ChunkGenerator* getChunkGenerator();
 

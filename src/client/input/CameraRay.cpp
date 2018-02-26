@@ -6,36 +6,37 @@
 #include <util/Logger.h>
 #include <glm/gtc/constants.hpp>
 
-
-int skySphereVertexAmount = 0;
-
-CameraRay::CameraRay(Camera * camera) : camera(camera)
+CameraRay::CameraRay(Camera * camera) : camera(camera), lookingBlock(nullptr)
 {
 	createCubeHoverMesh();
 }
 
 void CameraRay::tick()
 {
-	BlockAABB* lookingBlock = getLookingBlock();
-	
 	// Free memory
-	if (lookingBlock)
+	delete(lookingBlock);
+
+	lookingBlock = processLookingBlock();
+	
+	if (lookingBlock->blockInfo)
 	{
-		ShaderCache::skyShader->use();
+		// Draw cursor
+		ShaderCache::unlitShader->use();
 
 		cubeHover->setIdentity();
-		cubeHover->translate(glm::vec3(lookingBlock->x + 0.5F, lookingBlock->y + 0.5F, lookingBlock->z + 0.5F));
-		cubeHover->scale(glm::vec3(1.1F, 1.1F, 1.1F));
+		cubeHover->translate(glm::vec3(lookingBlock->blockInfo->x, lookingBlock->blockInfo->y, lookingBlock->blockInfo->z));
 
-		glDisable(GL_CULL_FACE);
-		cubeHover->drawVAO(skySphereVertexAmount, 0, GL_TRIANGLE_FAN);
-		glEnable(GL_CULL_FACE);
-
-		delete(lookingBlock);
+		glLineWidth(2.0F);
+		cubeHover->drawVAO(48, 0, GL_LINES);
 	}
 }
 
-BlockAABB* CameraRay::getLookingBlock()
+RaycastResult* CameraRay::getLookingBlock()
+{
+	return lookingBlock;
+}
+
+RaycastResult* CameraRay::processLookingBlock()
 {
 	// Get currently looking block
 	float minDistance = PLACE_DISTANCE + 1;
@@ -60,7 +61,7 @@ BlockAABB* CameraRay::getLookingBlock()
 		// Block hit
 		if (hit)
 		{
-			float distance = (cameraPos - outIntersect).length();
+			float distance = glm::distance(cameraPos, outIntersect);
 			if (distance < minDistance)
 			{
 				minDistance = distance;
@@ -80,56 +81,94 @@ BlockAABB* CameraRay::getLookingBlock()
 		}
 	}
 
-	return nearestBlock;
+	return new RaycastResult(nearestBlock, nearestNormal.x, nearestNormal.y, nearestNormal.z);
 }
-
-VertexArray* createSphere(int lats, int longs);
 
 void CameraRay::createCubeHoverMesh()
 {
-	cubeHover = createSphere(15, 15);
-}
-
-VertexArray* createSphere(int lats, int longs)
-{
-	int vertexAmount = (lats + 1) * (longs + 1) * 6;
-	float* vertices = new float[vertexAmount];
-
-	int currentVertex = 0;
-	for (int i = 0; i <= lats; i++)
+	float vertices[] =
 	{
-		float lat0 = glm::pi<float>() * (-0.5F + (float)(i - 1) / lats);
-		float z0 = sin(lat0);
-		float zr0 = cos(lat0);
+		// Top face
+		0.0F, 1.0F, 0.0F,
+		1.0F, 1.0F, 0.0F,
 
-		float lat1 = glm::pi<float>() * (-0.5F + (float)i / lats);
-		float z1 = sin(lat1);
-		float zr1 = cos(lat1);
+		1.0F, 1.0F, 0.0F,
+		1.0F, 1.0F, 1.0F,
 
-		for (int j = 0; j <= longs; j++)
-		{
-			float lng = 2 * glm::pi<float>() * (float)(j - 1) / longs;
-			float x = cos(lng);
-			float y = sin(lng);
+		1.0F, 1.0F, 1.0F,
+		0.0F, 1.0F, 1.0F,
 
-			vertices[currentVertex] = x * zr0;
-			vertices[currentVertex + 1] = y * zr0;
-			vertices[currentVertex + 2] = z0;
+		0.0F, 1.0F, 1.0F,
+		0.0F, 1.0F, 0.0F,
 
-			vertices[currentVertex + 3] = x * zr1;
-			vertices[currentVertex + 4] = y * zr1;
-			vertices[currentVertex + 5] = z1;
+		// Bottom face
+		0.0F, 0.0F, 0.0F,
+		1.0F, 0.0F, 0.0F,
 
-			currentVertex += 6;
-		}
-	}
+		1.0F, 0.0F, 0.0F,
+		1.0F, 0.0F, 1.0F,
 
-	VertexArray* skySphere = VertexArray::makeVAO();
-	skySphere->disableNormals();
-	skySphere->addVBO(vertices, vertexAmount * sizeof(float), GL_STATIC_DRAW);
-	skySphere->assignPositionAttrib(0, 0, sizeof(float) * 3);
+		1.0F, 0.0F, 1.0F,
+		0.0F, 0.0F, 1.0F,
 
-	skySphereVertexAmount = vertexAmount;
+		0.0F, 0.0F, 1.0F,
+		0.0F, 0.0F, 0.0F,
 
-	return skySphere;
+		// X- face
+		0.0F, 0.0F, 0.0F,
+		0.0F, 1.0F, 0.0F,
+
+		0.0F, 1.0F, 0.0F,
+		0.0F, 1.0F, 1.0F,
+
+		0.0F, 1.0F, 1.0F,
+		0.0F, 0.0F, 1.0F,
+
+		0.0F, 0.0F, 1.0F,
+		0.0F, 0.0F, 0.0F,
+
+		// X+ face
+		1.0F, 0.0F, 0.0F,
+		1.0F, 1.0F, 0.0F,
+
+		1.0F, 1.0F, 0.0F,
+		1.0F, 1.0F, 1.0F,
+
+		1.0F, 1.0F, 1.0F,
+		1.0F, 0.0F, 1.0F,
+
+		1.0F, 0.0F, 1.0F,
+		1.0F, 0.0F, 0.0F,
+
+		// Z- face
+		0.0F, 0.0F, 0.0F,
+		0.0F, 1.0F, 0.0F,
+
+		0.0F, 1.0F, 0.0F,
+		1.0F, 1.0F, 0.0F,
+
+		1.0F, 1.0F, 0.0F,
+		1.0F, 0.0F, 0.0F,
+
+		1.0F, 0.0F, 0.0F,
+		0.0F, 0.0F, 0.0F,
+
+		// Z+ face
+		0.0F, 0.0F, 1.0F,
+		0.0F, 1.0F, 1.0F,
+
+		0.0F, 1.0F, 1.0F,
+		1.0F, 1.0F, 1.0F,
+
+		1.0F, 1.0F, 1.0F,
+		1.0F, 0.0F, 1.0F,
+
+		1.0F, 0.0F, 1.0F,
+		0.0F, 0.0F, 1.0F,
+	};
+
+	cubeHover = VertexArray::makeVAO();
+	cubeHover->disableNormals();
+	cubeHover->addVBO(vertices, 144 * sizeof(float), GL_STATIC_DRAW);
+	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 3);
 }

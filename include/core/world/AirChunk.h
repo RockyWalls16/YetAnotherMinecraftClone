@@ -22,12 +22,14 @@ using namespace std;
 
 class ChunkRenderIndex;
 class World;
+class Block;
 
 enum NeighbourNotification
 {
 	LOADED,
 	UNLOADED,
-	RESPONSE
+	RESPONSE,
+	REPLACED
 };
 
 enum ChunkType
@@ -60,7 +62,7 @@ public:
 	int getChunkZ() const;
 
 	virtual short getBlockAt(int x, int y, int z);
-	virtual void setBlockAt(short block, int x, int y, int z);
+	virtual void setBlockAt(Block* block, int x, int y, int z, bool reDraw);
 	void resetTTL();
 
 	virtual ChunkType getChunkType();
@@ -74,6 +76,10 @@ public:
 	bool isGenerated();
 
 	void setGenerated();
+
+	void setDirty(Block* block, int x, int y, int z);
+
+	void refreshChunk();
 
 	static int getFlatIndex(int x, int z);
 };

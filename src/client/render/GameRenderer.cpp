@@ -134,6 +134,9 @@ int GameRenderer::initGameRenderer()
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// Linear color space
+		glEnable(GL_FRAMEBUFFER_SRGB);
+
 		frameBuffer = FrameBuffer::makeFBO();
 		frameBuffer->attachColorTexture(width, height);
 		//frameBuffer->attachDepthTexture(width, height);

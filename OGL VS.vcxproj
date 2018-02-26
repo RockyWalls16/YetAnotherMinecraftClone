@@ -182,6 +182,7 @@
     <ClCompile Include="src\client\shaders\ShaderLoader.cpp" />
     <ClCompile Include="src\client\shaders\SkyShader.cpp" />
     <ClCompile Include="src\client\shaders\StaticShader.cpp" />
+    <ClCompile Include="src\client\shaders\UnlitShader.cpp" />
     <ClCompile Include="src\client\textures\Texture.cpp" />
     <ClCompile Include="src\client\textures\TextureCache.cpp" />
     <ClCompile Include="src\client\textures\TextureLoader.cpp" />
@@ -192,7 +193,7 @@
     <ClCompile Include="src\core\world\ChunkColumn.cpp" />
     <ClCompile Include="src\core\world\ChunkGenerator.cpp" />
     <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
-    <ClCompile Include="src\core\world\LayeredChunk.cpp" />
+    <ClCompile Include="src\core\world\ComplexChunk.cpp" />
     <ClCompile Include="src\core\world\World.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Launcher.cpp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="include\client\shaders\ShaderLoader.h" />
     <ClInclude Include="include\client\shaders\SkyShader.h" />
     <ClInclude Include="include\client\shaders\StaticShader.h" />
+    <ClInclude Include="include\client\shaders\UnlitShader.h" />
     <ClInclude Include="include\client\textures\Texture.h" />
     <ClInclude Include="include\client\textures\TextureCache.h" />
     <ClInclude Include="include\client\textures\TextureLoader.h" />
@@ -388,7 +390,7 @@
     <ClInclude Include="include\core\world\AirChunk.h" />
     <ClInclude Include="include\core\world\ChunkGenerator.h" />
     <ClInclude Include="include\core\world\ChunkGeneratorQueue.h" />
-    <ClInclude Include="include\core\world\LayeredChunk.h" />
+    <ClInclude Include="include\core\world\ComplexChunk.h" />
     <ClInclude Include="include\core\world\World.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\math\AABB.h" />

@@ -15,6 +15,7 @@ StaticShader* ShaderCache::blockShader = ShaderLoader::registerShader<StaticShad
 PostProcessShader* ShaderCache::testPostShader = ShaderLoader::registerShader<PostProcessShader>("post_process");
 Shader2D* ShaderCache::shader2d = ShaderLoader::registerShader<Shader2D>("2d");
 SkyShader* ShaderCache::skyShader = ShaderLoader::registerShader<SkyShader>("skySphere");
+UnlitShader* ShaderCache::unlitShader = ShaderLoader::registerShader<UnlitShader>("unlit");
 
 void ShaderCache::initShaderCache()
 {

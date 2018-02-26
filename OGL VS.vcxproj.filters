@@ -90,9 +90,6 @@
     <ClCompile Include="src\core\world\ChunkGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\world\LayeredChunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\world\World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -157,6 +154,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\UnlitShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\world\ComplexChunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -659,9 +662,6 @@
     <ClInclude Include="include\core\world\ChunkGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\world\LayeredChunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\core\world\World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -747,6 +747,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\world\ChunkGeneratorQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\UnlitShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\world\ComplexChunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

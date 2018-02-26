@@ -13,6 +13,7 @@
 #include <client/shaders/PostProcessShader.h>
 #include <client/shaders/SkyShader.h>
 #include <client/shaders/Shader2D.h>
+#include <client/shaders/UnlitShader.h>
 #include <vector>
 
 class ShaderCache
@@ -22,6 +23,7 @@ public:
 	static PostProcessShader* testPostShader;
 	static Shader2D* shader2d;
 	static SkyShader* skyShader;
+	static UnlitShader* unlitShader;
 
 private:
 	static std::vector<Shader*> shaderCache;

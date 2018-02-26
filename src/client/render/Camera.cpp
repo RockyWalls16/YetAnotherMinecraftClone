@@ -142,6 +142,11 @@ void Camera::setRotation(const glm::vec3& nRotation)
 	updateVectors();
 }
 
+CameraRay * Camera::getCameraRay()
+{
+	return cameraRay;
+}
+
 const glm::mat4& Camera::getProjectionMatrix() const
 {
 	return projectionMatrix;
