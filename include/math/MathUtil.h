@@ -22,6 +22,8 @@ public:
 	static glm::vec3 getFlatStrafingVector(const glm::vec3& direction);
 
 	static float lessDecimal(float value, float decimal);
+
+	static int MathUtil::getChunkTilePosFromWorld(int pos);
 };
 
 #endif /* UTIL_MATHUTIL_H_ */

@@ -154,7 +154,7 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			const RaycastResult& lookingBlock = camera->getCameraRay()->getLookingBlock();
+			const RaycastResult& lookingBlock = camera->getCameraRay().getLookingBlock();
 
 			if (lookingBlock.blockInfo)
 			{
@@ -169,7 +169,7 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			const RaycastResult& lookingBlock = camera->getCameraRay()->getLookingBlock();
+			const RaycastResult& lookingBlock = camera->getCameraRay().getLookingBlock();
 
 			if (lookingBlock.blockInfo)
 			{

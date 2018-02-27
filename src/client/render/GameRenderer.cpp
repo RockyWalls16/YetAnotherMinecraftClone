@@ -161,7 +161,7 @@ void GameRenderer::onResize(int width, int height)
 
 		// Update matrices
 		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
-		gameCamera->setCameraPerspective(45.0F, width, height);
+		gameCamera->setCameraPerspective(70.0F, width, height);
 		
 		if (frameBuffer)
 		{

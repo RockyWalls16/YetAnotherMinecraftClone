@@ -40,34 +40,46 @@ void Entity::tick()
 
 	// Get all block surrounding player direction
 	AABB expandedBox = hitbox.expandBox(totalVelocity);
-	std::vector<AABB> blocksAABB;
-	expandedBox.blockInBox(&entityWorld, &blocksAABB);
+	std::vector<BlockAABB> blocksAABB;
+	expandedBox.blockInfoInBox(entityWorld, &blocksAABB);
 
-	for (AABB bAABB : blocksAABB)
+	for (BlockAABB& bAABB : blocksAABB)
 	{
-		bAABB.clipX(hitbox, &totalVelocity.x);
+		bAABB.aabb.clipX(hitbox, &totalVelocity.x);
 	}
 	hitbox.move(glm::vec3(totalVelocity.x, 0, 0));
 
-	for (AABB bAABB : blocksAABB)
+	// Reset X velocity on contact
+	if (totalVelocity.x != originalVelocity.x)
 	{
-		bAABB.clipZ(hitbox, &totalVelocity.z);
+		velocity.x = 0.0F;
+	}
+
+	for (BlockAABB& bAABB : blocksAABB)
+	{
+		bAABB.aabb.clipZ(hitbox, &totalVelocity.z);
 	}
 	hitbox.move(glm::vec3(0, 0, totalVelocity.z));
 
-	for (AABB bAABB : blocksAABB)
+	// Reset Z velocity on contact
+	if (totalVelocity.z != originalVelocity.z)
 	{
-		bAABB.clipY(hitbox, &totalVelocity.y);
+		velocity.z = 0.0F;
+	}
+
+	for (BlockAABB& bAABB : blocksAABB)
+	{
+		bAABB.aabb.clipY(hitbox, &totalVelocity.y);
 	}
 	hitbox.move(glm::vec3(0, totalVelocity.y, 0));
 
-	// Set on ground flag
-	onGround = originalVelocity.y != totalVelocity.y && originalVelocity.y < 0.0F;
-
-	if (onGround)
+	// Reset Y velocity on contact
+	if (totalVelocity.y != originalVelocity.y)
 	{
 		velocity.y = 0.0F;
 	}
+	// Set on ground flag
+	onGround = originalVelocity.y != totalVelocity.y && originalVelocity.y < 0.0F;
 
 	position += totalVelocity;
 
@@ -141,7 +153,7 @@ void Entity::setRotation(const glm::vec3& rotation, bool updateLast)
 
 float Entity::getEyeHeight()
 {
-	return 1.7F;
+	return 1.65F;
 }
 
 const glm::vec3& Entity::getVelocity() const

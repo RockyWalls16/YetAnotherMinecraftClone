@@ -28,7 +28,7 @@ void CameraRay::tick()
 	}
 }
 
-const RaycastResult& CameraRay::getLookingBlock()
+const RaycastResult& CameraRay::getLookingBlock() const
 {
 	return lookingBlock;
 }
@@ -42,8 +42,8 @@ void CameraRay::processLookingBlock(RaycastResult& raycastResult)
 	glm::vec3 forwardExpand = glm::vec3(forward.x * PLACE_DISTANCE, forward.y * PLACE_DISTANCE, forward.z * PLACE_DISTANCE);
 	AABB lookBox = AABB(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z), glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z)).expandBox(glm::vec3(forwardExpand.x, forwardExpand.y, forwardExpand.z));
 	
-	std::vector<BlockAABB*> tiles;
-	lookBox.blockInfoInBox(Game::getInstance().getWorld(), &tiles);
+	std::vector<BlockAABB> tiles;
+	lookBox.blockInfoInBox(*Game::getInstance().getWorld(), &tiles);
 	BlockAABB* nearestBlock = nullptr;
 	glm::vec3 nearestIntersect;
 	glm::vec3 nearestNormal;
@@ -51,9 +51,9 @@ void CameraRay::processLookingBlock(RaycastResult& raycastResult)
 	glm::vec3 outNormal;
 
 	// Check for each tile in camera sight line
-	for(BlockAABB* tile : tiles)
+	for(BlockAABB& tile : tiles)
 	{
-		bool hit = tile->aabb.intersectLine(cameraPos, cameraPos + forwardExpand, &outIntersect, &outNormal);
+		bool hit = tile.aabb.intersectLine(cameraPos, cameraPos + forwardExpand, &outIntersect, &outNormal);
 
 		// Block hit
 		if (hit)
@@ -64,17 +64,8 @@ void CameraRay::processLookingBlock(RaycastResult& raycastResult)
 				minDistance = distance;
 				nearestIntersect = outIntersect;
 				nearestNormal = outNormal;
-				nearestBlock = tile;
+				nearestBlock = new BlockAABB(tile);
 			}
-		}
-	}
-
-	// Free memory
-	for (int i = 0, length = tiles.size(); i < length; i++)
-	{
-		if (nearestBlock != tiles[i])
-		{
-			delete(tiles[i]);
 		}
 	}
 

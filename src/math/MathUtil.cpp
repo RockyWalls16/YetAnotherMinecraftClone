@@ -10,6 +10,8 @@
 #include <glm/vec3.hpp>
 #include <glm/trigonometric.hpp>
 
+#include <core/world/AirChunk.h>
+
 glm::vec3 MathUtil::lerpVec3(const glm::vec3& start, const glm::vec3& end, float amount)
 {
 	return (end - start) * amount + start;
@@ -53,3 +55,15 @@ float MathUtil::lessDecimal(float value, float decimal)
 	return round(value * power) / power;
 }
 
+int MathUtil::getChunkTilePosFromWorld(int pos)
+{
+	if (pos >= 0)
+	{
+		return pos % CHUNK_SIZE;
+	}
+	else
+	{
+		int i = pos % CHUNK_SIZE;
+		return i != 0 ? i + CHUNK_SIZE : 0;
+	}
+}

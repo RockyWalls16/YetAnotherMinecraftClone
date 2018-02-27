@@ -4,7 +4,7 @@
 #include <Game.h>
 #include <limits>
 
-ChunkGeneratorQueue::ChunkGeneratorQueue()
+ChunkGeneratorQueue::ChunkGeneratorQueue(World& world) : world(world)
 {
 	shallStop = false;
 	chunkInputQueue = vector<weak_ptr<AirChunk>>();
@@ -43,7 +43,7 @@ void ChunkGeneratorQueue::onThreadStart()
 		shared_ptr<AirChunk> inputChunk = popInputChunk();
 		if (inputChunk != nullptr)
 		{
-			shared_ptr<AirChunk> outputChunk = inputChunk->getWorld()->getChunkGenerator()->generateChunk(inputChunk);
+			shared_ptr<AirChunk> outputChunk = world.getChunkGenerator().generateChunk(inputChunk);
 			pushOutputChunk(outputChunk);
 		}
 		else
@@ -130,7 +130,7 @@ void ChunkGeneratorQueue::pushInputChunk(const shared_ptr<AirChunk>& chunk)
 	cv.notify_all();
 }
 
-int ChunkGeneratorQueue::getOutputSize()
+int ChunkGeneratorQueue::getOutputSize() const
 {
 	// Fast non synchronized method (executed every frame)
 	return chunkOutputQueue.size();

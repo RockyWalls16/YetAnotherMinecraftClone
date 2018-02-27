@@ -10,7 +10,7 @@
 #include <core/world/World.h>
 #include <core/block/Block.h>
 
-ComplexChunk::ComplexChunk(World* world, int x, int y, int z, short** layers) : AirChunk(world, x, y, z), layers(layers)
+ComplexChunk::ComplexChunk(World& world, int x, int y, int z, short** layers) : AirChunk(world, x, y, z), layers(layers)
 {
 
 }

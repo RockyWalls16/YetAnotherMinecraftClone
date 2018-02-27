@@ -14,7 +14,7 @@
 #include <core/block/Block.h>
 #include <core/world/ComplexChunk.h>
 
-AirChunk::AirChunk(World* world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL), generated(false)
+AirChunk::AirChunk(World& world, int chX, int chY, int chZ) : chunkWorld(world), chunkX(chX), chunkY(chY), chunkZ(chZ), neighbourCount(0), timeToLive(CHUNK_TTL), generated(false)
 {}
 
 AirChunk::~AirChunk()
@@ -27,11 +27,11 @@ void AirChunk::tick()
 	timeToLive--;
 	if (timeToLive == 0)
 	{
-		chunkWorld->addChunkToUnload(shared_from_this());
+		chunkWorld.addChunkToUnload(shared_from_this());
 	}
 }
 
-World * AirChunk::getWorld()
+World& AirChunk::getWorld()
 {
 	return chunkWorld;
 }
@@ -70,8 +70,8 @@ void AirChunk::setBlockAt(Block* block, int x, int y, int z, bool reDraw)
 
 		shared_ptr<ComplexChunk> complexChunk = make_shared<ComplexChunk>(chunkWorld, chunkX, chunkY, chunkZ, layers);
 		complexChunk->setGenerated();
-		complexChunk->chunkWorld->replaceChunkAt(complexChunk, chunkX, chunkY, chunkZ);
-		complexChunk->chunkWorld->notifyNeighbours(complexChunk, NeighbourNotification::REPLACED);
+		complexChunk->chunkWorld.replaceChunkAt(complexChunk, chunkX, chunkY, chunkZ);
+		complexChunk->chunkWorld.notifyNeighbours(complexChunk, NeighbourNotification::REPLACED);
 	}
 }
 
@@ -120,7 +120,7 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 		// Chunk is ready
 		if (neighbourCount == 6 && loaded != NeighbourNotification::REPLACED)
 		{
-			chunkWorld->onChunkDirty(shared_from_this());
+			chunkWorld.onChunkDirty(shared_from_this());
 		}
 	}
 	else
@@ -128,7 +128,7 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 		// Unload chunk
 		if (neighbourCount == 6)
 		{
-			chunkWorld->onChunkUnReady(shared_from_this());
+			chunkWorld.onChunkUnReady(shared_from_this());
 		}
 
 		neighbourCount--;
@@ -185,5 +185,5 @@ void AirChunk::setDirty(Block* block, int x, int y, int z)
 
 void AirChunk::refreshChunk()
 {
-	chunkWorld->onChunkDirty(shared_from_this());
+	chunkWorld.onChunkDirty(shared_from_this());
 }

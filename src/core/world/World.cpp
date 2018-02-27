@@ -12,13 +12,11 @@
 #include <util/Logger.h>
 #include <util/TimeManager.h>
 #include <core/world/ChunkGeneratorQueue.h>
+#include <math/MathUtil.h>
 
-World::World()
+World::World() : chunkGenerator(ChunkGenerator(*this)), chunkGeneratorQueue(*this)
 {
-	chunkGenerator = new ChunkGenerator(this);
-	chunkGeneratorQueue = new ChunkGeneratorQueue();
-	chunksColumns = std::unordered_map<long long, shared_ptr<ChunkColumn>>();
-	chunkGeneratorQueue->start();
+	chunkGeneratorQueue.start();
 }
 
 void World::tick()
@@ -113,7 +111,7 @@ Block * World::getBlockAt(int x, int y, int z)
 		return Block::AIR;
 	}
 
-	return Block::getBlock(theChunk->getBlockAt(getChunkTilePosFromWorld(x), getChunkTilePosFromWorld(y), getChunkTilePosFromWorld(z)));
+	return Block::getBlock(theChunk->getBlockAt(MathUtil::getChunkTilePosFromWorld(x), MathUtil::getChunkTilePosFromWorld(y), MathUtil::getChunkTilePosFromWorld(z)));
 }
 
 void World::setBlockAt(Block * block, int x, int y, int z, bool redrawChunk)
@@ -124,20 +122,7 @@ void World::setBlockAt(Block * block, int x, int y, int z, bool redrawChunk)
 		return;
 	}
 
-	theChunk->setBlockAt(block, getChunkTilePosFromWorld(x), getChunkTilePosFromWorld(y), getChunkTilePosFromWorld(z), redrawChunk);
-}
-
-int World::getChunkTilePosFromWorld(int pos)
-{
-	if (pos >= 0)
-	{
-		return pos % CHUNK_SIZE;
-	}
-	else
-	{
-		int i = pos % CHUNK_SIZE;
-		return i != 0 ? i + CHUNK_SIZE : 0;
-	}
+	theChunk->setBlockAt(block, MathUtil::getChunkTilePosFromWorld(x), MathUtil::getChunkTilePosFromWorld(y), MathUtil::getChunkTilePosFromWorld(z), redrawChunk);
 }
 
 shared_ptr<ChunkColumn> World::getColumnAt(int chunkX, int chunkZ)
@@ -175,9 +160,9 @@ shared_ptr<AirChunk> World::loadChunk(const shared_ptr<ChunkColumn>& column, int
 	}
 	
 	// Generate new chunk & and add it to column
-	shared_ptr<AirChunk> outputChunk = make_shared<AirChunk>(this, x, y, z);
+	shared_ptr<AirChunk> outputChunk = make_shared<AirChunk>(*this, x, y, z);
 	column->setChunkAt(outputChunk, y);
-	chunkGeneratorQueue->pushInputChunk(outputChunk);
+	chunkGeneratorQueue.pushInputChunk(outputChunk);
 
 	return outputChunk;
 }
@@ -207,10 +192,10 @@ void World::unloadChunk(const shared_ptr<AirChunk>& chunk)
 
 void World::fetchReadyChunks()
 {
-	int chunkAmount = chunkGeneratorQueue->getOutputSize();
+	int chunkAmount = chunkGeneratorQueue.getOutputSize();
 	for (int i = 0; i < chunkAmount; i++)
 	{
-		shared_ptr<AirChunk> chunk = chunkGeneratorQueue->popOutputChunk();
+		shared_ptr<AirChunk> chunk = chunkGeneratorQueue.popOutputChunk();
 		shared_ptr<ChunkColumn> column = getColumnAt(chunk->getChunkX(), chunk->getChunkZ());
 		if (column)
 		{
@@ -237,7 +222,7 @@ void World::onChunkDirty(const shared_ptr<AirChunk>& chunk)
 	}
 }
 
-ChunkGenerator * World::getChunkGenerator()
+ChunkGenerator& World::getChunkGenerator()
 {
 	return chunkGenerator;
 }

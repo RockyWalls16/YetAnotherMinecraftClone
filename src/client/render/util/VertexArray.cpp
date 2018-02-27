@@ -11,6 +11,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
+#include <iostream>
 
 VertexArray::VertexArray(unsigned int id) : idVAO(id), idEBO(0), dirty(true), useNormals(true)
 {
@@ -142,6 +143,12 @@ void VertexArray::setIdentity()
 void VertexArray::translate(const glm::vec3& translation)
 {
 	modelMatrix = glm::translate(modelMatrix, translation);
+	dirty = true;
+}
+
+void VertexArray::setTranslate(const glm::vec3& translation)
+{
+	modelMatrix[3] = glm::vec4(translation, 1.0);
 	dirty = true;
 }
 

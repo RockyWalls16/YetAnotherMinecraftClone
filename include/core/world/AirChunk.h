@@ -41,7 +41,7 @@ enum ChunkType
 class AirChunk : public std::enable_shared_from_this<AirChunk>
 {
 protected:
-	World* chunkWorld;
+	World& chunkWorld;
 	int chunkX;
 	int chunkY;
 	int chunkZ;
@@ -51,12 +51,12 @@ protected:
 	bool generated;
 
 public:
-	AirChunk(World* world, int chX, int chY, int chZ);
+	AirChunk(World& world, int chX, int chY, int chZ);
 	virtual ~AirChunk();
 
 	void tick();
 
-	World* getWorld();
+	World& getWorld();
 	int getChunkX() const;
 	int getChunkY() const;
 	int getChunkZ() const;

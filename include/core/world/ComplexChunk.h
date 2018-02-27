@@ -18,7 +18,7 @@ private:
 	short** layers;
 
 public:
-	ComplexChunk(World* world, int x, int y, int z, short** layers);
+	ComplexChunk(World& world, int x, int y, int z, short** layers);
 	~ComplexChunk();
 
 	virtual short getBlockAt(int x, int y, int z) override;

@@ -13,6 +13,7 @@
 class ChunkGeneratorQueue
 {
 private:
+	World & world;
 	std::vector<weak_ptr<AirChunk>> chunkInputQueue;
 	std::queue<shared_ptr<AirChunk>> chunkOutputQueue;
 
@@ -25,13 +26,13 @@ private:
 	bool shallStop;
 
 public:
-	ChunkGeneratorQueue();
+	ChunkGeneratorQueue(World& world);
 	~ChunkGeneratorQueue();
 
 	void start();
 
 	void pushInputChunk(const shared_ptr<AirChunk>& chunk);
-	int getOutputSize();
+	int getOutputSize() const;
 	shared_ptr<AirChunk> popOutputChunk();
 
 private:

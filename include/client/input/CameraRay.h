@@ -32,7 +32,7 @@ public:
 
 	void tick();
 
-	const RaycastResult& getLookingBlock();
+	const RaycastResult& getLookingBlock() const;
 
 private:
 	void processLookingBlock(RaycastResult& raycastResult);

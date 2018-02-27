@@ -186,12 +186,12 @@ void ChunkRenderer::fetchReadyChunks()
 	}
 }
 
-void ChunkRenderer::addChunkToRenderQueue(shared_ptr<AirChunk> chunk)
+void ChunkRenderer::addChunkToRenderQueue(const shared_ptr<AirChunk>& chunk)
 {
 	chunkRenderQueue->pushInputChunk(chunk);
 }
 
-VertexBuilder** ChunkRenderer::prepareChunkMesh(shared_ptr<AirChunk> chunk)
+VertexBuilder** ChunkRenderer::prepareChunkMesh(const shared_ptr<AirChunk>& chunk)
 {
 	// Add chunks to FBO, array index [0] opaque [1] transparent
 	VertexBuilder** vertexBuilders = new VertexBuilder*[2]{ new VertexBuilder(11, 12000), new VertexBuilder(11, 12000) };
@@ -215,7 +215,7 @@ VertexBuilder** ChunkRenderer::prepareChunkMesh(shared_ptr<AirChunk> chunk)
 /***
  *  Greedy meshing algorithm. 
  */
-void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirChunk> ch)
+void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_ptr<AirChunk>& ch)
 {
 	// Lock chunk neighbours
 	shared_ptr<AirChunk> neighbours[6];
@@ -383,7 +383,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, shared_ptr<AirC
 	}
 }
 
-void ChunkRenderer::removeChunk(shared_ptr<AirChunk> chunk)
+void ChunkRenderer::removeChunk(const shared_ptr<AirChunk>& chunk)
 {
 	// Remove opaque chunks render 
 	shared_ptr<ChunkRenderColumn> opaqueColumn = getRenderColumn(RenderLayer::RL_OPAQUE, chunk->getChunkX(), chunk->getChunkZ());
@@ -484,7 +484,7 @@ shared_ptr<ChunkRenderColumn> ChunkRenderer::getRenderColumn(RenderLayer layer, 
 	return it != column->columnsMap.end() ? it->second : nullptr;
 }
 
-void ChunkRenderer::configureVAO(shared_ptr<AirChunk> chunk, VertexBuilder * builder, VertexArray * vertexArray)
+void ChunkRenderer::configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilder * builder, VertexArray * vertexArray)
 {
 	vertexArray->addVBO(builder->getVertexBuffer(), builder->getVBOSize(), GL_STATIC_DRAW);
 	vertexArray->enableEBO(builder->getIndicesBuffer(), builder->getEOBSize(), GL_STATIC_DRAW);

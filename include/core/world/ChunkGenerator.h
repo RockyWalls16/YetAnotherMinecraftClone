@@ -18,10 +18,10 @@ class World;
 class ChunkGenerator
 {
 private:
-	World * world;
+	World& world;
 
 public:
-	ChunkGenerator(World* world);
+	ChunkGenerator(World& world);
 
 	shared_ptr<AirChunk> generateChunk(shared_ptr<AirChunk> inputChunk);
 };

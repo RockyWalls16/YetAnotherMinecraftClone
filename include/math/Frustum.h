@@ -23,7 +23,7 @@ public:
 	glm::vec3 normal;
 	float d;
 
-	void setPN(glm::vec3 point, glm::vec3 normal)
+	void setPN(glm::vec3& point, glm::vec3& normal)
 	{
 		this->point = point;
 		this->normal = normal;
@@ -47,9 +47,9 @@ private:
 	static float farW;
 
 public:
-	static void updateFrustumSize(Camera* camera);
+	static void updateFrustumSize(Camera& camera);
 
-	static void computePlanes(Camera* camera);
+	static void computePlanes(Camera& camera);
 	static bool pointInFrustum(glm::vec3 & p);
 	static bool boxInFrustum(int x, int y, int z, int sX, int sY, int sZ);
 	static bool columnInFrustum(int x, int y, int z, int sX, int sY, int sZ);

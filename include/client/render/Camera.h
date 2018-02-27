@@ -11,11 +11,10 @@
 #include <core/entity/Entity.h>
 #include <glm/matrix.hpp>
 #include <glm/vec3.hpp>
+#include <client/input/CameraRay.h>
 
 #define NEAR_PLANE 0.1F
 #define FAR_PLANE 1000.0F
-
-class CameraRay;
 
 class Camera
 {
@@ -35,7 +34,7 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjMatrix;
 
-	CameraRay* cameraRay;
+	CameraRay cameraRay;
 
 public:
 	Camera();
@@ -69,7 +68,7 @@ public:
 	void setTrackedEntity(Entity& trackedEntity);
 	void setRotation(const glm::vec3& nRotation);
 
-	CameraRay* getCameraRay();
+	CameraRay& getCameraRay();
 };
 
 #endif /* CLIENT_RENDER_CAMERA_H_ */

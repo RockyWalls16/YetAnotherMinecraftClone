@@ -10,7 +10,7 @@ AABB::AABB(glm::vec3 startPos, glm::vec3 endPos) : startPos(startPos), endPos(en
 {
 }
 
-void AABB::updatePos(glm::vec3 newPos)
+void AABB::updatePos(const glm::vec3& newPos)
 {
 	// Move AABB to new pos from Corner
 	glm::vec3 size = endPos - startPos;
@@ -19,7 +19,7 @@ void AABB::updatePos(glm::vec3 newPos)
 	endPos = newPos + size;
 }
 
-void AABB::updatePosCenter(glm::vec3 newPos)
+void AABB::updatePosCenter(const glm::vec3& newPos)
 {
 	// Move AABB to new pos from Bottom Center
 	glm::vec3 size = endPos - startPos;
@@ -34,41 +34,13 @@ void AABB::updatePosCenter(glm::vec3 newPos)
 	endPos = newPos + halfSize;
 }
 
-void AABB::move(glm::vec3 amount)
+void AABB::move(glm::vec3& amount)
 {
 	startPos += amount;
 	endPos += amount;
 }
 
-void AABB::blockInBox(World* world, std::vector<AABB>* aabbVector)
-{
-	int x, y, z;
-	int bX = (int) floor(startPos.x);
-	int bY = (int) floor(startPos.y);
-	int bZ = (int) floor(startPos.z);
-	int bX2 = (int) ceil(endPos.x);
-	int bY2 = (int) ceil(endPos.y);
-	int bZ2 = (int) ceil(endPos.z);
-	Block* block;
-
-	for (y = bY; y < bY2; y++)
-	{
-		for (x = bX; x < bX2; x++)
-		{
-			for (z = bZ; z < bZ2; z++)
-			{
-				block = world->getBlockAt(x, y, z);
-
-				if (block->canCollide())
-				{
-					aabbVector->push_back(block->getHitbox(x, y, z));
-				}
-			}
-		}
-	}
-}
-
-void AABB::blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector)
+void AABB::blockInfoInBox(World& world, std::vector<BlockAABB>* aabbVector)
 {
 	int x, y, z;
 	int bX = (int)floor(startPos.x);
@@ -77,19 +49,81 @@ void AABB::blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector)
 	int bX2 = (int)ceil(endPos.x);
 	int bY2 = (int)ceil(endPos.y);
 	int bZ2 = (int)ceil(endPos.z);
+
+	// Prepare enough memory
+	aabbVector->reserve((bX2 - bX) * (bY2 - bY) * (bZ2 - bZ));
+
 	Block* block;
 
-	for (y = bY; y < bY2; y++)
+	// Get first column & first chunk (reduce map inspection)
+	int lastCX = bX >> CHUNK_SHIFT;
+	int lastCY = bY >> CHUNK_SHIFT;
+	int lastCZ = bZ >> CHUNK_SHIFT;
+	int cX, cY, cZ;
+	int cbX, cbY, cbZ;
+
+	shared_ptr<ChunkColumn> column = world.getColumnAt(lastCX, lastCZ);
+	shared_ptr<AirChunk> chunk = nullptr;
+	if (column)
 	{
-		for (x = bX; x < bX2; x++)
+		chunk = column->getChunkAt(lastCY);
+	}
+
+	for (x = bX; x < bX2; x++)
+	{
+		cX = x >> CHUNK_SHIFT;
+		cbX = MathUtil::getChunkTilePosFromWorld(x);
+
+		for (z = bZ; z < bZ2; z++)
 		{
-			for (z = bZ; z < bZ2; z++)
+			cZ = z >> CHUNK_SHIFT;
+			cbZ = MathUtil::getChunkTilePosFromWorld(z);
+
+			// Check is on another column
+			if (cZ != lastCZ || cX != lastCX)
 			{
-				block = world->getBlockAt(x, y, z);
+				column = world.getColumnAt(cX, cZ);
+				lastCX = cX;
+				lastCZ = cZ;
+
+				// Update chunk
+				if (column)
+				{
+					chunk = column->getChunkAt(cY);
+				}
+			}
+
+			// Check column is not null
+			if (!column)
+			{
+				continue;
+			}
+
+			for (y = bY; y < bY2; y++)
+			{
+				cY = y >> CHUNK_SHIFT;
+
+				// Check is on another chunk
+				if (cY != lastCY)
+				{
+					chunk = column->getChunkAt(cY);
+					lastCY = cY;
+
+					// Go to next chunk
+					if (!chunk)
+					{
+						y += CHUNK_SIZE - y - 1;
+						continue;
+					}
+				}
+
+				cbY = MathUtil::getChunkTilePosFromWorld(y);
+
+				block = Block::getBlock(chunk->getBlockAt(cbX, cbY, cbZ));
 
 				if (block->canCollide())
 				{
-					aabbVector->push_back(new BlockAABB(block, block->getHitbox(x, y, z), x, y, z));
+					aabbVector->push_back(BlockAABB(block, block->getHitbox(x, y, z), x, y, z));
 				}
 			}
 		}
@@ -199,7 +233,7 @@ void AABB::clipZ(AABB& hitbox, float* velocityZ)
 	}
 }
 
-bool AABB::intersectLine(glm::vec3 startVec, glm::vec3 endVector, glm::vec3* outIntersect, glm::vec3* outNormal)
+bool AABB::intersectLine(glm::vec3& startVec, glm::vec3& endVector, glm::vec3* outIntersect, glm::vec3* outNormal)
 {
 	float fLow = 0;
 	float fHigh = 1;

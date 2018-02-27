@@ -16,7 +16,7 @@
 #define NOISE_MULTIPLIER 100
 #define MAX_HEIGHT (MIN_HEIGHT + NOISE_MULTIPLIER)
 
-ChunkGenerator::ChunkGenerator(World * world) : world(world)
+ChunkGenerator::ChunkGenerator(World& world) : world(world)
 {
 }
 

@@ -43,6 +43,7 @@ public:
 
 	void setIdentity();
 	void translate(const glm::vec3& translation);
+	void setTranslate(const glm::vec3& translation);
 	void rotate(float amount, const glm::vec3& rotation);
 	void scale(const glm::vec3& scale);
 	void processNormalMatrix();

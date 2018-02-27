@@ -16,9 +16,8 @@ SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRend
 void SkyRenderer::render()
 {
 	ShaderCache::skyShader->use();
-	skySphere->setIdentity();
-	skySphere->translate(glm::vec3(GameRenderer::getInstance().getGameCamera()->getLocation()));
-	skySphere->scale(glm::vec3(FAR_PLANE - 1, FAR_PLANE - 1, FAR_PLANE - 1));
+	skySphere->setTranslate(GameRenderer::getInstance().getGameCamera()->getLocation());
+	//skySphere->scale(glm::vec3(FAR_PLANE - 1, FAR_PLANE - 1, FAR_PLANE - 1));
 	skySphere->drawVAO(skySphereVertexAmount, 0, GL_TRIANGLE_STRIP);
 }
 
