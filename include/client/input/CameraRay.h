@@ -16,32 +16,26 @@ public:
 	int nY;
 	int nZ;
 
-	RaycastResult(BlockAABB* blockInfo, int x, int y, int z) : blockInfo(blockInfo), nX(x), nY(y), nZ(z) {}
-	~RaycastResult()
-	{
-		if (blockInfo != nullptr)
-		{
-			delete(blockInfo);
-		}
-	};
+	RaycastResult(BlockAABB* blockInfo, int x, int y, int z);
+	~RaycastResult();
 };
 
 class CameraRay
 {
 private:
-	Camera* camera;
+	const Camera& camera;
 	VertexArray* cubeHover;
-	RaycastResult* lookingBlock;
+	RaycastResult lookingBlock;
 
 public:
-	CameraRay(Camera* camera);
+	CameraRay(const Camera& camera);
 
 	void tick();
 
-	RaycastResult* getLookingBlock();
+	const RaycastResult& getLookingBlock();
 
 private:
-	RaycastResult* processLookingBlock();
+	void processLookingBlock(RaycastResult& raycastResult);
 
 	void createCubeHoverMesh();
 };

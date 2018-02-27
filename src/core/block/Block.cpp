@@ -12,7 +12,7 @@ Block* Block::STONE = new Block(1, 1);
 Block* Block::DIRT = new Block(2, 2);
 Block* Block::PLANKS = new Block(3, 4);
 Block* Block::SLABS = new Block(4, 5);
-Block* Block::BRICKS = new Block(5, 6);
+Block* Block::BRICKS = new Block(5, 7);
 Block* Block::TNT = new Block(6, 8);
 Block* Block::COBBLE = new Block(7, 16);
 Block* Block::BEDROCK = new Block(8, 17);
@@ -74,6 +74,11 @@ AABB Block::getHitbox(int x, int y, int z)
 }
 
 bool Block::canCollide()
+{
+	return true;
+}
+
+bool Block::isSimpleBlock()
 {
 	return true;
 }

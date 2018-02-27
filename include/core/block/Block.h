@@ -49,6 +49,8 @@ public:
 
 	virtual bool canCollide();
 
+	virtual bool isSimpleBlock();
+
 	static Block* getBlock(unsigned short id);
 
 	static std::vector<Block*>& getBlockList();

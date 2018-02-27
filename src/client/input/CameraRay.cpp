@@ -6,42 +6,39 @@
 #include <util/Logger.h>
 #include <glm/gtc/constants.hpp>
 
-CameraRay::CameraRay(Camera * camera) : camera(camera), lookingBlock(nullptr)
+CameraRay::CameraRay(const Camera& camera) : camera(camera), lookingBlock(RaycastResult(nullptr, 0, 0, 0))
 {
 	createCubeHoverMesh();
 }
 
 void CameraRay::tick()
 {
-	// Free memory
-	delete(lookingBlock);
-
-	lookingBlock = processLookingBlock();
+	processLookingBlock(lookingBlock);
 	
-	if (lookingBlock->blockInfo)
+	if (lookingBlock.blockInfo)
 	{
 		// Draw cursor
 		ShaderCache::unlitShader->use();
 
 		cubeHover->setIdentity();
-		cubeHover->translate(glm::vec3(lookingBlock->blockInfo->x, lookingBlock->blockInfo->y, lookingBlock->blockInfo->z));
+		cubeHover->translate(glm::vec3(lookingBlock.blockInfo->x, lookingBlock.blockInfo->y, lookingBlock.blockInfo->z));
 
 		glLineWidth(2.0F);
 		cubeHover->drawVAO(48, 0, GL_LINES);
 	}
 }
 
-RaycastResult* CameraRay::getLookingBlock()
+const RaycastResult& CameraRay::getLookingBlock()
 {
 	return lookingBlock;
 }
 
-RaycastResult* CameraRay::processLookingBlock()
+void CameraRay::processLookingBlock(RaycastResult& raycastResult)
 {
 	// Get currently looking block
 	float minDistance = PLACE_DISTANCE + 1;
-	glm::vec3 cameraPos = camera->getLocation();
-	glm::vec3 forward = camera->getForwardVec();
+	glm::vec3 cameraPos = camera.getLocation();
+	glm::vec3 forward = camera.getForwardVec();
 	glm::vec3 forwardExpand = glm::vec3(forward.x * PLACE_DISTANCE, forward.y * PLACE_DISTANCE, forward.z * PLACE_DISTANCE);
 	AABB lookBox = AABB(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z), glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z)).expandBox(glm::vec3(forwardExpand.x, forwardExpand.y, forwardExpand.z));
 	
@@ -81,7 +78,15 @@ RaycastResult* CameraRay::processLookingBlock()
 		}
 	}
 
-	return new RaycastResult(nearestBlock, nearestNormal.x, nearestNormal.y, nearestNormal.z);
+	if (raycastResult.blockInfo)
+	{
+		delete(raycastResult.blockInfo);
+	}
+
+	raycastResult.blockInfo = nearestBlock;
+	raycastResult.nX = nearestNormal.x;
+	raycastResult.nY = nearestNormal.y;
+	raycastResult.nZ = nearestNormal.z;
 }
 
 void CameraRay::createCubeHoverMesh()
@@ -171,4 +176,14 @@ void CameraRay::createCubeHoverMesh()
 	cubeHover->disableNormals();
 	cubeHover->addVBO(vertices, 144 * sizeof(float), GL_STATIC_DRAW);
 	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 3);
+}
+
+RaycastResult::RaycastResult(BlockAABB * blockInfo, int x, int y, int z) : blockInfo(blockInfo), nX(x), nY(y), nZ(z) {}
+
+RaycastResult::~RaycastResult()
+{
+	if (blockInfo != nullptr)
+	{
+		delete(blockInfo);
+	}
 }

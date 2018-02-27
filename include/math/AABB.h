@@ -28,13 +28,13 @@ public:
 
 	void blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector);
 
-	AABB expandBox(glm::vec3 expandAABB);
+	AABB expandBox(glm::vec3& expandAABB);
 
-	void clipX(AABB* hitbox, float* velocityX);
+	void clipX(AABB& hitbox, float* velocityX);
 
-	void clipY(AABB* hitbox, float* velocityY);
+	void clipY(AABB& hitbox, float* velocityY);
 
-	void clipZ(AABB* hitbox, float* velocityZ);
+	void clipZ(AABB& hitbox, float* velocityZ);
 
 	bool intersectLine(glm::vec3 startVec, glm::vec3 endVector, glm::vec3* outIntersect, glm::vec3* outNormal);
 

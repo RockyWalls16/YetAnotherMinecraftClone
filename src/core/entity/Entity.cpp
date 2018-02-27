@@ -13,12 +13,10 @@
 #define GRAVITY 9.81F / 30.0F;
 #define BASE_SPEED 0.6F;
 
-Entity::Entity(World& world) : entityWorld(world)
+Entity::Entity(World& world) : entityWorld(world), hitbox(AABB(glm::vec3(0.1F, 0.0F, 0.1F), glm::vec3(0.9F, 1.8F, 0.9F)))
 {
 	entityWorld.addEntity(this);
-	hitbox = new AABB(glm::vec3(0.1F, 0.0F, 0.1F), glm::vec3(0.9F, 1.8F, 0.9F));
 }
-
 
 void Entity::tick()
 {
@@ -41,7 +39,7 @@ void Entity::tick()
 	glm::vec3 totalVelocity = originalVelocity;
 
 	// Get all block surrounding player direction
-	AABB expandedBox = hitbox->expandBox(totalVelocity);
+	AABB expandedBox = hitbox.expandBox(totalVelocity);
 	std::vector<AABB> blocksAABB;
 	expandedBox.blockInBox(&entityWorld, &blocksAABB);
 
@@ -49,19 +47,19 @@ void Entity::tick()
 	{
 		bAABB.clipX(hitbox, &totalVelocity.x);
 	}
-	hitbox->move(glm::vec3(totalVelocity.x, 0, 0));
+	hitbox.move(glm::vec3(totalVelocity.x, 0, 0));
 
 	for (AABB bAABB : blocksAABB)
 	{
 		bAABB.clipZ(hitbox, &totalVelocity.z);
 	}
-	hitbox->move(glm::vec3(0, 0, totalVelocity.z));
+	hitbox.move(glm::vec3(0, 0, totalVelocity.z));
 
 	for (AABB bAABB : blocksAABB)
 	{
 		bAABB.clipY(hitbox, &totalVelocity.y);
 	}
-	hitbox->move(glm::vec3(0, totalVelocity.y, 0));
+	hitbox.move(glm::vec3(0, totalVelocity.y, 0));
 
 	// Set on ground flag
 	onGround = originalVelocity.y != totalVelocity.y && originalVelocity.y < 0.0F;
@@ -78,7 +76,7 @@ void Entity::tick()
 	velocity = glm::vec3(velocity.x * 0.8F, velocity.y, velocity.z * 0.8F);
 
 	// Update hitbox position
-	hitbox->updatePosCenter(position);
+	hitbox.updatePosCenter(position);
 }
 
 const glm::vec3& Entity::getControllerVelocity() const
@@ -128,7 +126,7 @@ void Entity::setPosition(const glm::vec3& position)
 	this->position = position;
 	this->lastPosition = position;
 
-	hitbox->updatePosCenter(position);
+	hitbox.updatePosCenter(position);
 }
 
 void Entity::setRotation(const glm::vec3& rotation, bool updateLast)

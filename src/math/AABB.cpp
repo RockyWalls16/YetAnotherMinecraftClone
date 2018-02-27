@@ -96,7 +96,7 @@ void AABB::blockInfoInBox(World* world, std::vector<BlockAABB*>* aabbVector)
 	}
 }
 
-AABB AABB::expandBox(glm::vec3 expandAABB)
+AABB AABB::expandBox(glm::vec3& expandAABB)
 {
 	AABB newBox = AABB(startPos, endPos);
 
@@ -133,68 +133,68 @@ AABB AABB::expandBox(glm::vec3 expandAABB)
 	return newBox;
 }
 
-void AABB::clipX(AABB* hitbox, float* velocityX)
+void AABB::clipX(AABB& hitbox, float* velocityX)
 {
 	//Check can collide in YZ axis
-	if (hitbox->startPos.y >= endPos.y || hitbox->endPos.y <= startPos.y || hitbox->startPos.z >= endPos.z || hitbox->endPos.z <= startPos.z)
+	if (hitbox.startPos.y >= endPos.y || hitbox.endPos.y <= startPos.y || hitbox.startPos.z >= endPos.z || hitbox.endPos.z <= startPos.z)
 	{
 		return;
 	}
 	
 	// Check X- face collision
-	if (*velocityX > 0 && hitbox->endPos.x <= startPos.x)
+	if (*velocityX > 0 && hitbox.endPos.x <= startPos.x)
 	{
-		float distance = startPos.x - hitbox->endPos.x;
+		float distance = startPos.x - hitbox.endPos.x;
 		*velocityX = distance < *velocityX ? distance : *velocityX;
 	}
 	// Check X+ face collision
-	else if (*velocityX < 0 && hitbox->startPos.x >= endPos.x)
+	else if (*velocityX < 0 && hitbox.startPos.x >= endPos.x)
 	{
-		float distance = endPos.x - hitbox->startPos.x;
+		float distance = endPos.x - hitbox.startPos.x;
 		*velocityX = distance > *velocityX ? distance : *velocityX;
 	}
 }
 
-void AABB::clipY(AABB* hitbox, float* velocityY)
+void AABB::clipY(AABB& hitbox, float* velocityY)
 {
 	//Check can collide in XZ axis
-	if (hitbox->startPos.x >= endPos.x || hitbox->endPos.x <= startPos.x || hitbox->startPos.z >= endPos.z || hitbox->endPos.z <= startPos.z)
+	if (hitbox.startPos.x >= endPos.x || hitbox.endPos.x <= startPos.x || hitbox.startPos.z >= endPos.z || hitbox.endPos.z <= startPos.z)
 	{
 		return;
 	}
 
 	// Check bottom face collision
-	if (*velocityY > 0 && hitbox->endPos.y <= startPos.y)
+	if (*velocityY > 0 && hitbox.endPos.y <= startPos.y)
 	{
-		float distance = startPos.y - hitbox->endPos.y;
+		float distance = startPos.y - hitbox.endPos.y;
 		*velocityY = distance < *velocityY ? distance : *velocityY;
 	}
 	// Check top face collision
-	else if (*velocityY < 0 && hitbox->startPos.y >= endPos.y)
+	else if (*velocityY < 0 && hitbox.startPos.y >= endPos.y)
 	{
-		float distance = endPos.y - hitbox->startPos.y;
+		float distance = endPos.y - hitbox.startPos.y;
 		*velocityY = distance > *velocityY ? distance : *velocityY;
 	}
 }
 
-void AABB::clipZ(AABB* hitbox, float* velocityZ)
+void AABB::clipZ(AABB& hitbox, float* velocityZ)
 {
 	//Check can collide in YX axis
-	if (hitbox->startPos.y >= endPos.y || hitbox->endPos.y <= startPos.y || hitbox->startPos.x >= endPos.x || hitbox->endPos.x <= startPos.x)
+	if (hitbox.startPos.y >= endPos.y || hitbox.endPos.y <= startPos.y || hitbox.startPos.x >= endPos.x || hitbox.endPos.x <= startPos.x)
 	{
 		return;
 	}
 
 	// Check Z- face collision
-	if (*velocityZ > 0 && hitbox->endPos.z <= startPos.z)
+	if (*velocityZ > 0 && hitbox.endPos.z <= startPos.z)
 	{
-		float distance = startPos.z - hitbox->endPos.z;
+		float distance = startPos.z - hitbox.endPos.z;
 		*velocityZ = distance < *velocityZ ? distance : *velocityZ;
 	}
 	// Check Z+ face collision
-	else if (*velocityZ < 0 && hitbox->startPos.z >= endPos.z)
+	else if (*velocityZ < 0 && hitbox.startPos.z >= endPos.z)
 	{
-		float distance = endPos.z - hitbox->startPos.z;
+		float distance = endPos.z - hitbox.startPos.z;
 		*velocityZ = distance > *velocityZ ? distance : *velocityZ;
 	}
 }

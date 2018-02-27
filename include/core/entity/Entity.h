@@ -24,7 +24,7 @@ protected:
 	glm::vec3 velocity;
 	glm::vec3 controllerVelocity;
 
-	AABB* hitbox;
+	AABB hitbox;
 	bool onGround;
 
 	World& entityWorld;

@@ -13,6 +13,8 @@ public:
 	virtual bool isVisible() override { return false; }
 
 	virtual bool canCollide() override { return false; }
+
+	virtual bool isSimpleBlock() override { return false; };
 };
 
 #endif

@@ -19,6 +19,9 @@ public:
 	{
 		return RenderLayer::RL_TRANSPARENT;
 	}
+
+
+	virtual bool isSimpleBlock() override { return false; };
 };
 
 #endif

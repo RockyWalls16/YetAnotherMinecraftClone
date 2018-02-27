@@ -154,11 +154,11 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			RaycastResult* lookingBlock = camera->getCameraRay()->getLookingBlock();
+			const RaycastResult& lookingBlock = camera->getCameraRay()->getLookingBlock();
 
-			if (lookingBlock->blockInfo)
+			if (lookingBlock.blockInfo)
 			{
-				Game::getInstance().getWorld()->setBlockAt(Block::AIR, lookingBlock->blockInfo->x, lookingBlock->blockInfo->y, lookingBlock->blockInfo->z);
+				Game::getInstance().getWorld()->setBlockAt(Block::AIR, lookingBlock.blockInfo->x, lookingBlock.blockInfo->y, lookingBlock.blockInfo->z);
 			}
 		}
 
@@ -169,11 +169,11 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			RaycastResult* lookingBlock = camera->getCameraRay()->getLookingBlock();
+			const RaycastResult& lookingBlock = camera->getCameraRay()->getLookingBlock();
 
-			if (lookingBlock->blockInfo)
+			if (lookingBlock.blockInfo)
 			{
-				Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock->blockInfo->x + lookingBlock->nX, lookingBlock->blockInfo->y + lookingBlock->nY, lookingBlock->blockInfo->z + lookingBlock->nZ);
+				Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock.blockInfo->x + lookingBlock.nX, lookingBlock.blockInfo->y + lookingBlock.nY, lookingBlock.blockInfo->z + lookingBlock.nZ);
 			}
 		}
 

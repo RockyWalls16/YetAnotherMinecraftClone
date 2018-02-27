@@ -18,7 +18,7 @@
 
 Camera::Camera()
 {
-	cameraRay = new CameraRay(this);
+	cameraRay = new CameraRay(*this);
 }
 
 void Camera::setCameraPerspective(float fov, int width, int height)
