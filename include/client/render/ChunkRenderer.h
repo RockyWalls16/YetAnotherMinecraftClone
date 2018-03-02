@@ -89,6 +89,8 @@ public:
 	ChunkRenderContainer* getColumnContainer(RenderLayer layer);
 	shared_ptr<ChunkRenderColumn> getRenderColumn(RenderLayer layer, int x, int z);
 
+	long long getColumnIndex(int chunkX, int chunkZ);
+
 private:
 	void configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilder* builder, VertexArray* vertexArray);
 };

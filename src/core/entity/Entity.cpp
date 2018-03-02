@@ -20,11 +20,11 @@ Entity::Entity(World& world) : entityWorld(world), hitbox(AABB(glm::vec3(0.1F, 0
 
 void Entity::tick()
 {
-	shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos(position.x, position.y, position.z);
+	/*shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos(position.x, position.y, position.z);
 	if (chunk == nullptr || (chunk != nullptr && !chunk->isGenerated()))
 	{
 		return;
-	}
+	}*/
 
 	lastPosition = position;
 	lastRotation = rotation;
@@ -32,7 +32,7 @@ void Entity::tick()
 	// Add gravity
 	if (velocity.y > -2000)
 	{
-		velocity.y -= GRAVITY;
+		//velocity.y -= GRAVITY;
 	}
 
 	glm::vec3 originalVelocity = velocity + controllerVelocity;

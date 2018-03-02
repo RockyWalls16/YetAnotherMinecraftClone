@@ -161,7 +161,7 @@ void ChunkRenderer::fetchReadyChunks()
 			if (opaqueColumn == nullptr)
 			{
 				opaqueColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
-				opaqueContainer->columnsMap.insert(make_pair(ChunkColumn::getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), opaqueColumn));
+				opaqueContainer->columnsMap.insert(make_pair(getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), opaqueColumn));
 			}
 
 			opaqueColumn->column.push_back(cri);
@@ -174,7 +174,7 @@ void ChunkRenderer::fetchReadyChunks()
 			if (transparentColumn == nullptr)
 			{
 				transparentColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
-				transparentContainer->columnsMap.insert(make_pair(ChunkColumn::getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), transparentColumn));
+				transparentContainer->columnsMap.insert(make_pair(getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), transparentColumn));
 			}
 
 			transparentColumn->column.push_back(cri);
@@ -406,7 +406,7 @@ void ChunkRenderer::removeChunk(const shared_ptr<AirChunk>& chunk)
 					// Free transparent column memory
 					if (transparentColumn->column.empty())
 					{
-						transparentContainer->columnsMap.erase(ChunkColumn::getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
+						transparentContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
 						chunkCount--;
 					}
 				}
@@ -418,7 +418,7 @@ void ChunkRenderer::removeChunk(const shared_ptr<AirChunk>& chunk)
 				// Free opaque column memory
 				if (opaqueColumn->column.empty())
 				{
-					opaqueContainer->columnsMap.erase(ChunkColumn::getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
+					opaqueContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
 				}
 
 				return;
@@ -451,7 +451,7 @@ void ChunkRenderer::removeChunk(const shared_ptr<AirChunk>& chunk)
 				// Free transparent column memory
 				if (transparentColumn->column.empty())
 				{
-					transparentContainer->columnsMap.erase(ChunkColumn::getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
+					transparentContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
 				}
 
 				return;
@@ -480,7 +480,7 @@ shared_ptr<ChunkRenderColumn> ChunkRenderer::getRenderColumn(RenderLayer layer, 
 {
 	// Returns chunk column for layer and pos
 	ChunkRenderContainer* column = getColumnContainer(layer);
-	auto it = column->columnsMap.find(ChunkColumn::getColumnIndex(x, z));
+	auto it = column->columnsMap.find(getColumnIndex(x, z));
 	return it != column->columnsMap.end() ? it->second : nullptr;
 }
 
@@ -493,4 +493,10 @@ void ChunkRenderer::configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilde
 	vertexArray->assignPositionAttrib(0, 2, 11 * sizeof(float), (void*)(6 * sizeof(float))); // Normals
 	vertexArray->assignUVAttrib(0, 3, 11 * sizeof(float), (void*)(9 * sizeof(float))); // Atlas pos
 	vertexArray->translate(glm::vec3(chunk->getChunkX() * CHUNK_SIZE, chunk->getChunkY() * CHUNK_SIZE, chunk->getChunkZ() * CHUNK_SIZE));
+}
+
+long long ChunkRenderer::getColumnIndex(int chunkX, int chunkZ)
+{
+	// Generate Hashcode for column
+	return (((long long)chunkX << (sizeof(int) * 8)) | (chunkZ & 0xffffffff));
 }

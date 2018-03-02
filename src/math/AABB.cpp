@@ -62,11 +62,19 @@ void AABB::blockInfoInBox(World& world, std::vector<BlockAABB>* aabbVector)
 	int cX, cY, cZ;
 	int cbX, cbY, cbZ;
 
-	shared_ptr<ChunkColumn> column = world.getColumnAt(lastCX, lastCZ);
+	ChunkManager& cm = world.getChunkManager();
+
+	ChunkLineZ lineZ = cm.loadZLineFromX(lastCX);
+	ChunkLineY lineY = nullptr;
 	shared_ptr<AirChunk> chunk = nullptr;
-	if (column)
+
+	if (lineZ)
 	{
-		chunk = column->getChunkAt(lastCY);
+		lineY = cm.getYLineFromZ(lineZ, lastCZ);
+		if (lineY)
+		{
+			chunk = cm.getChunkFromY(lineY, lastCY);
+		}
 	}
 
 	for (x = bX; x < bX2; x++)
@@ -74,27 +82,47 @@ void AABB::blockInfoInBox(World& world, std::vector<BlockAABB>* aabbVector)
 		cX = x >> CHUNK_SHIFT;
 		cbX = MathUtil::getChunkTilePosFromWorld(x);
 
+		// Check is on another X line
+		if (cX != lastCX)
+		{
+			lineZ = cm.loadZLineFromX(cX);
+			lastCX = cX;
+
+			if (lineZ)
+			{
+				lineY = cm.getYLineFromZ(lineZ, lastCZ);
+				if (lineY)
+				{
+					chunk = cm.getChunkFromY(lineY, lastCY);
+				}
+			}
+		}
+
+		if (!lineZ)
+		{
+			continue;
+		}
+
 		for (z = bZ; z < bZ2; z++)
 		{
 			cZ = z >> CHUNK_SHIFT;
 			cbZ = MathUtil::getChunkTilePosFromWorld(z);
 
-			// Check is on another column
-			if (cZ != lastCZ || cX != lastCX)
+			// Check is on another line
+			if (cZ != lastCZ)
 			{
-				column = world.getColumnAt(cX, cZ);
-				lastCX = cX;
+				lineY = cm.getYLineFromZ(lineZ, cZ);
 				lastCZ = cZ;
 
 				// Update chunk
-				if (column)
+				if (lineY)
 				{
-					chunk = column->getChunkAt(cY);
+					chunk = cm.getChunkFromY(lineY, lastCY);
 				}
 			}
 
 			// Check column is not null
-			if (!column)
+			if (!lineY)
 			{
 				continue;
 			}
@@ -106,7 +134,7 @@ void AABB::blockInfoInBox(World& world, std::vector<BlockAABB>* aabbVector)
 				// Check is on another chunk
 				if (cY != lastCY)
 				{
-					chunk = column->getChunkAt(cY);
+					chunk = cm.getChunkFromY(lineY, cY);
 					lastCY = cY;
 
 					// Go to next chunk

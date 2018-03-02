@@ -19,7 +19,7 @@ AirChunk::AirChunk(World& world, int chX, int chY, int chZ) : chunkWorld(world),
 
 AirChunk::~AirChunk()
 {
-
+	
 }
 
 void AirChunk::tick()
@@ -70,7 +70,7 @@ void AirChunk::setBlockAt(Block* block, int x, int y, int z, bool reDraw)
 
 		shared_ptr<ComplexChunk> complexChunk = make_shared<ComplexChunk>(chunkWorld, chunkX, chunkY, chunkZ, layers);
 		complexChunk->setGenerated();
-		complexChunk->chunkWorld.replaceChunkAt(complexChunk, chunkX, chunkY, chunkZ);
+		complexChunk->chunkWorld.replaceChunkAt(complexChunk);
 		complexChunk->chunkWorld.notifyNeighbours(complexChunk, NeighbourNotification::REPLACED);
 	}
 }

@@ -162,6 +162,9 @@
     <ClCompile Include="src\core\world\ComplexChunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\world\ChunkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\stb_image.h">
@@ -753,6 +756,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\core\world\ComplexChunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\world\ChunkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
