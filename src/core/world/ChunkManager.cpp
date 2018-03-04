@@ -100,6 +100,7 @@ void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk)
 		if (lineY)
 		{
 			setChunkAt(chunk, lineY);
+			loadedChunks.push_back(chunk);
 		}
 	}
 }

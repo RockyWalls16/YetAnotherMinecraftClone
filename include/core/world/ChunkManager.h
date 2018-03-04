@@ -4,6 +4,7 @@
 #include <core/world/AirChunk.h>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 using namespace std;
  
@@ -16,6 +17,7 @@ class ChunkManager
 {
 private:
 	ChunkLineX chunkLines;
+	vector<shared_ptr<AirChunk>> loadedChunks;
 
 public:
 	ChunkManager();
