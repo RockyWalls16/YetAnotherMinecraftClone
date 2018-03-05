@@ -761,6 +761,33 @@
     <ClInclude Include="include\core\world\ChunkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="external\sparsepp\spp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_dlalloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_smartptr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_stdint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\sparsepp\spp_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="external\glm\detail\func_common.inl">

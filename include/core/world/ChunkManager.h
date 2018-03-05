@@ -5,13 +5,14 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include <sparsepp/spp.h>
 
 using namespace std;
  
 // Map for each axis
-typedef shared_ptr<unordered_map<int, shared_ptr<AirChunk>>> ChunkLineY;
-typedef shared_ptr<unordered_map<int, ChunkLineY>> ChunkLineZ;
-typedef unordered_map<int, ChunkLineZ> ChunkLineX;
+typedef shared_ptr<spp::sparse_hash_map<int, shared_ptr<AirChunk>>> ChunkLineY;
+typedef shared_ptr<spp::sparse_hash_map<int, ChunkLineY>> ChunkLineZ;
+typedef spp::sparse_hash_map<int, ChunkLineZ> ChunkLineX;
 
 class ChunkManager
 {
@@ -36,7 +37,9 @@ public:
 
 	ChunkLineY loadYLineFromZ(const ChunkLineZ& lineZ, int z);
 
-	void setChunkAt(const shared_ptr<AirChunk>& chunk, const ChunkLineY& lineY);
+	shared_ptr<AirChunk> getChunkFromNeighbour(const shared_ptr<AirChunk>& chunk, Side side);
+
+	void setChunkAt(const shared_ptr<AirChunk>& chunk, ChunkLineY& lineY);
 
 	void setChunkAt(const shared_ptr<AirChunk>& chunk);
 

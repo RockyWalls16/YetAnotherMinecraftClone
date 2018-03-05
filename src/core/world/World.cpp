@@ -60,25 +60,24 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 	int yLimit = y + size;
 	int zLimit = z + size;
 
-	ChunkLineZ lineZ;
-	ChunkLineY lineY;
 	for (int i = x - size; i < xLimit; i++)
 	{
-		lineZ = chunkManager.loadZLineFromX(i);
+		ChunkLineZ& lineZ = chunkManager.loadZLineFromX(i);
 		for (int k = z - size; k < zLimit; k++)
 		{
-			lineY = chunkManager.loadYLineFromZ(lineZ, k);
+			ChunkLineY& lineY = chunkManager.loadYLineFromZ(lineZ, k);
 			for (int j = y - size; j < yLimit; j++)
 			{
-				shared_ptr<AirChunk> chunk = chunkManager.getChunkFromY(lineY, j);
+				shared_ptr<AirChunk>& chunk = chunkManager.getChunkFromY(lineY, j);
 				if (chunk == nullptr)
 				{
 					// Generate new chunk & and add it to manager
-					chunk = make_shared<AirChunk>(*this, i, j, k);
-					chunkManager.setChunkAt(chunk, lineY);
-					chunkGeneratorQueue.pushInputChunk(chunk);
+					shared_ptr<AirChunk> newChunk = make_shared<AirChunk>(*this, i, j, k);
+					chunkManager.setChunkAt(newChunk, lineY);
+					chunkGeneratorQueue.pushInputChunk(newChunk);
+					continue;
 				}
-
+				
 				chunk->resetTTL();
 			}
 		}

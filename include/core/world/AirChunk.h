@@ -54,7 +54,7 @@ public:
 	AirChunk(World& world, int chX, int chY, int chZ);
 	virtual ~AirChunk();
 
-	void tick();
+	bool tick();
 
 	World& getWorld();
 	int getChunkX() const;

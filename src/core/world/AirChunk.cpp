@@ -22,13 +22,16 @@ AirChunk::~AirChunk()
 	
 }
 
-void AirChunk::tick()
+bool AirChunk::tick()
 {
 	timeToLive--;
 	if (timeToLive == 0)
 	{
 		chunkWorld.addChunkToUnload(shared_from_this());
+		return false;
 	}
+
+	return true;
 }
 
 World& AirChunk::getWorld()

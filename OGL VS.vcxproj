@@ -353,6 +353,15 @@
     <ClInclude Include="external\glm\vector_relational.hpp" />
     <ClInclude Include="external\khr\khrplatform.h" />
     <ClInclude Include="external\PerlinNoise.hpp" />
+    <ClInclude Include="external\sparsepp\spp.h" />
+    <ClInclude Include="external\sparsepp\spp_config.h" />
+    <ClInclude Include="external\sparsepp\spp_dlalloc.h" />
+    <ClInclude Include="external\sparsepp\spp_memory.h" />
+    <ClInclude Include="external\sparsepp\spp_smartptr.h" />
+    <ClInclude Include="external\sparsepp\spp_stdint.h" />
+    <ClInclude Include="external\sparsepp\spp_timer.h" />
+    <ClInclude Include="external\sparsepp\spp_traits.h" />
+    <ClInclude Include="external\sparsepp\spp_utils.h" />
     <ClInclude Include="external\stb_image.h" />
     <ClInclude Include="include\client\input\CameraRay.h" />
     <ClInclude Include="include\client\input\GameController.h" />

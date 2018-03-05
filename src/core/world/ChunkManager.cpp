@@ -40,15 +40,14 @@ shared_ptr<AirChunk> ChunkManager::getChunkFromY(const ChunkLineY& lineY, int y)
 
 void ChunkManager::tickChunks()
 {
-	ChunkLineX lineX = chunkLines;
-	for (std::pair<int, ChunkLineZ> clZ : lineX)
+	for (int length = loadedChunks.size(), i = length - 1; i >= 0; i--)
 	{
-		for (std::pair<int, ChunkLineY> clY : *(clZ.second))
+		shared_ptr<AirChunk>& chunk = loadedChunks[i];
+
+		// Shall remove chunk ?
+		if (!chunk->tick())
 		{
-			for (std::pair<int, shared_ptr<AirChunk>> chunk : *(clY.second))
-			{
-				chunk.second->tick();
-			}
+			loadedChunks.erase(loadedChunks.begin() + i);
 		}
 	}
 }
@@ -61,8 +60,8 @@ ChunkLineZ ChunkManager::loadZLineFromX(int x)
 		return lineZ;
 	}
 
-	lineZ = make_shared<unordered_map<int, ChunkLineY>>();
-	chunkLines.insert_or_assign(x, lineZ);
+	lineZ = make_shared<spp::sparse_hash_map<int, ChunkLineY>>();
+	chunkLines[x] = lineZ;
 
 	return lineZ;
 }
@@ -75,15 +74,20 @@ ChunkLineY ChunkManager::loadYLineFromZ(const ChunkLineZ& lineZ, int z)
 		return lineY;
 	}
 
-	lineY = make_shared<unordered_map<int, shared_ptr<AirChunk>>>();
-	lineZ->insert_or_assign(z, lineY);
+	lineY = make_shared<spp::sparse_hash_map<int, shared_ptr<AirChunk>>>();
+	(*lineZ)[z] = lineY;
 
 	return lineY;
 }
 
-void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk, const ChunkLineY& lineY)
+shared_ptr<AirChunk> ChunkManager::getChunkFromNeighbour(const shared_ptr<AirChunk>& chunk, Side side)
 {
-	lineY->insert_or_assign(chunk->getChunkY(), chunk);
+	return chunk->getNeighbour[side].lock();
+}
+
+void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk, ChunkLineY& lineY)
+{
+	(*lineY)[chunk->getChunkY()] = chunk;
 }
 
 void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk)
