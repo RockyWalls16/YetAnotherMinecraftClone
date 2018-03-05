@@ -26,6 +26,14 @@ KeyBind::KeyBind(int keyId, InputType inputType) : keyId(keyId), inputType(input
 	GameController::getInstance().registerKeybind(this);
 }
 
+GameController::GameController() : mouseCaptured(false)
+{
+	GLFWwindow* window = WindowManager::getMainInstance()->getGameWindow();
+	glfwSetKeyCallback(window, keyCallBack);
+	glfwSetCursorPosCallback(window, mousePosCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+}
+
 GameController& GameController::getInstance()
 {
 	static GameController instance;
@@ -212,14 +220,6 @@ void GameController::updateInputs()
 	lastMouseX = mouseX;
 	lastMouseY = mouseY;
 
-	// Set mouse pos
-	double xPos;
-	double yPos;
-
-	glfwGetCursorPos(WindowManager::getMainInstance()->getGameWindow(), &xPos, &yPos);
-	mouseX = (int) floor(xPos);
-	mouseY = (int) floor(yPos);
-
 	// Update gamepad controls
 	/*if(glfwJoystickPresent(GLFW_JOYSTICK_1))
 	{
@@ -229,30 +229,14 @@ void GameController::updateInputs()
 	for (auto it : keyMap)
 	{
 		KeyBind* keybind = it.second;
-		
-		if (actualInputState(keybind) == GLFW_PRESS)
+		if (keybind->lastState == PRESSED)
 		{
-			if (keybind->lastState == PRESSED || keybind->lastState == HELD)
-			{
-				keybind->keyState = HELD;
-			}
-			else
-			{
-				keybind->keyState = PRESSED;
-			}
+			keybind->keyState = HELD;
 		}
-		else
+		else if (keybind->lastState == RELEASED)
 		{
-			if (keybind->lastState == PRESSED || keybind->lastState == HELD)
-			{
-				keybind->keyState = RELEASED;
-			}
-			else
-			{
-				keybind->keyState = NOT_PRESSED;
-			}
+			keybind->keyState = NOT_PRESSED;
 		}
-
 		keybind->lastState = keybind->keyState;
 	}
 }
@@ -289,14 +273,48 @@ int GameController::actualInputState(KeyBind* keybind)
 	}
 }
 
+void GameController::keyCallBack(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+	GameController& gc = getInstance();
+
+	auto it = gc.keyMap.find(key);
+	KeyBind* keybind = it != gc.keyMap.end() ? it->second : nullptr;
+
+	if (keybind)
+	{
+		keybind->keyState = keybind->lastState = action == GLFW_PRESS ? PRESSED : (action == GLFW_RELEASE ? RELEASED : HELD);
+	}
+}
+
+void GameController::mousePosCallback(GLFWwindow * window, double x, double y)
+{
+	GameController& gc = getInstance();
+	gc.mouseX = (int)floor(x);
+	gc.mouseY = (int)floor(y);
+}
+
+void GameController::mouseButtonCallback(GLFWwindow * window, int key, int action, int mods)
+{
+	GameController& gc = getInstance();
+
+	auto it = gc.keyMap.find(key);
+	KeyBind* keybind = it != gc.keyMap.end() ? it->second : nullptr;
+
+	if (keybind)
+	{
+		keybind->keyState = keybind->lastState = action == GLFW_PRESS ? PRESSED : (action == GLFW_RELEASE ? RELEASED : HELD);
+	}
+}
+
 void GameController::setMouseCaptured(bool captured)
 {
 	glfwSetInputMode(WindowManager::getMainInstance()->getGameWindow(), GLFW_CURSOR, captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	mouseCaptured = captured;
 }
 
 bool GameController::isMouseCaptured()
 {
-	return glfwGetInputMode(WindowManager::getMainInstance()->getGameWindow(), GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+	return mouseCaptured;
 }
 
 

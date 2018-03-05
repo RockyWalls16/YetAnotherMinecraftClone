@@ -82,7 +82,7 @@ ChunkLineY ChunkManager::loadYLineFromZ(const ChunkLineZ& lineZ, int z)
 
 shared_ptr<AirChunk> ChunkManager::getChunkFromNeighbour(const shared_ptr<AirChunk>& chunk, Side side)
 {
-	return chunk->getNeighbour[side].lock();
+	return chunk->getNeighbour(side).lock();
 }
 
 void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk, ChunkLineY& lineY)

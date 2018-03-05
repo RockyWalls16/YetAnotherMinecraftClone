@@ -15,11 +15,12 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <client/render/ChunkRenderQueue.h>
+#include <sparsepp/spp.h>
 
 using namespace std;
 
 class AirChunk;
-class ChunkRenderQueue;
 enum RenderLayer;
 
 class ChunkRenderColumn
@@ -30,15 +31,13 @@ public:
 	std::vector<ChunkRenderIndex*> column;
 
 	ChunkRenderColumn(int cX, int cZ) : chunkX(cX), chunkZ(cZ)
-	{
-
-	}
+	{}
 };
 
 class ChunkRenderContainer
 {
 public:
-	std::unordered_map<long long, shared_ptr<ChunkRenderColumn>> columnsMap;
+	spp::sparse_hash_map<long long, shared_ptr<ChunkRenderColumn>> columnsMap;
 };
 
 // Contains mesh data for render
@@ -46,23 +45,18 @@ class ChunkRenderIndex
 {
 public:
 	shared_ptr<AirChunk> chunk;
-	VertexArray* chunkOpaqueMesh;
-	VertexArray* chunkTransparentMesh;
-	unsigned int opaqueVertexAmount;
-	unsigned int transparentVertexAmount;
+	VertexArray* mesh;
+	unsigned int vertexAmount;
 
-	ChunkRenderIndex(shared_ptr<AirChunk> chunk, VertexArray* opaqueMesh, VertexArray* transparentMesh, unsigned int opaqueVertexAmount, unsigned int transparentVertexAmount) :
+	ChunkRenderIndex(shared_ptr<AirChunk> chunk, VertexArray* mesh, unsigned int vertexAmount) :
 		chunk(chunk),
-		chunkOpaqueMesh(opaqueMesh),
-		chunkTransparentMesh(transparentMesh),
-		opaqueVertexAmount(opaqueVertexAmount),
-		transparentVertexAmount(transparentVertexAmount)
+		mesh(mesh),
+		vertexAmount(vertexAmount)
 	{};
 
 	~ChunkRenderIndex()
 	{
-		delete(chunkOpaqueMesh);
-		delete(chunkTransparentMesh);
+		delete(mesh);
 	}
 };
 
@@ -70,23 +64,28 @@ class ChunkRenderer
 {
 private:
 	int chunkCount;
-	ChunkRenderQueue* chunkRenderQueue;
-
-	ChunkRenderContainer* opaqueContainer;
-	ChunkRenderContainer* transparentContainer;
+	int chunkDrawed;
+	ChunkRenderQueue chunkRenderQueue;
+	ChunkRenderContainer opaqueContainer;
+	ChunkRenderContainer transparentContainer;
 
 public:
 	ChunkRenderer();
 	~ChunkRenderer();
 
 	void render(RenderLayer renderLayer);
+
+	void renderChunkLayer(RenderLayer renderLayer);
+
 	void fetchReadyChunks();
+	void addChunkToContainer(ChunkRenderContainer& columnContainer, shared_ptr<ChunkRenderColumn> layerColumn, shared_ptr<AirChunk>& chunk, VertexBuilder* builders, int vertexAmount);
 	void addChunkToRenderQueue(const shared_ptr<AirChunk>& chunk);
 
 	VertexBuilder** prepareChunkMesh(const shared_ptr<AirChunk>& chunk);
 	void applyGreedyMeshing(VertexBuilder** builders, const shared_ptr<AirChunk>& ch);
 	void removeChunk(const shared_ptr<AirChunk>& chunk);
-	ChunkRenderContainer* getColumnContainer(RenderLayer layer);
+	void removeChunkAtLayer(const shared_ptr<AirChunk>& chunk, RenderLayer renderLayer);
+	ChunkRenderContainer& getColumnContainer(RenderLayer layer);
 	shared_ptr<ChunkRenderColumn> getRenderColumn(RenderLayer layer, int x, int z);
 
 	long long getColumnIndex(int chunkX, int chunkZ);

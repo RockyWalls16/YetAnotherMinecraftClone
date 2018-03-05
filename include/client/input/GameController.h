@@ -8,7 +8,8 @@
 #ifndef CLIENT_INPUT_GAMECONTROLLER_H_
 #define CLIENT_INPUT_GAMECONTROLLER_H_
 
-#include <unordered_map>
+#include <util/GLHeader.h>
+#include <sparsepp/spp.h>
 
 enum PressMode : char
 {
@@ -59,7 +60,8 @@ public:
 class GameController
 {
 private:
-	std::unordered_map<int, KeyBind*> keyMap;
+	spp::sparse_hash_map<int, KeyBind*> keyMap;
+	bool mouseCaptured;
 	int mouseX;
 	int mouseY;
 	int lastMouseX;
@@ -70,6 +72,8 @@ private:
 	const unsigned char* gamepadButtonsStates;*/
 
 public:
+	GameController();
+
 	static GameController& getInstance();
 
 	void processInput();
@@ -83,6 +87,9 @@ public:
 private:
 	void updateInputs();
 	int actualInputState(KeyBind* keybind);
+	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mousePosCallback(GLFWwindow* window, double x, double y);
+	static void mouseButtonCallback(GLFWwindow* window, int key, int action, int mods);
 };
 
 #endif /* CLIENT_INPUT_GAMECONTROLLER_H_ */

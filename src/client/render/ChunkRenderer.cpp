@@ -23,24 +23,16 @@
 #include <algorithm>
 #include <limits>
 
-ChunkRenderer::ChunkRenderer()
+ChunkRenderer::ChunkRenderer() : chunkCount(0), chunkDrawed(0)
 {
-	opaqueContainer = new ChunkRenderContainer();
-	transparentContainer = new ChunkRenderContainer();
-
-	chunkRenderQueue = new ChunkRenderQueue();
-	chunkRenderQueue->start();
-	chunkCount = 0;
+	chunkRenderQueue.start();
 }
 
 ChunkRenderer::~ChunkRenderer()
-{
-	delete(chunkRenderQueue);
-}
+{}
 
 void ChunkRenderer::render(RenderLayer renderLayer)
 {
-	static int chunkDrawed = 0;
 	if (renderLayer == RenderLayer::RL_OPAQUE)
 	{
 		chunkDrawed = 0;
@@ -53,142 +45,115 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 	fetchReadyChunks();
 
 	World* world = Game::getInstance().getWorld();
-	Camera* camera = GameRenderer::getInstance().getGameCamera();
 
 	// Render chunks opaque then transparent
-	if (renderLayer == RenderLayer::RL_OPAQUE)
-	{ 
-		// For each opaque column
-		for (auto opaqueColumn : opaqueContainer->columnsMap)
-		{
-			shared_ptr<ChunkRenderColumn> column = opaqueColumn.second;
-			int chunkX = column->chunkX * CHUNK_SIZE;
-			int chunkZ = column->chunkZ * CHUNK_SIZE;
-			
-			// Check column is in frustum
-			if (Frustum::columnInFrustum(chunkX, camera->getLocation().y - CHUNK_SIZE * 10, chunkZ, CHUNK_SIZE, camera->getLocation().y + CHUNK_SIZE * 10, CHUNK_SIZE))
-			{
-				for (ChunkRenderIndex* cri : column->column)
-				{
-					shared_ptr<AirChunk> chunk = cri->chunk;
-					if (Frustum::boxInFrustum(chunkX, chunk->getChunkY() * CHUNK_SIZE, chunkZ, CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE))
-					{
-						cri->chunkOpaqueMesh->drawEBO(cri->opaqueVertexAmount);
-						chunkDrawed++;
-					}
-				}
-			}
-		}
-	}
-	else if (renderLayer == RenderLayer::RL_TRANSPARENT)
+	renderChunkLayer(renderLayer);
+
+	TextureCache::blockTexture->unbind();
+}
+
+void ChunkRenderer::renderChunkLayer(RenderLayer renderLayer)
+{
+	Camera* camera = GameRenderer::getInstance().getGameCamera();
+	float cameraY = camera->getLocation().y;
+	ChunkRenderContainer& container = getColumnContainer(renderLayer);
+
+	for (auto columnPair : container.columnsMap)
 	{
-		// For each opaque column
-		for (auto transparentColumn : transparentContainer->columnsMap)
+		shared_ptr<ChunkRenderColumn>& column = columnPair.second;
+	
+		int chunkX = column->chunkX * CHUNK_SIZE;
+		int chunkZ = column->chunkZ * CHUNK_SIZE;
+
+		// Check column is in frustum
+		if (Frustum::columnInFrustum(chunkX, cameraY - CHUNK_SIZE * 10, chunkZ, CHUNK_SIZE, cameraY + CHUNK_SIZE * 10, CHUNK_SIZE))
 		{
-			shared_ptr<ChunkRenderColumn> column = transparentColumn.second;
 			for (ChunkRenderIndex* cri : column->column)
 			{
-				shared_ptr<AirChunk> chunk = cri->chunk;
+				shared_ptr<AirChunk>& chunk = cri->chunk;
 				if (Frustum::boxInFrustum(chunk->getChunkX() * CHUNK_SIZE, chunk->getChunkY() * CHUNK_SIZE, chunk->getChunkZ() * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE))
 				{
-					cri->chunkTransparentMesh->drawEBO(cri->transparentVertexAmount);
+					cri->mesh->drawEBO(cri->vertexAmount);
 					chunkDrawed++;
 				}
 			}
 		}
 	}
-
-	TextureCache::blockTexture->unbind();
 }
 
 void ChunkRenderer::fetchReadyChunks()
 {
 	// Check ChunkRenderQueue for ready chunk to add as VAO
-	int chunkAmount = chunkRenderQueue->getOutputSize();
+	int chunkAmount = chunkRenderQueue.getOutputSize();
 	for (int i = 0; i < chunkAmount; i++)
 	{
-		ChunkRenderOutput* cru = chunkRenderQueue->popOutputChunk();
-
-		VertexArray* opaqueVAO = VertexArray::makeVAO();
-		VertexArray* transparentVAO = VertexArray::makeVAO();
-		configureVAO(cru->chunk, cru->vertexBuilders[0], opaqueVAO);
-		configureVAO(cru->chunk, cru->vertexBuilders[1], transparentVAO);
-
-		ChunkRenderIndex* cri = new ChunkRenderIndex(cru->chunk, opaqueVAO, transparentVAO, cru->vertexBuilders[0]->getIndicesWriteIndex(), cru->vertexBuilders[1]->getIndicesWriteIndex());
+		ChunkRenderOutput* cru = chunkRenderQueue.popOutputChunk();
 
 		shared_ptr<ChunkRenderColumn> opaqueColumn = getRenderColumn(RenderLayer::RL_OPAQUE, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
 		shared_ptr<ChunkRenderColumn> transparentColumn = getRenderColumn(RenderLayer::RL_TRANSPARENT, cru->chunk->getChunkX(), cru->chunk->getChunkZ());
-
-		// Remove chunk if already renderer
-		vector<ChunkRenderIndex*>::iterator iter;
-		if (opaqueColumn != nullptr)
-		{
-			for (iter = opaqueColumn->column.begin(); iter != opaqueColumn->column.end();)
-			{
-				if ((*iter)->chunk == cru->chunk)
-				{
-					// Don't delete if also contains transparent vertices
-					if ((*iter)->chunkTransparentMesh == 0)
-					{
-						delete(*iter);
-					}
-					chunkCount--;
-					opaqueColumn->column.erase(iter);
-					break;
-				}
-				iter++;
-			}
-		}
-
-		if (transparentColumn != nullptr)
-		{
-			for (iter = transparentColumn->column.begin(); iter != transparentColumn->column.end();)
-			{
-				if ((*iter)->chunk == cru->chunk)
-				{
-					delete(*iter);
-					chunkCount--;
-					transparentColumn->column.erase(iter);
-					break;
-				}
-				iter++;
-			}
-		}
-
-		// Add chunk to opaque render list
-		if (cri->opaqueVertexAmount > 0)
-		{
-			if (opaqueColumn == nullptr)
-			{
-				opaqueColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
-				opaqueContainer->columnsMap.insert(make_pair(getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), opaqueColumn));
-			}
-
-			opaqueColumn->column.push_back(cri);
-			chunkCount++;
-		}
-
-		// Add chunk to transparent render list
-		if (cri->transparentVertexAmount > 0)
-		{
-			if (transparentColumn == nullptr)
-			{
-				transparentColumn = make_shared<ChunkRenderColumn>(cru->chunk->getChunkX(), cru->chunk->getChunkZ());
-				transparentContainer->columnsMap.insert(make_pair(getColumnIndex(cru->chunk->getChunkX(), cru->chunk->getChunkZ()), transparentColumn));
-			}
-
-			transparentColumn->column.push_back(cri);
-			chunkCount++;
-		}
-		
+		addChunkToContainer(opaqueContainer, opaqueColumn, cru->chunk, cru->vertexBuilders[0], cru->vertexBuilders[0]->getIndicesWriteIndex());
+		addChunkToContainer(transparentContainer, transparentColumn, cru->chunk, cru->vertexBuilders[1], cru->vertexBuilders[1]->getIndicesWriteIndex());
 
 		delete(cru);
 	}
 }
 
+void ChunkRenderer::addChunkToContainer(ChunkRenderContainer& columnContainer, shared_ptr<ChunkRenderColumn> layerColumn, shared_ptr<AirChunk>& chunk, VertexBuilder* builders, int vertexAmount)
+{
+	// Create new chunk render index
+	ChunkRenderIndex* cri = nullptr;
+	if (vertexAmount > 0)
+	{
+		VertexArray* vao = VertexArray::makeVAO();
+		configureVAO(chunk, builders, vao);
+		cri = new ChunkRenderIndex(chunk, vao, builders->getIndicesWriteIndex());
+	}
+
+	// Check chunk if already renderer
+	if (layerColumn != nullptr)
+	{
+		for (int i = 0, length = layerColumn->column.size(); i < length; i++)
+		{
+			ChunkRenderIndex* oldCri = layerColumn->column[i];
+			if (oldCri->chunk == chunk)
+			{
+				// Replace oldCri by new cri and delete old one
+				delete(oldCri);
+
+				// Replace chunk
+				if (cri)
+				{
+					layerColumn->column[i] = cri;
+					return;
+				}
+				else
+				{
+					// Erase chunk if nothing new
+					layerColumn->column.erase(layerColumn->column.begin() + i);
+					chunkCount--;
+					break;
+				}
+			}
+		}
+	}
+
+	// Chunk not present add it to render list
+	if (cri)
+	{
+		if (layerColumn == nullptr)
+		{
+			layerColumn = make_shared<ChunkRenderColumn>(chunk->getChunkX(), chunk->getChunkZ());
+			columnContainer.columnsMap.insert(make_pair(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()), layerColumn));
+		}
+
+		layerColumn->column.push_back(cri);
+		chunkCount++;
+	}
+}
+
 void ChunkRenderer::addChunkToRenderQueue(const shared_ptr<AirChunk>& chunk)
 {
-	chunkRenderQueue->pushInputChunk(chunk);
+	chunkRenderQueue.pushInputChunk(chunk);
 }
 
 VertexBuilder** ChunkRenderer::prepareChunkMesh(const shared_ptr<AirChunk>& chunk)
@@ -385,86 +350,41 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 
 void ChunkRenderer::removeChunk(const shared_ptr<AirChunk>& chunk)
 {
-	// Remove opaque chunks render 
-	shared_ptr<ChunkRenderColumn> opaqueColumn = getRenderColumn(RenderLayer::RL_OPAQUE, chunk->getChunkX(), chunk->getChunkZ());
-	if (opaqueColumn != nullptr)
+	removeChunkAtLayer(chunk, RL_OPAQUE);
+	removeChunkAtLayer(chunk, RL_TRANSPARENT);
+}
+
+void ChunkRenderer::removeChunkAtLayer(const shared_ptr<AirChunk>& chunk, RenderLayer renderLayer)
+{
+	ChunkRenderContainer& columnContainer = getColumnContainer(renderLayer);
+	shared_ptr<ChunkRenderColumn> column = getRenderColumn(renderLayer, chunk->getChunkX(), chunk->getChunkZ());
+	if (column != nullptr)
 	{
 		// Iterate over column
 		vector<ChunkRenderIndex*>::iterator iter;
-		for (iter = opaqueColumn->column.begin(); iter != opaqueColumn->column.end();)
-		{
-			if ((*iter)->chunk == chunk)
-			{
-				ChunkRenderIndex* cri = *iter;
-
-				// If chunks also contains transparent vertices delete it
-				if (cri->transparentVertexAmount > 0)
-				{
-					shared_ptr<ChunkRenderColumn> transparentColumn = getRenderColumn(RenderLayer::RL_TRANSPARENT, chunk->getChunkX(), chunk->getChunkZ());
-					transparentColumn->column.erase(remove(transparentColumn->column.begin(), transparentColumn->column.end(), cri), transparentColumn->column.end());
-
-					// Free transparent column memory
-					if (transparentColumn->column.empty())
-					{
-						transparentContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
-						chunkCount--;
-					}
-				}
-
-				delete(*iter);
-				iter = opaqueColumn->column.erase(iter);
-				chunkCount--;
-
-				// Free opaque column memory
-				if (opaqueColumn->column.empty())
-				{
-					opaqueContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
-				}
-
-				return;
-			}
-			else
-			{
-				iter++;
-			}
-		}
-	}
-
-	
-
-	// If chunk is composed ONLY of transparent blocks
-	shared_ptr<ChunkRenderColumn> transparentColumn = getRenderColumn(RenderLayer::RL_TRANSPARENT, chunk->getChunkX(), chunk->getChunkZ());
-	if (transparentColumn != nullptr)
-	{
-		// Iterate over column
-		vector<ChunkRenderIndex*>::iterator iter;
-		for (iter = transparentColumn->column.begin(); iter != transparentColumn->column.end();)
+		for (iter = column->column.begin(); iter != column->column.end(); iter++)
 		{
 			if ((*iter)->chunk == chunk)
 			{
 				ChunkRenderIndex* cri = *iter;
 
 				delete(*iter);
-				iter = transparentColumn->column.erase(iter);
+				iter = column->column.erase(iter);
 				chunkCount--;
 
 				// Free transparent column memory
-				if (transparentColumn->column.empty())
+				if (column->column.empty())
 				{
-					transparentContainer->columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
+					columnContainer.columnsMap.erase(getColumnIndex(chunk->getChunkX(), chunk->getChunkZ()));
 				}
 
 				return;
-			}
-			else
-			{
-				iter++;
 			}
 		}
 	}
 }
 
-ChunkRenderContainer * ChunkRenderer::getColumnContainer(RenderLayer layer)
+ChunkRenderContainer& ChunkRenderer::getColumnContainer(RenderLayer layer)
 {
 	if (layer == RenderLayer::RL_OPAQUE)
 	{
@@ -479,9 +399,9 @@ ChunkRenderContainer * ChunkRenderer::getColumnContainer(RenderLayer layer)
 shared_ptr<ChunkRenderColumn> ChunkRenderer::getRenderColumn(RenderLayer layer, int x, int z)
 {
 	// Returns chunk column for layer and pos
-	ChunkRenderContainer* column = getColumnContainer(layer);
-	auto it = column->columnsMap.find(getColumnIndex(x, z));
-	return it != column->columnsMap.end() ? it->second : nullptr;
+	ChunkRenderContainer& column = getColumnContainer(layer);
+	auto it = column.columnsMap.find(getColumnIndex(x, z));
+	return it != column.columnsMap.end() ? it->second : nullptr;
 }
 
 void ChunkRenderer::configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilder * builder, VertexArray * vertexArray)
