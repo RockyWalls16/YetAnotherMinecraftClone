@@ -79,24 +79,31 @@ void GameRenderer::renderGame()
 	glEnable(GL_BLEND);
 	worldRenderer->render(RenderLayer::RL_TRANSPARENT);
 
+	// Unbind framebuffer
 	frameBuffer->unbind();
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	worldRenderer->render(RenderLayer::RL_PRE_PP);
+	
 	// Disable wireframe
 	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	glDisable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	ShaderCache::testPostShader->use();
+
+	ShaderCache::postShader->use();
 	frameBuffer->bindTexture(0);
+	frameBuffer->bindTexture(1);
+	frameBuffer->bindTexture(2);
+	frameBuffer->bindTexture(3);
 	frameBuffer->drawOverlay();
 
 	fvao->render2D(4, 28);
 	//coords->render2D(4, 58);
 
-	//checkGLError("Frame");
+	checkGLError("Frame");
 
 	windowManager->swapBuffers();
 	
@@ -138,8 +145,11 @@ int GameRenderer::initGameRenderer()
 		glEnable(GL_FRAMEBUFFER_SRGB);
 
 		frameBuffer = FrameBuffer::makeFBO();
-		frameBuffer->attachColorTexture(width, height);
-		//frameBuffer->attachDepthTexture(width, height);
+		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
+		frameBuffer->attachColorTexture(width, height, 1, GL_RGB16F, GL_RGB, GL_FLOAT); // Normals buffer
+		frameBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
+		frameBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
+		frameBuffer->attachDepthBuffer(width, height);
 		frameBuffer->checkAndUnbind();
 
 		worldRenderer = new WorldRenderer(Game::getInstance().getWorld());
@@ -158,18 +168,21 @@ void GameRenderer::onResize(int width, int height)
 	if(width > 0 && height > 0)
 	{
 		glViewport(0, 0, width, height);
+		frameWidth = width;
+		frameHeight = height;
 
 		// Update matrices
 		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
 		gameCamera->setCameraPerspective(70.0F, width, height);
 		
+		ShaderCache::postShader->onResize(width, height);
+
 		if (frameBuffer)
 		{
 			frameBuffer->resizeAttachedTexture(width, height);
 		}
 	}
 }
-
 
 WindowManager* GameRenderer::getWindowManager()
 {

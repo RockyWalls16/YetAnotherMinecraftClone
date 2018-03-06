@@ -20,7 +20,7 @@ class ShaderCache
 {
 public:
 	static StaticShader* blockShader;
-	static PostProcessShader* testPostShader;
+	static PostProcessShader* postShader;
 	static Shader2D* shader2d;
 	static SkyShader* skyShader;
 	static UnlitShader* unlitShader;

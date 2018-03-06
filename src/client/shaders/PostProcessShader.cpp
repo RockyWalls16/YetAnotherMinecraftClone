@@ -1,9 +1,19 @@
 #include "client/shaders/PostProcessShader.h"
+#include <client/render/GameRenderer.h>
 #include <util/GLHeader.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 void PostProcessShader::use()
 {
 	Shader::use();
+
+	glm::vec3 sunDir = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
+	glUniform3f(uniformSunDirLocation, sunDir.x, sunDir.y, sunDir.z);
+
+	Camera* camera = GameRenderer::getInstance().getGameCamera();
+	glm::vec3 camPos = camera->getLocation();
+	glUniform3f(uniformCameraPosLocation, camPos.x, camPos.y, camPos.z);
 }
 
 void PostProcessShader::stop()
@@ -11,8 +21,39 @@ void PostProcessShader::stop()
 	Shader::stop();
 }
 
+void PostProcessShader::onResize(int width, int height)
+{
+	Shader::use();
+
+	glUniform2f(screenSizeUniformLocation, width, height);
+	glUniform2f(pixelSizeUniformLocation, 1 / (float) width, 1 / (float) height);
+}
+
 void PostProcessShader::bindAttributesAndUniforms()
 {
+	Shader::use();
+
 	bindAttribute(0, "aPos");
 	bindAttribute(1, "aTex");
+
+	bindUniformLocation("screenSize", &screenSizeUniformLocation);
+	bindUniformLocation("pixelSize", &pixelSizeUniformLocation);
+
+	bindUniformLocation("uSunDir", &uniformSunDirLocation);
+	bindUniformLocation("uCameraPos", &uniformCameraPosLocation);
+
+	// Set G Buffer textures
+	int positionGBuffer;
+	int normalGBuffer;
+	int albedoGBuffer;
+	int lightInfoGBuffer;
+	bindUniformLocation("gPosition", &positionGBuffer);
+	bindUniformLocation("gNormal", &normalGBuffer);
+	bindUniformLocation("gAlbedo", &albedoGBuffer);
+	bindUniformLocation("gLightInfo", &lightInfoGBuffer);
+
+	glUniform1i(positionGBuffer, 0);
+	glUniform1i(normalGBuffer, 1);
+	glUniform1i(albedoGBuffer, 2);
+	glUniform1i(lightInfoGBuffer, 3);
 }

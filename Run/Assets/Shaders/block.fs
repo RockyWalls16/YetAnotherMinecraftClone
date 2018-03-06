@@ -1,6 +1,9 @@
 #version 330 core
 
-out vec4 gl_Color;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gAlbedo;
+layout (location = 3) out vec3 gLightInfo;
 
 in vec3 outFragPos;
 in vec3 outColor;
@@ -8,10 +11,7 @@ in vec3 outNormal;
 in vec3 outRawNormal;
 in vec2 outAtlasPos;
 
-in vec3 toLight;
-in vec3 toCamera;
-
-uniform sampler2D albedo;
+uniform sampler2D albedoMap;
 uniform sampler2D specularMap;
 
 uniform vec2 uAtlasCellSize;
@@ -40,20 +40,16 @@ void main()
 	float vPos = mod(coords.y, 1);
 	vec2 texCoords = vec2(uPos * uAtlasCellSize.x + outAtlasPos.x, vPos * uAtlasCellSize.y + outAtlasPos.y);
 	
-	// Diffuse light
-	vec3 unitNormal = normalize(outNormal);
-	vec3 unitToLight = normalize(toLight);
-	float diffuse = max(dot(unitNormal, unitToLight), 0.2);
-
 	// Specular
-	vec3 unitToCamera = normalize(toCamera);
-	vec3 reflectDir = reflect(-unitToLight, unitNormal);
+	//vec3 unitToCamera = normalize(toCamera);
+	//vec3 reflectDir = reflect(-unitToLight, unitNormal);
 	
-	vec4 specTex = texture(specularMap, texCoords);
-    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specTex.r * 255.0);
-	vec3 specular = specTex.g * specAmount * vec3(1.0, 1.0, 1.0);  
-	
-	// Final color
-	vec4 texColor = texture(albedo, texCoords);
-    gl_Color = diffuse * texColor * vec4(outColor, 1.0) + vec4(specular, 0.0);
+	//vec4 specTex = texture(specularMap, texCoords);
+    //float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specTex.r * 255.0);
+	//vec3 specular = specTex.g * specAmount * vec3(1.0, 1.0, 1.0);  
+
+	gPosition = outFragPos;
+	gNormal = normalize(outNormal);
+	gAlbedo = texture(albedoMap, texCoords);
+	gLightInfo = texture(specularMap, texCoords).rgb;
 } 

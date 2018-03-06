@@ -55,7 +55,7 @@ int WindowManager::initWindow()
 	// Enable vsync
 	glfwSwapInterval(vsync);
 
-	glClearColor(0.0F, 0.2F, 0.5F, 1.0F);
+	glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 
 	return 0;
 }

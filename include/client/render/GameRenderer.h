@@ -16,12 +16,17 @@
 enum RenderLayer
 {
 	RL_OPAQUE,
-	RL_TRANSPARENT
+	RL_TRANSPARENT,
+	RL_PRE_PP,
+	RL_POST_PP
 };
 
 class GameRenderer
 {
 private:
+	int frameWidth;
+	int frameHeight;
+
 	WindowManager* windowManager;
 	Camera* gameCamera;
 	WorldRenderer* worldRenderer;

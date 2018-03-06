@@ -25,10 +25,8 @@ void StaticShader::bindAttributesAndUniforms()
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);
 	bindUniformLocation("uNormalMat", &uniformNormalLocation);
-	bindUniformLocation("uCameraPos", &uniformCameraPos);
-	bindUniformLocation("uSunDir", &uniformSunDir);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
-	bindUniformLocation("albedo", &uniformAlbedoTexture);
+	bindUniformLocation("albedoMap", &uniformAlbedoTexture);
 	bindUniformLocation("specularMap", &uniformSpecularTexture);
 
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
@@ -41,14 +39,7 @@ void StaticShader::use()
 	Shader::use();
 
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
-	
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewProjMatrix()));
-	
-	glm::vec3 camPos = camera->getLocation();
-	glUniform3f(uniformCameraPos, camPos.x, camPos.y, camPos.z);
-
-	glm::vec3 sunDir = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
-	glUniform3f(uniformSunDir, sunDir.x, sunDir.y, sunDir.z);
 }
 
 void StaticShader::stop()

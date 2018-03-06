@@ -76,42 +76,38 @@ FrameBuffer::~FrameBuffer()
 	glDeleteRenderbuffers(1, &rbo);
 }
 
-void FrameBuffer::attachTexture(int type, int width, int height)
+void FrameBuffer::attachTexture(int type, int width, int height, int internalFormat, int pixelFormat, int dataType)
 {
 	bind();
-
-	int internalFormat = GL_RGB;
-	int pixelDataFormat = GL_RGB;
 
 	// Handle depth buffer
 	if (type == GL_DEPTH_ATTACHMENT)
 	{
-		internalFormat = pixelDataFormat = GL_DEPTH_COMPONENT;
+		internalFormat = pixelFormat = GL_DEPTH_COMPONENT;
 	}
 
 	// Load texture and register it as attached
-	Texture* texture = TextureLoader::createTexture(NULL, width, height, internalFormat, pixelDataFormat, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+	Texture* texture = TextureLoader::createTexture(NULL, width, height, internalFormat, pixelFormat, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, dataType);
 	AttachedTexture* attachedTexture = new AttachedTexture(texture, type);
 	attachedTextures.push_back(attachedTexture);
 
 
 	// Attach it
 	glFramebufferTexture2D(GL_FRAMEBUFFER, type, GL_TEXTURE_2D, texture->getTextureId(), 0);
+}
 
+void FrameBuffer::attachColorTexture(int width, int height, int colorIndex, int internalType, int pixelFormat, int dataType)
+{
+	attachTexture(GL_COLOR_ATTACHMENT0 + colorIndex, width, height, internalType, pixelFormat, dataType);
+	attachedColors.push_back(GL_COLOR_ATTACHMENT0 + colorIndex);
+}
+
+void FrameBuffer::attachDepthBuffer(int width, int height)
+{
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-}
-
-void FrameBuffer::attachColorTexture(int width, int height, int colorIndex)
-{
-	attachTexture(GL_COLOR_ATTACHMENT0 + colorIndex, width, height);
-}
-
-void FrameBuffer::attachDepthTexture(int width, int height)
-{
-	attachTexture(GL_DEPTH_ATTACHMENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
 }
 
 void FrameBuffer::resizeAttachedTexture(int width, int height)
@@ -122,11 +118,12 @@ void FrameBuffer::resizeAttachedTexture(int width, int height)
 	}
 
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 }
 
 void FrameBuffer::bindTexture(int attachedTextureId)
 {
+	glActiveTexture(GL_TEXTURE0 + attachedTextureId);
 	glBindTexture(GL_TEXTURE_2D, attachedTextures[attachedTextureId]->texture->getTextureId());
 }
 
@@ -135,8 +132,18 @@ void FrameBuffer::drawOverlay()
 	screenQuad->drawEBO(6, 0, GL_TRIANGLES, false); // Draw fbo overlay
 }
 
+void FrameBuffer::blitFrameBuffer(int width, int height)
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferId);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+	glBlitFramebuffer(0, height, width, 0, 0, height, width, 0, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void FrameBuffer::checkAndUnbind()
 {
+	glDrawBuffers(attachedColors.size(), attachedColors.data());
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		Error("FrameBuffer is not complete");

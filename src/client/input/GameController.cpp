@@ -112,12 +112,6 @@ void GameController::processInput()
 	{
 		Game::getInstance().closeGame();
 	}
-	
-	// Test key
-	if (F9_KEY->isPressed())
-	{
-		
-	}
 
 	if (LEFT_KEY->isPressed())
 	{
@@ -152,7 +146,7 @@ void GameController::processInput()
 	}
 
 	// Reload shaders
-	if (F12_KEY->isPressed())
+	if (F9_KEY->isPressed())
 	{
 		ShaderCache::initShaderCache();
 	}
