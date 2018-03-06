@@ -136,7 +136,7 @@ void FrameBuffer::blitFrameBuffer(int width, int height)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-	glBlitFramebuffer(0, height, width, 0, 0, height, width, 0, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

@@ -10,15 +10,10 @@ out vec3 outNormal;
 out vec3 outRawNormal;
 out vec2 outAtlasPos;
 
-out vec3 toLight;
-out vec3 toCamera;
-
-uniform float uTime;
 uniform mat4 uModel;
 uniform mat4 uViewMat;
 uniform mat4 uViewProj;
 uniform mat3 uNormalMat;
-
 
 void main()
 {
@@ -27,9 +22,8 @@ void main()
 	outFragPos = worldPosition.xyz;
 	gl_Position = uViewProj * worldPosition;
 
-	outNormal = uNormalMat * aNormal;
+	outNormal = normalize(uNormalMat * aNormal);
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;
-
 }

@@ -21,7 +21,10 @@ void UnlitShader::use()
 
 void UnlitShader::bindAttributesAndUniforms()
 {
+	Shader::use();
+
 	bindAttribute(0, "aPos");
+	bindAttribute(1, "aColor");
 
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);

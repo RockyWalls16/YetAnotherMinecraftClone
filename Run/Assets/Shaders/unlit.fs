@@ -2,8 +2,9 @@
 
 out vec4 gl_Color;
 
+in vec4 outColor;
 
 void main()
 {
-    gl_Color = vec4(1.0, 0.0, 1.0, 1.0);
+    gl_Color = outColor;
 } 

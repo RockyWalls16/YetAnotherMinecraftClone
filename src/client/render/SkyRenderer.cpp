@@ -17,7 +17,6 @@ void SkyRenderer::render()
 {
 	ShaderCache::skyShader->use();
 	skySphere->setTranslate(GameRenderer::getInstance().getGameCamera()->getLocation());
-	//skySphere->scale(glm::vec3(FAR_PLANE - 1, FAR_PLANE - 1, FAR_PLANE - 1));
 	skySphere->drawVAO(skySphereVertexAmount, 0, GL_TRIANGLE_STRIP);
 }
 
@@ -59,7 +58,7 @@ void SkyRenderer::createSphere(int lats, int longs)
 	skySphere->disableNormals();
 	skySphere->addVBO(vertices, vertexAmount * sizeof(float), GL_STATIC_DRAW);
 	skySphere->assignPositionAttrib(0, 0, sizeof(float) * 3);
-	skySphere->scale(glm::vec3(FAR_PLANE - 1, FAR_PLANE - 1, FAR_PLANE - 1));
+	skySphere->scale(glm::vec3(FAR_PLANE - 10, FAR_PLANE - 10, FAR_PLANE - 10));
 	
 	skySphereVertexAmount = vertexAmount;
 }

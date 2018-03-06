@@ -55,6 +55,11 @@ float MathUtil::lessDecimal(float value, float decimal)
 	return round(value * power) / power;
 }
 
+float MathUtil::lerp(float start, float end, float time)
+{
+	return (start + time * (end - start));
+}
+
 int MathUtil::getChunkTilePosFromWorld(int pos)
 {
 	if (pos >= 0)

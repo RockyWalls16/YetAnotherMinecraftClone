@@ -45,15 +45,10 @@ void Camera::updateCameraRender()
 	}
 
 	// Calculate matrices
-	viewMatrix = glm::mat4(1.0F);
-	viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.x), xAxis);
-	viewMatrix = glm::rotate(viewMatrix, glm::radians(rotation.y), yAxis);
-	viewMatrix = glm::translate(viewMatrix, glm::vec3(-location.x, -location.y, -location.z));
+	viewMatrix = glm::lookAt(location, location + forwardVector, upVector);
 	viewProjMatrix = projectionMatrix * viewMatrix;
 
 	Frustum::computePlanes(*this);
-
-	cameraRay.tick();
 }
 
 void Camera::updateVectors()

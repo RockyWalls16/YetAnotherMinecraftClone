@@ -21,7 +21,7 @@ void CameraRay::tick()
 		ShaderCache::unlitShader->use();
 
 		cubeHover->setIdentity();
-		cubeHover->translate(glm::vec3(lookingBlock.blockInfo->x, lookingBlock.blockInfo->y, lookingBlock.blockInfo->z));
+		cubeHover->translate(glm::vec3(lookingBlock.blockInfo->x + 0.5F, lookingBlock.blockInfo->y + 0.5F, lookingBlock.blockInfo->z + 0.5F));
 
 		glLineWidth(2.0F);
 		cubeHover->drawVAO(48, 0, GL_LINES);
@@ -85,88 +85,137 @@ void CameraRay::createCubeHoverMesh()
 	float vertices[] =
 	{
 		// Top face
-		0.0F, 1.0F, 0.0F,
-		1.0F, 1.0F, 0.0F,
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 0.0F,
-		1.0F, 1.0F, 1.0F,
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 1.0F,
-		0.0F, 1.0F, 1.0F,
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 1.0F, 1.0F,
-		0.0F, 1.0F, 0.0F,
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
 		// Bottom face
-		0.0F, 0.0F, 0.0F,
-		1.0F, 0.0F, 0.0F,
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 0.0F, 0.0F,
-		1.0F, 0.0F, 1.0F,
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 0.0F, 1.0F,
-		0.0F, 0.0F, 1.0F,
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 0.0F, 1.0F,
-		0.0F, 0.0F, 0.0F,
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
 		// X- face
-		0.0F, 0.0F, 0.0F,
-		0.0F, 1.0F, 0.0F,
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 1.0F, 0.0F,
-		0.0F, 1.0F, 1.0F,
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 1.0F, 1.0F,
-		0.0F, 0.0F, 1.0F,
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 0.0F, 1.0F,
-		0.0F, 0.0F, 0.0F,
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
 		// X+ face
-		1.0F, 0.0F, 0.0F,
-		1.0F, 1.0F, 0.0F,
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 0.0F,
-		1.0F, 1.0F, 1.0F,
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 1.0F,
-		1.0F, 0.0F, 1.0F,
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 0.0F, 1.0F,
-		1.0F, 0.0F, 0.0F,
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
 		// Z- face
-		0.0F, 0.0F, 0.0F,
-		0.0F, 1.0F, 0.0F,
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 1.0F, 0.0F,
-		1.0F, 1.0F, 0.0F,
+		-0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 0.0F,
-		1.0F, 0.0F, 0.0F,
+		0.5F, 0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 0.0F, 0.0F,
-		0.0F, 0.0F, 0.0F,
+		0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, -0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
 		// Z+ face
-		0.0F, 0.0F, 1.0F,
-		0.0F, 1.0F, 1.0F,
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		0.0F, 1.0F, 1.0F,
-		1.0F, 1.0F, 1.0F,
+		-0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 1.0F, 1.0F,
-		1.0F, 0.0F, 1.0F,
+		0.5F, 0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 
-		1.0F, 0.0F, 1.0F,
-		0.0F, 0.0F, 1.0F,
+		0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
+		-0.5F, -0.5F, 0.5F, //P
+		1.0F, 1.0F, 1.0F, 1.0F, // C
 	};
 
 	cubeHover = VertexArray::makeVAO();
 	cubeHover->disableNormals();
-	cubeHover->addVBO(vertices, 144 * sizeof(float), GL_STATIC_DRAW);
-	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 3);
+	cubeHover->addVBO(vertices, 672 * sizeof(float), GL_STATIC_DRAW);
+	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 7);
+	cubeHover->assignRGBAAttrib(0, 1, sizeof(float) * 7, (void*) (sizeof(float) * 3));
 }
 
 RaycastResult::RaycastResult(BlockAABB * blockInfo, int x, int y, int z) : blockInfo(blockInfo), nX(x), nY(y), nZ(z) {}

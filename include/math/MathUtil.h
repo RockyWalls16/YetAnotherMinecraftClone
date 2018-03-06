@@ -23,6 +23,8 @@ public:
 
 	static float lessDecimal(float value, float decimal);
 
+	static float lerp(float start, float end, float time);
+
 	static int MathUtil::getChunkTilePosFromWorld(int pos);
 };
 

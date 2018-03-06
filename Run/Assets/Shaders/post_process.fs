@@ -18,15 +18,16 @@ const float ambiant = 0.1F;
 
 void main()
 {
-	vec3 fragPos = texture(gPosition, outTex).rgb;
-    vec3 normal = texture(gNormal, outTex).rgb;
     vec4 albedo = texture(gAlbedo, outTex);
-	vec3 lightInfo = texture(gLightInfo, outTex).rgb;
 
 	if(albedo.a == 0.0)
 	{
 		discard;
 	}
+
+	vec3 lightInfo = texture(gLightInfo, outTex).rgb;
+	vec3 fragPos = texture(gPosition, outTex).rgb;
+    vec3 normal = texture(gNormal, outTex).rgb;
 
 	// Diffuse
 	vec3 unitToLight = normalize(-uSunDir);
@@ -39,5 +40,6 @@ void main()
     float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
 	vec3 specular = lightInfo.g * specAmount * vec3(1.0, 1.0, 1.0);  
 
-	gl_Color = vec4(albedo.rgb * diffuse + specular, albedo.a);
+	//gl_Color = vec4(albedo.rgb * diffuse + specular, albedo.a);
+	gl_Color = vec4(albedo.rgb, 1.0);
 } 
