@@ -47,13 +47,16 @@ void PostProcessShader::bindAttributesAndUniforms()
 	int normalGBuffer;
 	int albedoGBuffer;
 	int lightInfoGBuffer;
+	int depthGBuffer;
 	bindUniformLocation("gPosition", &positionGBuffer);
 	bindUniformLocation("gNormal", &normalGBuffer);
 	bindUniformLocation("gAlbedo", &albedoGBuffer);
 	bindUniformLocation("gLightInfo", &lightInfoGBuffer);
+	bindUniformLocation("gDepth", &depthGBuffer);
 
 	glUniform1i(positionGBuffer, 0);
 	glUniform1i(normalGBuffer, 1);
 	glUniform1i(albedoGBuffer, 2);
 	glUniform1i(lightInfoGBuffer, 3);
+	glUniform1i(depthGBuffer, 4);
 }

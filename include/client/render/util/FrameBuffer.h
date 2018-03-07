@@ -40,6 +40,7 @@ public:
 	void checkAndUnbind();
 	void attachTexture(int type, int width, int height, int internalFormat, int pixelFormat, int dataType = GL_UNSIGNED_BYTE);
 	void attachColorTexture(int width, int height, int colorIndex = 0, int internalType = GL_RGB, int pixelFormat = GL_RGB, int dataType = GL_UNSIGNED_BYTE);
+	void attachDepthTexture(int width, int height);
 	void attachDepthBuffer(int width, int height);
 	void resizeAttachedTexture(int width, int height);
 	void bindTexture(int attachedTextureId);

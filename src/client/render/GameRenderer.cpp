@@ -59,8 +59,9 @@ void GameRenderer::renderGame()
 	}
 	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
 
-	//frameBuffer->bind();
+	frameBuffer->bind();
 
+	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (wireframe)
 	{
@@ -74,40 +75,35 @@ void GameRenderer::renderGame()
 	worldRenderer->render(RenderLayer::RL_OPAQUE);
 	
 	// Transparent layer
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 	//worldRenderer->render(RenderLayer::RL_TRANSPARENT);
 
 	// Unbind framebuffer
-	//frameBuffer->unbind();
+	frameBuffer->unbind();
 
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Disable wireframe
 	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	//glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
-	/*ShaderCache::postShader->use();
+	ShaderCache::postShader->use();
 	frameBuffer->bindTexture(0);
 	frameBuffer->bindTexture(1);
 	frameBuffer->bindTexture(2);
 	frameBuffer->bindTexture(3);
+	frameBuffer->bindTexture(4);
 	frameBuffer->drawOverlay();
-
-	// Forward rendering
-	frameBuffer->blitFrameBuffer(frameWidth, frameHeight);
-
-	worldRenderer->render(RenderLayer::RL_PRE_PP);
-	gameCamera->getCameraRay().tick();
 
 	// UI
 
 	fvao->render2D(4, 28);
 	//coords->render2D(4, 58);
 
-	//checkGLError("Frame");*/
+	checkGLError("Frame");
 
 	windowManager->swapBuffers();
 	
@@ -132,6 +128,7 @@ int GameRenderer::initGameRenderer()
 
 		// Load Shaders
 		ShaderCache::initShaderCache();
+
 		gameCamera = new Camera();
 
 		// Set perspective view based on frame buffer size
@@ -155,7 +152,8 @@ int GameRenderer::initGameRenderer()
 		frameBuffer->attachColorTexture(width, height, 1, GL_RGB10_A2, GL_RGB, GL_FLOAT); // Normals buffer
 		frameBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
 		frameBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
-		frameBuffer->attachDepthBuffer(width, height);
+		frameBuffer->attachDepthTexture(width, height);
+		//frameBuffer->attachDepthBuffer(width, height);
 		frameBuffer->checkAndUnbind();
 
 		worldRenderer = new WorldRenderer(Game::getInstance().getWorld());

@@ -213,7 +213,7 @@ void CameraRay::createCubeHoverMesh()
 
 	cubeHover = VertexArray::makeVAO();
 	cubeHover->disableNormals();
-	cubeHover->addVBO(vertices, 672 * sizeof(float), GL_STATIC_DRAW);
+	cubeHover->addVBO(vertices, 336 * sizeof(float), GL_STATIC_DRAW);
 	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 7);
 	cubeHover->assignRGBAAttrib(0, 1, sizeof(float) * 7, (void*) (sizeof(float) * 3));
 }

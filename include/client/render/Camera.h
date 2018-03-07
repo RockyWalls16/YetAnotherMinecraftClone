@@ -16,6 +16,7 @@
 #define NEAR_PLANE 0.1F
 #define FAR_PLANE 1000.0F
 
+
 class Camera
 {
 private:

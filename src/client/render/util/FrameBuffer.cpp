@@ -73,18 +73,11 @@ FrameBuffer::~FrameBuffer()
 	}
 
 	glDeleteFramebuffers(1, &framebufferId);
-	glDeleteRenderbuffers(1, &rbo);
 }
 
 void FrameBuffer::attachTexture(int type, int width, int height, int internalFormat, int pixelFormat, int dataType)
 {
 	bind();
-
-	// Handle depth buffer
-	if (type == GL_DEPTH_ATTACHMENT)
-	{
-		internalFormat = pixelFormat = GL_DEPTH_COMPONENT;
-	}
 
 	// Load texture and register it as attached
 	Texture* texture = TextureLoader::createTexture(NULL, width, height, internalFormat, pixelFormat, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, dataType);
@@ -102,6 +95,11 @@ void FrameBuffer::attachColorTexture(int width, int height, int colorIndex, int 
 	attachedColors.push_back(GL_COLOR_ATTACHMENT0 + colorIndex);
 }
 
+void FrameBuffer::attachDepthTexture(int width, int height)
+{
+	attachTexture(GL_DEPTH_ATTACHMENT, width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT);
+}
+
 void FrameBuffer::attachDepthBuffer(int width, int height)
 {
 	glGenRenderbuffers(1, &rbo);
@@ -117,8 +115,8 @@ void FrameBuffer::resizeAttachedTexture(int width, int height)
 		TextureLoader::reallocateTexture(attachedTex->texture, NULL, false, width, height);
 	}
 
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	//glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 }
 
 void FrameBuffer::bindTexture(int attachedTextureId)
