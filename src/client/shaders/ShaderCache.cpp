@@ -11,7 +11,8 @@
 
 std::vector<Shader*> ShaderCache::shaderCache;
 
-StaticShader* ShaderCache::blockShader = ShaderLoader::registerShader<StaticShader>("block");
+DeferredBlockShader* ShaderCache::deferredBlockShader = ShaderLoader::registerShader<DeferredBlockShader>("deferred_block");
+ForwardBlockShader* ShaderCache::forwardBlockShader = ShaderLoader::registerShader<ForwardBlockShader>("forward_block");
 PostProcessShader* ShaderCache::postShader = ShaderLoader::registerShader<PostProcessShader>("post_process");
 Shader2D* ShaderCache::shader2d = ShaderLoader::registerShader<Shader2D>("2d");
 SkyShader* ShaderCache::skyShader = ShaderLoader::registerShader<SkyShader>("skySphere");

@@ -69,9 +69,6 @@
     <ClCompile Include="src\client\shaders\ShaderLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\shaders\StaticShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\client\textures\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -163,6 +160,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\world\ChunkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\DeferredBlockShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\ForwardBlockShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -644,9 +647,6 @@
     <ClInclude Include="include\client\shaders\ShaderLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\client\shaders\StaticShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\client\textures\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -786,6 +786,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\sparsepp\spp_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\DeferredBlockShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\ForwardBlockShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

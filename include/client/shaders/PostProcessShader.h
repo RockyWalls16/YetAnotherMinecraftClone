@@ -1,5 +1,5 @@
 /*
-* StaticShader.h
+* DeferredBlockShader.h
 *
 *  Created on: 31 août 2017
 *      Author: Valentin

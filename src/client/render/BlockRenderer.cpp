@@ -29,7 +29,8 @@ void BlockRenderer::initBlockRenderer()
 	atlasCellW = (texW / ATLAS_COLUMNS) / (float) texW;
 	atlasCellH = (texH / ATLAS_ROWS) / (float) texH;
 
-	ShaderCache::blockShader->setAtlasCellSize(atlasCellW, atlasCellH);
+	ShaderCache::deferredBlockShader->setAtlasCellSize(atlasCellW, atlasCellH);
+	ShaderCache::forwardBlockShader->setAtlasCellSize(atlasCellW, atlasCellH);
 }
 
 void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, const shared_ptr<AirChunk>& chunk, Block* blockId, int x, int y, int z)

@@ -60,9 +60,8 @@ void GameRenderer::renderGame()
 	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
 
 	frameBuffer->bind();
-
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	if (wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -74,10 +73,6 @@ void GameRenderer::renderGame()
 	glDisable(GL_BLEND);
 	worldRenderer->render(RenderLayer::RL_OPAQUE);
 	
-	// Transparent layer
-	glEnable(GL_BLEND);
-	//worldRenderer->render(RenderLayer::RL_TRANSPARENT);
-
 	// Unbind framebuffer
 	frameBuffer->unbind();
 
@@ -88,8 +83,10 @@ void GameRenderer::renderGame()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	glDisable(GL_DEPTH_TEST);
 
+	worldRenderer->render(RenderLayer::RL_PRE_PP);
+
+	glDisable(GL_DEPTH_TEST);
 	ShaderCache::postShader->use();
 	frameBuffer->bindTexture(0);
 	frameBuffer->bindTexture(1);
@@ -97,13 +94,21 @@ void GameRenderer::renderGame()
 	frameBuffer->bindTexture(3);
 	frameBuffer->bindTexture(4);
 	frameBuffer->drawOverlay();
+	
+	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	frameBuffer->blitFrameBuffer(frameWidth, frameHeight);
+	gameCamera->getCameraRay().tick();
+	worldRenderer->render(RenderLayer::RL_TRANSPARENT);
+
 
 	// UI
 
+	glDisable(GL_DEPTH_TEST);
 	fvao->render2D(4, 28);
 	//coords->render2D(4, 58);
 
-	checkGLError("Frame");
+	//checkGLError("Frame");
 
 	windowManager->swapBuffers();
 	
@@ -136,16 +141,13 @@ int GameRenderer::initGameRenderer()
 		windowManager->getFramebufferSize(&width, &height);
 		onResize(width, height);
 
-		glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+		glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		// Linear color space
-		glEnable(GL_FRAMEBUFFER_SRGB);
 
 		frameBuffer = FrameBuffer::makeFBO();
 		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer

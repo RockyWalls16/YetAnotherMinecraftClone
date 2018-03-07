@@ -6,7 +6,7 @@
  */
 
 #include <util/Logger.h>
-#include <client/shaders/StaticShader.h>
+#include <client/shaders/Shader.h>
 #include <client/render/util/VertexArray.h>
 
 #include <glm/gtc/matrix_transform.hpp>

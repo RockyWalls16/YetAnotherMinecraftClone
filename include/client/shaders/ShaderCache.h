@@ -9,17 +9,19 @@
 #define CLIENT_SHADERS_SHADERCACHE_H_
 
 #include <client/shaders/Shader.h>
-#include <client/shaders/StaticShader.h>
+#include <client/shaders/DeferredBlockShader.h>
 #include <client/shaders/PostProcessShader.h>
 #include <client/shaders/SkyShader.h>
 #include <client/shaders/Shader2D.h>
 #include <client/shaders/UnlitShader.h>
+#include <client/shaders/ForwardBlockShader.h>
 #include <vector>
 
 class ShaderCache
 {
 public:
-	static StaticShader* blockShader;
+	static DeferredBlockShader* deferredBlockShader;
+	static ForwardBlockShader* forwardBlockShader;
 	static PostProcessShader* postShader;
 	static Shader2D* shader2d;
 	static SkyShader* skyShader;

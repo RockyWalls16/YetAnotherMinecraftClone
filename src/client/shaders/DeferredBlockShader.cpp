@@ -1,5 +1,5 @@
 /*
- * StaticShader.cpp
+ * DeferredBlockShader.cpp
  *
  *  Created on: 31 août 2017
  *      Author: Valentin
@@ -8,12 +8,12 @@
 #include <client/render/GameRenderer.h>
 #include <util/GLHeader.h>
 #include <util/Logger.h>
-#include <client/shaders/StaticShader.h>
+#include <client/shaders/DeferredBlockShader.h>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-void StaticShader::bindAttributesAndUniforms()
+void DeferredBlockShader::bindAttributesAndUniforms()
 {
 	Shader::use();
 
@@ -34,7 +34,7 @@ void StaticShader::bindAttributesAndUniforms()
 	glUniform1i(uniformSpecularTexture, 1);
 }
 
-void StaticShader::use()
+void DeferredBlockShader::use()
 {
 	Shader::use();
 
@@ -42,12 +42,12 @@ void StaticShader::use()
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewProjMatrix()));
 }
 
-void StaticShader::stop()
+void DeferredBlockShader::stop()
 {
 	Shader::stop();
 }
 
-void StaticShader::setAtlasCellSize(float cellW, float cellH)
+void DeferredBlockShader::setAtlasCellSize(float cellW, float cellH)
 {
 	Shader::use();
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
@@ -55,7 +55,7 @@ void StaticShader::setAtlasCellSize(float cellW, float cellH)
 	this->cellH = cellH;
 }
 
-void StaticShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
+void DeferredBlockShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix3fv(uniformNormalLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));

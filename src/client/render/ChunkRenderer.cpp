@@ -38,7 +38,14 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 		chunkDrawed = 0;
 	}
 
-	ShaderCache::blockShader->use();
+	if (renderLayer == RenderLayer::RL_OPAQUE)
+	{
+		ShaderCache::deferredBlockShader->use();
+	}
+	else
+	{
+		ShaderCache::forwardBlockShader->use();
+	}
 	TextureCache::blockTexture->bind();
 	TextureCache::blockSpecularTexture->bind(1);
 

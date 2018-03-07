@@ -97,7 +97,7 @@ void FrameBuffer::attachColorTexture(int width, int height, int colorIndex, int 
 
 void FrameBuffer::attachDepthTexture(int width, int height)
 {
-	attachTexture(GL_DEPTH_ATTACHMENT, width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT);
+	attachTexture(GL_DEPTH_ATTACHMENT, width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 }
 
 void FrameBuffer::attachDepthBuffer(int width, int height)

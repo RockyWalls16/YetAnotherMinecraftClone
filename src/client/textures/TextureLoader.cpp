@@ -48,11 +48,11 @@ Texture* TextureLoader::loadTexture(const std::string& path, bool useMipmap, int
 	}
 
 	int imagePixelFormat = GL_RGB;
-	int internalPixelFormat = GL_SRGB;
+	int internalPixelFormat = GL_RGB;
 	if(nrChannels == 4)
 	{
 		imagePixelFormat = GL_RGBA;
-		internalPixelFormat = GL_SRGB_ALPHA;
+		internalPixelFormat = GL_RGBA;
 	}
 	else if(nrChannels == 1)
 	{
@@ -114,7 +114,7 @@ Texture* TextureLoader::createTexture(void* data, int width, int height, int int
 void TextureLoader::reallocateTexture(Texture* texture, void* data, bool useMipmap, int width, int height, int dataType)
 {
 	texture->bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, texture->getTextureInternalFormat(), width, height, 0, texture->getTexturePixelDataFormat(), GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, texture->getTextureInternalFormat(), width, height, 0, texture->getTexturePixelDataFormat(), dataType, data);
 	
 	if (useMipmap)
 	{

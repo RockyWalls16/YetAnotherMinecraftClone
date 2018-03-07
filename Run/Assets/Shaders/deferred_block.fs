@@ -40,9 +40,8 @@ void main()
 	float vPos =  coords.y - floor(coords.y);
 	vec2 texCoords = vec2(uPos * uAtlasCellSize.x + outAtlasPos.x, vPos * uAtlasCellSize.y + outAtlasPos.y);
 
-
 	gPosition = outFragPos;
 	gNormal = outNormal;
-	gAlbedo = texture(albedoMap, texCoords);
+	gAlbedo = vec4(texture(albedoMap, texCoords).rgb, 1.0);
 	gLightInfo = texture(specularMap, texCoords).rgb;
 } 

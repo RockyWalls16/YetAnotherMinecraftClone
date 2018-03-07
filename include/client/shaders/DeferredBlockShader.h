@@ -1,17 +1,17 @@
 /*
- * StaticShader.h
+ * DeferredBlockShader.h
  *
  *  Created on: 31 août 2017
  *      Author: Valentin
  */
 
-#ifndef CLIENT_SHADERS_STATICSHADER_H_
-#define CLIENT_SHADERS_STATICSHADER_H_
+#ifndef CLIENT_SHADERS_DEFERREDBLOCKSHADER_H_
+#define CLIENT_SHADERS_DEFERREDBLOCKSHADER_H_
 
 #include <client/shaders/Shader.h>
 #include <string>
 
-class StaticShader : public Shader
+class DeferredBlockShader : public Shader
 {
 private:
 	int uniformModelLocation;
@@ -24,7 +24,7 @@ private:
 	float cellH;
 
 public:
-	StaticShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformNormalLocation(0), uniformAtlasCellSizeLocation(0), uniformAlbedoTexture(0), uniformSpecularTexture(0), cellW(1.0F), cellH(1.0F){}
+	DeferredBlockShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformNormalLocation(0), uniformAtlasCellSizeLocation(0), uniformAlbedoTexture(0), uniformSpecularTexture(0), cellW(1.0F), cellH(1.0F){}
 
 	virtual void use() override;
 	virtual void stop() override;
@@ -35,4 +35,4 @@ private:
 	virtual void bindAttributesAndUniforms() override;
 };
 
-#endif /* CLIENT_SHADERS_STATICSHADER_H_ */
+#endif /* CLIENT_SHADERS_DEFERREDBLOCKSHADER_H_ */
