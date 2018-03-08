@@ -70,20 +70,20 @@ shared_ptr<AirChunk> ChunkGenerator::generateChunk(shared_ptr<AirChunk> inputChu
 
 				if (wY < 46)
 				{
-					layers[y][layerIndex] = 12; // Water
+					layers[y][layerIndex] = 5; // Water
 				}
 
 				if (wY < height)
 				{
 					if (heightDiff == 1)
 					{
-						layers[y][layerIndex] = 11; // Grass
+						layers[y][layerIndex] = 3; // Grass
 
 						// Generate sand noise
 						noise2 = perlin.octaveNoise((rX + x) / 50.0F, (rZ + z) / 50.0F);
 						if (wY < 48 + noise2)
 						{
-							layers[y][layerIndex] = 9; // Sand
+							layers[y][layerIndex] = 4; // Sand
 						}
 					}
 					else if (heightDiff < 5)

@@ -125,9 +125,9 @@ void GameController::processInput()
 	if (RIGHT_KEY->isPressed())
 	{
 		selectedBlock++;
-		if (selectedBlock > 12)
+		if (selectedBlock >= Block::getBlockList().size())
 		{
-			selectedBlock = 12;
+			selectedBlock = Block::getBlockList().size() - 1;
 		}
 	}
 

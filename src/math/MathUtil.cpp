@@ -5,6 +5,7 @@
  *      Author: Valentin
  */
 
+#include <cstdlib>
 #include <math/MathUtil.h>
 
 #include <glm/vec3.hpp>
@@ -71,4 +72,20 @@ int MathUtil::getChunkTilePosFromWorld(int pos)
 		int i = pos % CHUNK_SIZE;
 		return i != 0 ? i + CHUNK_SIZE : 0;
 	}
+}
+
+int MathUtil::rand(int min, int max)
+{
+	return std::rand() % (max - min) + min;
+}
+
+
+float MathUtil::randF()
+{
+	return std::rand() / (float) RAND_MAX;
+}
+
+float MathUtil::randF(float min, float max)
+{
+	return (std::rand() / (float) RAND_MAX) * (max - min) + min;
 }

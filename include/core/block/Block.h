@@ -20,16 +20,10 @@ public:
 	static Block* AIR;
 	static Block* STONE;
 	static Block* DIRT;
-	static Block* PLANKS;
-	static Block* SLABS;
-	static Block* BRICKS;
-	static Block* TNT;
-	static Block* COBBLE;
-	static Block* BEDROCK;
-	static Block* SAND;
-	static Block* GRAVEL;
 	static Block* GRASS;
+	static Block* SAND;
 	static Block* WATER;
+	static Block* LEAVES;
 
 	Block(unsigned short id, int textureId);
 
@@ -46,6 +40,8 @@ public:
 	virtual RenderLayer getRenderLayer();
 
 	virtual AABB getHitbox(int x, int y, int z);
+
+	virtual AABB getRenderHitbox();
 
 	virtual bool canCollide();
 

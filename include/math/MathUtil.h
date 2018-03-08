@@ -10,6 +10,8 @@
 
 #include <glm/vec3.hpp>
 
+#define M_PI 3.14159265358979323846
+
 class MathUtil
 {
 public:
@@ -25,7 +27,13 @@ public:
 
 	static float lerp(float start, float end, float time);
 
-	static int MathUtil::getChunkTilePosFromWorld(int pos);
+	static int getChunkTilePosFromWorld(int pos);
+
+	static int rand(int min, int max);
+
+	static float randF();
+
+	static float randF(float min, float max);
 };
 
 #endif /* UTIL_MATHUTIL_H_ */

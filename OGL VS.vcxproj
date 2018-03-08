@@ -158,6 +158,7 @@
     <ClCompile Include="external\glm\detail\dummy.cpp" />
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
+    <ClCompile Include="include\util\Color.cpp" />
     <ClCompile Include="src\client\input\CameraRay.cpp" />
     <ClCompile Include="src\client\render\font\Font.cpp" />
     <ClCompile Include="src\client\input\GameController.cpp" />
@@ -181,8 +182,9 @@
     <ClCompile Include="src\client\shaders\Shader2D.cpp" />
     <ClCompile Include="src\client\shaders\ShaderCache.cpp" />
     <ClCompile Include="src\client\shaders\ShaderLoader.cpp" />
-    <ClCompile Include="src\client\shaders\SkyShader.cpp" />
+    <ClCompile Include="src\client\shaders\SkySphereShader.cpp" />
     <ClCompile Include="src\client\shaders\DeferredBlockShader.cpp" />
+    <ClCompile Include="src\client\shaders\StarShader.cpp" />
     <ClCompile Include="src\client\shaders\UnlitShader.cpp" />
     <ClCompile Include="src\client\textures\Texture.cpp" />
     <ClCompile Include="src\client\textures\TextureCache.cpp" />
@@ -388,8 +390,9 @@
     <ClInclude Include="include\client\shaders\Shader.h" />
     <ClInclude Include="include\client\shaders\ShaderCache.h" />
     <ClInclude Include="include\client\shaders\ShaderLoader.h" />
-    <ClInclude Include="include\client\shaders\SkyShader.h" />
+    <ClInclude Include="include\client\shaders\SkySphereShader.h" />
     <ClInclude Include="include\client\shaders\DeferredBlockShader.h" />
+    <ClInclude Include="include\client\shaders\StarShader.h" />
     <ClInclude Include="include\client\shaders\UnlitShader.h" />
     <ClInclude Include="include\client\textures\Texture.h" />
     <ClInclude Include="include\client\textures\TextureCache.h" />
@@ -397,6 +400,7 @@
     <ClInclude Include="include\core\block\Block.h" />
     <ClInclude Include="include\core\block\BlockAir.h" />
     <ClInclude Include="include\core\block\BlockGrass.h" />
+    <ClInclude Include="include\core\block\BlockLeaves.h" />
     <ClInclude Include="include\core\block\BlockWater.h" />
     <ClInclude Include="include\core\entity\Entity.h" />
     <ClInclude Include="include\core\world\AirChunk.h" />
@@ -408,6 +412,7 @@
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\math\AABB.h" />
     <ClInclude Include="include\math\Frustum.h" />
+    <ClInclude Include="include\util\Color.h" />
     <ClInclude Include="include\util\GLHeader.h" />
     <ClInclude Include="include\util\Logger.h" />
     <ClInclude Include="include\math\MathUtil.h" />

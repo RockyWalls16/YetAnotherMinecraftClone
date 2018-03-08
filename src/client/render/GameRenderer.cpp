@@ -60,6 +60,7 @@ void GameRenderer::renderGame()
 	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
 
 	frameBuffer->bind();
+	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (wireframe)
@@ -148,6 +149,7 @@ int GameRenderer::initGameRenderer()
 		glCullFace(GL_BACK);
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_PROGRAM_POINT_SIZE);
 
 		frameBuffer = FrameBuffer::makeFBO();
 		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
@@ -179,7 +181,7 @@ void GameRenderer::onResize(int width, int height)
 
 		// Update matrices
 		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
-		gameCamera->setCameraPerspective(70.0F, width, height);
+		gameCamera->setCameraPerspective(60.0F, width, height);
 		
 		ShaderCache::postShader->onResize(width, height);
 

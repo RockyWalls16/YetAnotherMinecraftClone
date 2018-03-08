@@ -102,7 +102,7 @@ short BlockRenderer::getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk,
 	return 0;
 }
 
-void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, int x, int y, int z, int sX, int sY, int sZ, Side faceSide)
+void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, AABB& renderBox, int x, int y, int z, int sX, int sY, int sZ, Side faceSide)
 {
 	static unsigned int indices[] =
 	{
@@ -122,9 +122,9 @@ void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, int
 	for(int i = 0; i < DATA_PER_VERTEX; i += VERTEX_STRIDE)
 	{
 		// Positions
-		cubePos[i] = vertices[verticeOffset + j] * sX + x;
-		cubePos[i + 1] = vertices[verticeOffset + j + 1] * sY + y;
-		cubePos[i + 2] = vertices[verticeOffset + j + 2] * sZ + z;
+		cubePos[i] = vertices[verticeOffset + j] * sX * renderBox.endPos.x + x + renderBox.startPos.x;
+		cubePos[i + 1] = vertices[verticeOffset + j + 1] * sY * renderBox.endPos.y + y + renderBox.startPos.y;
+		cubePos[i + 2] = vertices[verticeOffset + j + 2] * sZ * renderBox.endPos.z + z + renderBox.startPos.z;
 
 		// Colors
 		cubePos[i + 3] = vertices[verticeOffset + j + 3];

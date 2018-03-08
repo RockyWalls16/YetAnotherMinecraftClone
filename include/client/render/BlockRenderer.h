@@ -36,7 +36,7 @@ public:
 
 	static short getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Side side, int x, int y, int z);
 
-	static void renderFace(VertexBuilder* vertexBuilder, Block* blockId, int x, int y, int z, int sX, int sY, int sZ, Side faceSide);
+	static void renderFace(VertexBuilder* vertexBuilder, Block* blockId, AABB& renderBox, int x, int y, int z, int sX, int sY, int sZ, Side faceSide);
 };
 
 #endif /* CLIENT_RENDER_BLOCKRENDERER_H_ */

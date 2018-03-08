@@ -20,6 +20,10 @@ public:
 		return RenderLayer::RL_TRANSPARENT;
 	}
 
+	virtual AABB getRenderHitbox() override
+	{
+		return AABB(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 0.8F, 1.0F));
+	}
 
 	virtual bool isSimpleBlock() override { return false; };
 };

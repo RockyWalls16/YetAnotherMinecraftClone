@@ -32,7 +32,7 @@ private:
 	ChunkGeneratorQueue chunkGeneratorQueue;
 	std::vector<shared_ptr<AirChunk>> deadChunkQueue;
 	std::vector<Entity*> entityList;
-	long time;
+	long time = 0;
 
 public:
 	World();
@@ -57,6 +57,7 @@ public:
 	ChunkGenerator& getChunkGenerator();
 
 	long getTime();
+	float World::getDayPercent();
 
 	void notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type);
 

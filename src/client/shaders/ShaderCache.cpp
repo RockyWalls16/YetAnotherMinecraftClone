@@ -15,7 +15,8 @@ DeferredBlockShader* ShaderCache::deferredBlockShader = ShaderLoader::registerSh
 ForwardBlockShader* ShaderCache::forwardBlockShader = ShaderLoader::registerShader<ForwardBlockShader>("forward_block");
 PostProcessShader* ShaderCache::postShader = ShaderLoader::registerShader<PostProcessShader>("post_process");
 Shader2D* ShaderCache::shader2d = ShaderLoader::registerShader<Shader2D>("2d");
-SkyShader* ShaderCache::skyShader = ShaderLoader::registerShader<SkyShader>("skySphere");
+SkySphereShader* ShaderCache::skyShader = ShaderLoader::registerShader<SkySphereShader>("skySphere");
+StarShader* ShaderCache::starShader = ShaderLoader::registerShader<StarShader>("stars");
 UnlitShader* ShaderCache::unlitShader = ShaderLoader::registerShader<UnlitShader>("unlit");
 
 void ShaderCache::initShaderCache()

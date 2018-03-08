@@ -216,6 +216,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 				Block* block = Block::getBlock(ch->getBlockAt(x, y, z));
 				if (block->isVisible()) // Check block is visible
 				{
+					AABB blockAABB = block->getRenderHitbox();
 					int renderLayer = block->getRenderLayer();
 					for (side = 0; side < 6; side++) // For eachs side
 					{
@@ -261,7 +262,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 								}
 								mainLoopTB:
 
-								BlockRenderer::renderFace(builders[renderLayer], block, x, y, z, x2 - x, 1, width, (Side) side);
+								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, x2 - x, 1, width, (Side) side);
 							}
 							else if (side == Side::EAST || side == Side::WEST)
 							{
@@ -275,6 +276,12 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 											if (!mask[x][y2][z2][side] && ch->getBlockAt(x, y2, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side) side))
 											{
 												mask[x][y2][z2][side] = true;
+
+												// Block is not full height, no need to check for further Y neighbours
+												if (blockAABB.startPos.y != 0.0 || blockAABB.endPos.y != 1.0)
+												{
+													break;
+												}
 											}
 											else
 											{
@@ -303,7 +310,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 								}
 								mainLoopNS:
 
-								BlockRenderer::renderFace(builders[renderLayer], block, x, y, z, 1, y2 - y, width, (Side)side);
+								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, 1, y2 - y, width, (Side)side);
 							}
 							else if (side == Side::NORTH || side == Side::SOUTH)
 							{
@@ -317,6 +324,12 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 											if (!mask[x2][y2][z][side] && ch->getBlockAt(x2, y2, z) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side) side))
 											{
 												mask[x2][y2][z][side] = true;
+
+												// Block is not full height, no need to check for further Y neighbours
+												if (blockAABB.startPos.y != 0.0 || blockAABB.endPos.y != 1.0)
+												{
+													break;
+												}
 											}
 											else
 											{
@@ -345,7 +358,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 								}
 								mainLoopWE:
 
-								BlockRenderer::renderFace(builders[renderLayer], block, x, y, z, x2 - x, height, 1, (Side)side);
+								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, x2 - x, height, 1, (Side)side);
 							}
 						}
 					}

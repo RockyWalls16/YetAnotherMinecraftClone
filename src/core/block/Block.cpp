@@ -2,6 +2,7 @@
 #include <core/block/BlockAir.h>
 #include <core/block/BlockGrass.h>
 #include <core/block/BlockWater.h>
+#include <core/block/BlockLeaves.h>
 #include <client/render/GameRenderer.h>
 #include <math/AABB.h>
 
@@ -10,16 +11,10 @@ std::vector<Block*> Block::blockList = std::vector<Block*>();
 Block* Block::AIR = new BlockAir(0);
 Block* Block::STONE = new Block(1, 1);
 Block* Block::DIRT = new Block(2, 2);
-Block* Block::PLANKS = new Block(3, 4);
-Block* Block::SLABS = new Block(4, 5);
-Block* Block::BRICKS = new Block(5, 7);
-Block* Block::TNT = new Block(6, 8);
-Block* Block::COBBLE = new Block(7, 16);
-Block* Block::BEDROCK = new Block(8, 17);
-Block* Block::SAND = new Block(9, 18);
-Block* Block::GRAVEL = new Block(10, 19);
-Block* Block::GRASS = new BlockGrass(11);
-Block* Block::WATER = new BlockWater(12, 205);
+Block* Block::GRASS = new BlockGrass(3);
+Block* Block::SAND = new Block(4, 18);
+Block* Block::WATER = new BlockWater(5, 205);
+Block* Block::LEAVES = new BlockLeaves(6, 52);
 
 Block::Block(unsigned short id, int textureId)
 {
@@ -71,6 +66,11 @@ RenderLayer Block::getRenderLayer()
 AABB Block::getHitbox(int x, int y, int z)
 {
 	return AABB(glm::vec3(x, y, z), glm::vec3(1.0F + x, 1.0F + y, 1.0F + z));
+}
+
+AABB Block::getRenderHitbox()
+{
+	return AABB(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
 }
 
 bool Block::canCollide()

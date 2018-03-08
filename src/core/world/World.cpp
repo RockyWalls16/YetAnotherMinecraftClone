@@ -17,6 +17,7 @@
 World::World() : chunkGenerator(ChunkGenerator(*this)), chunkGeneratorQueue(*this)
 {
 	chunkGeneratorQueue.start();
+	time = 7050;
 }
 
 void World::tick()
@@ -201,4 +202,10 @@ void World::notifySingleNeighbour(const shared_ptr<AirChunk>& sender, const shar
 long World::getTime()
 {
 	return time;
+}
+
+float World::getDayPercent()
+{
+	float totalPercent = (time / (float)DAY_DURATION);
+	return totalPercent - (int) totalPercent;
 }

@@ -129,9 +129,6 @@
     <ClCompile Include="src\client\render\SkyRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\shaders\SkyShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\world\ChunkColumn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -166,6 +163,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\client\shaders\ForwardBlockShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\SkySphereShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\StarShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\util\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -725,9 +731,6 @@
     <ClInclude Include="include\client\render\SkyRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\client\shaders\SkyShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\core\world\ChunkColumn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -792,6 +795,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\shaders\ForwardBlockShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\block\BlockLeaves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\SkySphereShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\StarShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
