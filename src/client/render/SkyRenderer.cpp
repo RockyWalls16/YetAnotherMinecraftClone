@@ -11,7 +11,7 @@
 #include <math/MathUtil.h>
 #include <client/textures/TextureLoader.h>
 
-#define STARS_AMOUNT 4000
+#define STARS_AMOUNT 20000
 
 
 // Sundown start at 19H00 -> fade to orange
@@ -38,7 +38,7 @@
 #define SKY_DAY_TOP Color(0.5F, 0.65F, 1.0F)
 #define SKY_DAY_BOTTOM Color(0.71F, 0.81F, 1.0F)
 
-SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer)
+SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer), sunLight(Color(1.0F, 0.0F, 1.0F), glm::vec3(-0.75F, -1.0F, -0.35F))
 {
 	starTexture = TextureLoader::loadTexture("star");
 	createSphere(6, 6);
@@ -49,7 +49,6 @@ void SkyRenderer::render()
 {
 	float dayPercent = worldRenderer->getWorld()->getDayPercent();
 
-	//glDisable(GL_DEPTH_TEST);
 	ShaderCache::skyShader->use();
 
 	// Set sky color
@@ -110,7 +109,6 @@ void SkyRenderer::render()
 	starField->drawVAO(STARS_AMOUNT, 0, GL_POINTS);
 
 	glDisable(GL_BLEND);
-	//glEnable(GL_DEPTH_TEST);
 }
 
 void SkyRenderer::createSphere(int lats, int longs)
@@ -176,4 +174,9 @@ void SkyRenderer::createStarField()
 	starField->addVBO(starsVertices, STARS_AMOUNT * 5 * sizeof(float), GL_STATIC_DRAW);
 	starField->assignPositionAttrib(0, 0, 5 * sizeof(float));
 	starField->assignVertexAttrib(0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*) (3 * sizeof(float)));
+}
+
+DirectionalLight & SkyRenderer::getSunLight()
+{
+	return sunLight;
 }

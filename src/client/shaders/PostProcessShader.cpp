@@ -1,5 +1,6 @@
 #include "client/shaders/PostProcessShader.h"
 #include <client/render/GameRenderer.h>
+#include <client/render/SkyRenderer.h>
 #include <util/GLHeader.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,8 +9,9 @@ void PostProcessShader::use()
 {
 	Shader::use();
 
-	glm::vec3 sunDir = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
-	glUniform3f(uniformSunDirLocation, sunDir.x, sunDir.y, sunDir.z);
+	DirectionalLight& sunLight = GameRenderer::getInstance().getWorldRenderer()->getSkyRenderer()->getSunLight();
+	glUniform3f(uniformSunDirLocation, sunLight.lightDirection.x, sunLight.lightDirection.y, sunLight.lightDirection.z);
+	glUniform3f(uniformSunColorLocation, sunLight.lightColor.r, sunLight.lightColor.g, sunLight.lightColor.b);
 
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
 	glm::vec3 camPos = camera->getLocation();
@@ -39,7 +41,8 @@ void PostProcessShader::bindAttributesAndUniforms()
 	bindUniformLocation("screenSize", &screenSizeUniformLocation);
 	bindUniformLocation("pixelSize", &pixelSizeUniformLocation);
 
-	bindUniformLocation("uSunDir", &uniformSunDirLocation);
+	bindUniformLocation("uSunLight.direction", &uniformSunDirLocation);
+	bindUniformLocation("uSunLight.color", &uniformSunColorLocation);
 	bindUniformLocation("uCameraPos", &uniformCameraPosLocation);
 
 	// Set G Buffer textures

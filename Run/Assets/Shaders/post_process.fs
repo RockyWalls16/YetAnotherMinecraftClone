@@ -6,7 +6,14 @@ in vec2 outTex;
 uniform vec2 screenSize;
 uniform vec2 pixelSize;
 
-uniform vec3 uSunDir;
+// Lights
+struct DirLight
+{
+    vec3 direction;
+    vec3 color;
+};  
+
+uniform DirLight uSunLight;
 uniform vec3 uCameraPos;
 
 uniform sampler2D gPosition;
@@ -40,15 +47,15 @@ void main()
     vec3 normal = texture(gNormal, outTex).rgb;
 
 	// Diffuse
-	vec3 unitToLight = normalize(-uSunDir);
-	vec3 diffuse = max(dot(normal, unitToLight), 0.2) * vec3(1.0, 1.0, 1.0);
+	vec3 unitToLight = normalize(-uSunLight.direction);
+	vec3 diffuse = max(dot(normal, unitToLight), 0.2) * uSunLight.color;
 
 	// Specular
 	vec3 unitToCamera = normalize(uCameraPos - fragPos);
 	vec3 reflectDir = reflect(-unitToLight, normal);
 	
     float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
-	vec3 specular = lightInfo.g * specAmount * vec3(1.0, 1.0, 1.0);  
+	vec3 specular = lightInfo.g * specAmount * uSunLight.color;  
 
 	gl_Color = vec4(albedo.rgb * diffuse + specular, 1.0);
 } 

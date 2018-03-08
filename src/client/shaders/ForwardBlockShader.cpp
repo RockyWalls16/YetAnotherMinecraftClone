@@ -1,4 +1,5 @@
 #include <client/render/GameRenderer.h>
+#include <client/render/SkyRenderer.h>
 #include <util/GLHeader.h>
 #include <util/Logger.h>
 #include <client/shaders/ForwardBlockShader.h>
@@ -22,7 +23,8 @@ void ForwardBlockShader::bindAttributesAndUniforms()
 	bindUniformLocation("albedoMap", &uniformAlbedoTexture);
 	bindUniformLocation("specularMap", &uniformSpecularTexture);
 
-	bindUniformLocation("uSunDir", &uniformSunDirLocation);
+	bindUniformLocation("uSunLight.direction", &uniformSunDirLocation);
+	bindUniformLocation("uSunLight.color", &uniformSunColorLocation);
 	bindUniformLocation("uCameraPos", &uniformCameraPosLocation);
 
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
@@ -37,8 +39,9 @@ void ForwardBlockShader::use()
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewProjMatrix()));
 
-	glm::vec3 sunDir = GameRenderer::getInstance().getWorldRenderer()->getSunDirection();
-	glUniform3f(uniformSunDirLocation, sunDir.x, sunDir.y, sunDir.z);
+	DirectionalLight& sunLight = GameRenderer::getInstance().getWorldRenderer()->getSkyRenderer()->getSunLight();
+	glUniform3f(uniformSunDirLocation, sunLight.lightDirection.x, sunLight.lightDirection.y, sunLight.lightDirection.z);
+	glUniform3f(uniformSunColorLocation, sunLight.lightColor.r, sunLight.lightColor.g, sunLight.lightColor.b);
 
 	glm::vec3 camPos = camera->getLocation();
 	glUniform3f(uniformCameraPosLocation, camPos.x, camPos.y, camPos.z);

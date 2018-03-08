@@ -170,6 +170,10 @@
     <ClCompile Include="src\client\render\font\FontRenderer.cpp" />
     <ClCompile Include="src\client\render\font\FontVAO.cpp" />
     <ClCompile Include="src\client\render\GameRenderer.cpp" />
+    <ClCompile Include="src\client\render\light\DirectionalLight.cpp" />
+    <ClCompile Include="src\client\render\light\DirectionalLightLocationArray.cpp" />
+    <ClCompile Include="src\client\render\light\Light.cpp" />
+    <ClCompile Include="src\client\render\light\LightCache.cpp" />
     <ClCompile Include="src\client\render\SkyRenderer.cpp" />
     <ClCompile Include="src\client\render\util\FrameBuffer.cpp" />
     <ClCompile Include="src\client\render\util\VertexArray.cpp" />
@@ -378,6 +382,10 @@
     <ClInclude Include="include\client\render\font\Font.h" />
     <ClInclude Include="include\client\render\font\FontCache.h" />
     <ClInclude Include="include\client\render\font\FontRenderer.h" />
+    <ClInclude Include="include\client\render\light\DirectionalLight.h" />
+    <ClInclude Include="include\client\render\light\Light.h" />
+    <ClInclude Include="include\client\render\light\LightCache.h" />
+    <ClInclude Include="include\client\render\light\DirectionalLightLocationArray.h" />
     <ClInclude Include="include\client\render\SkyRenderer.h" />
     <ClInclude Include="include\client\render\util\FrameBuffer.h" />
     <ClInclude Include="include\client\render\util\VertexArray.h" />

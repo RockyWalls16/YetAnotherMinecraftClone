@@ -18,7 +18,7 @@
 
 using namespace std;
 
-#define DAY_DURATION 1000
+#define DAY_DURATION 10000
 
 class Entity;
 class Block;

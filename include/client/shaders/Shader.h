@@ -31,6 +31,7 @@ public:
 	virtual void stop();
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) = 0;
 	const std::string& getShaderName() const;
+	unsigned int getProgramId();
 
 protected:
 	virtual void bindAttributesAndUniforms() = 0;

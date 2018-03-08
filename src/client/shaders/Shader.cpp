@@ -62,3 +62,8 @@ const std::string& Shader::getShaderName() const
 {
 	return shaderName;
 }
+
+unsigned int Shader::getProgramId()
+{
+	return programId;
+}

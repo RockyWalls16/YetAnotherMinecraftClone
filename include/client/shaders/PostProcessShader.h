@@ -16,6 +16,7 @@ class PostProcessShader : public Shader
 private:
 	int screenSizeUniformLocation;
 	int pixelSizeUniformLocation;
+	int uniformSunColorLocation;
 	int uniformSunDirLocation;
 	int uniformCameraPosLocation;
 

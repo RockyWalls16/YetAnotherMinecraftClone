@@ -1,0 +1,1 @@
+#include <client/render/light/LightCache.h>

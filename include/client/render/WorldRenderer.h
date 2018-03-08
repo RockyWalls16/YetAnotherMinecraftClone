@@ -21,16 +21,12 @@ private:
 	ChunkRenderer* chunkRenderer;
 	SkyRenderer* skyRenderer;
 
-	glm::vec3 sunDirection;
-
 public:
 	WorldRenderer(World* world);
 
 	~WorldRenderer();
 
 	void render(RenderLayer renderLayer);
-
-	glm::vec3 getSunDirection();
 
 	ChunkRenderer* getChunkRenderer();
 	SkyRenderer* getSkyRenderer();
