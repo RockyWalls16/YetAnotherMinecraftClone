@@ -90,12 +90,17 @@ ChunkType AirChunk::getChunkType()
 
 bool AirChunk::isReady()
 {
-	return neighbourCount == 6;
+	return neighbourCount == 27;
 }
 
-weak_ptr<AirChunk> AirChunk::getNeighbour(Side fromSide)
+weak_ptr<AirChunk> AirChunk::getNeighbour(int x, int y, int z)
 {
-	return neighbours[fromSide];
+	return neighbours[getNeighbourIndex(x, y, z)];
+}
+
+int AirChunk::getNeighbourIndex(int x, int y, int z)
+{
+	return (x + 1) + (y + 1) * 3 + (z + 1) * 9;
 }
 
 int AirChunk::getFlatIndex(int x, int z)
@@ -121,7 +126,7 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 		}
 
 		// Chunk is ready
-		if (neighbourCount == 6 && loaded != NeighbourNotification::REPLACED)
+		if (neighbourCount == 27 && loaded != NeighbourNotification::REPLACED)
 		{
 			chunkWorld.onChunkDirty(shared_from_this());
 		}
@@ -129,7 +134,7 @@ void AirChunk::onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<Ai
 	else
 	{
 		// Unload chunk
-		if (neighbourCount == 6)
+		if (neighbourCount == 27)
 		{
 			chunkWorld.onChunkUnReady(shared_from_this());
 		}
