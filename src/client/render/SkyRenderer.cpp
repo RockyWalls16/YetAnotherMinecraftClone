@@ -29,7 +29,7 @@
 #define SKY_NIGHT_TOP Color(0.0F, 0.0F, 0.02F)
 #define SKY_NIGHT_BOTTOM Color(0.01F, 0.02F, 0.05F)
 #define NIGHT_SUN_LIGHT Color(0.0F, 0.0F, 0.0F)
-#define NIGHT_MOON_LIGHT Color(0.1F, 0.15F, 0.25F)
+#define NIGHT_MOON_LIGHT Color(0.08F, 0.12F, 0.35F)
 
 // Sunrise start at 7H00 -> fade to orange
 #define SUNRISE_START 0.3
@@ -44,7 +44,7 @@
 #define DAY_SUN_LIGHT Color(1.0F, 0.95F, 0.9F)
 #define DAY_MOON_LIGHT Color(0.0F, 0.0F, 0.0F)
 
-SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer), sunLight(DAY_SUN_LIGHT, glm::vec3(0.0F)), moonLight(DAY_MOON_LIGHT, glm::vec3(0.0F))
+SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer), sunLight(DAY_SUN_LIGHT, 0.2F, glm::vec3(0.0F)), moonLight(DAY_MOON_LIGHT, 0.4F, glm::vec3(0.0F))
 {
 	starTexture = TextureLoader::loadTexture("star");
 	createSphere(6, 6);
@@ -112,13 +112,15 @@ void SkyRenderer::render()
 		moonLight.setColor(SUN_DOWN_START_MOON_LIGHT.lerp(DAY_MOON_LIGHT, percent));
 	}
 
+	// Sun position
 	float sunPercent = (dayPercent - SUNRISE_START) / (NIGHT - SUNRISE_START);
 	float sunX = cos(sunPercent * M_PI);
 	sunLight.setLightDirection(glm::vec3(sunX, sin(sunPercent * M_PI), sunX * 0.5F));
 
-	float moonPercent = dayPercent >= SUN_DOWN_START ? (dayPercent - SUN_DOWN_START) / (1.0 + SUNRISE_START) : dayPercent / (SUNRISE_START);
+	// Moon position
+	float moonPercent = dayPercent >= SUN_DOWN_START ? (dayPercent - SUN_DOWN_START) / (SUN_DOWN_START - SUNRISE_START) : (dayPercent + 1.0 - SUN_DOWN_START) / (SUN_DOWN_START - SUNRISE_START);
 	float moonX = cos(moonPercent * M_PI);
-	moonLight.setLightDirection(glm::vec3(moonX, sin(moonPercent * M_PI), moonX * 0.5F));
+	moonLight.setLightDirection(glm::vec3(moonX, sin(moonPercent * M_PI), moonX * -0.5F));
 
 	ShaderCache::skyShader->setColors(topColor, bottomColor);
 	skySphere->setTranslate(GameRenderer::getInstance().getGameCamera()->getLocation());

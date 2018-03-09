@@ -10,12 +10,17 @@ in vec2 outAtlasPos;
 
 in vec3 toCamera;
 
+// Directional Lights
 struct DirLight
 {
     vec3 direction;
     vec3 color;
+	float minAmbiant;
 };
-uniform DirLight uSunLight;
+
+#define NB_DIR_LIGHTS 4
+uniform DirLight uDirLights[NB_DIR_LIGHTS];
+uniform int uDirLightAmount;
 
 uniform sampler2D albedoMap;
 uniform sampler2D specularMap;
@@ -44,21 +49,31 @@ void main()
 	float uPos = coords.x - floor(coords.x);
 	float vPos = coords.y - floor(coords.y);
 	vec2 texCoords = vec2(uPos * uAtlasCellSize.x + outAtlasPos.x, vPos * uAtlasCellSize.y + outAtlasPos.y);
-	
-	// Diffuse light
-	vec3 unitNormal = normalize(outNormal);
-	vec3 unitToLight = normalize(-uSunLight.direction);
-	vec3 diffuse = max(dot(unitNormal, unitToLight), 0.2) * uSunLight.color;
-
-	// Specular
-	vec3 unitToCamera = normalize(toCamera);
-	vec3 reflectDir = reflect(-unitToLight, unitNormal);
-	
-	vec3 specularTex = texture(specularMap, texCoords).rgb;
-	float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specularTex.r * 255.0);
-	vec3 specular = specularTex.g * specAmount * uSunLight.color;
-	
-	// Final color
 	vec4 texColor = texture(albedoMap, texCoords);
-    gl_Color = vec4(diffuse, 1.0) * texColor * vec4(outColor, 1.0) + vec4(specular, 0.0);
+
+	/// Lightning
+	vec3 finalColor = vec3(0.0, 0.0, 0.0);
+
+	vec3 specularTex = texture(specularMap, texCoords).rgb;
+
+	for(int i = 0; i < uDirLightAmount; i++)
+	{
+		// Diffuse
+		vec3 unitNormal = normalize(outNormal);
+		vec3 unitToLight = normalize(uDirLights[i].direction);
+		float diff = max(dot(unitNormal, unitToLight), 0.0);
+		vec3 diffuse = texColor.rgb * diff * uDirLights[i].color;
+		vec3 ambiant = texColor.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff); 
+
+		// Specular
+		vec3 unitToCamera = normalize(toCamera);
+		vec3 reflectDir = reflect(-unitToLight, unitNormal);
+	
+		float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specularTex.r * 255.0);
+		vec3 specular = specularTex.g * specAmount * uDirLights[i].color;
+		
+		finalColor += ambiant + diffuse + specular;
+	}
+	
+    gl_Color = vec4(finalColor, texColor.a);
 } 

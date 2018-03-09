@@ -1,6 +1,6 @@
 #include <client/render/light/DirectionalLight.h>
 
-DirectionalLight::DirectionalLight(Color color, glm::vec3 direction) : Light(color), lightDirection(direction)
+DirectionalLight::DirectionalLight(Color color, float ambiantAmount, glm::vec3 direction) : Light(color, ambiantAmount), lightDirection(direction)
 {
 }
 

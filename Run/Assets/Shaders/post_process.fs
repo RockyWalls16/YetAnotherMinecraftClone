@@ -11,6 +11,7 @@ struct DirLight
 {
     vec3 direction;
     vec3 color;
+	float minAmbiant;
 };
 
 #define NB_DIR_LIGHTS 4
@@ -56,8 +57,9 @@ void main()
 	{
 		// Diffuse
 		vec3 unitToLight = normalize(uDirLights[i].direction);
-		vec3 ambiant = albedo.rgb * uDirLights[i].color * 0.2; 
-		vec3 diffuse = albedo.rgb * max(dot(normal, unitToLight), 0.0) * uDirLights[i].color;
+		float diff = max(dot(normal, unitToLight), 0.0);
+		vec3 diffuse = albedo.rgb * diff * uDirLights[i].color;
+		vec3 ambiant = albedo.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff); 
 
 		// Specular
 		vec3 unitToCamera = normalize(uCameraPos - fragPos);

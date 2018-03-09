@@ -23,8 +23,8 @@ void ForwardBlockShader::bindAttributesAndUniforms()
 	bindUniformLocation("albedoMap", &uniformAlbedoTexture);
 	bindUniformLocation("specularMap", &uniformSpecularTexture);
 
-	bindUniformLocation("uSunLight.direction", &uniformSunDirLocation);
-	bindUniformLocation("uSunLight.color", &uniformSunColorLocation);
+	dirLightLocationArray.init("uDirLightAmount", "uDirLights", "direction", "color", "minAmbiant");
+
 	bindUniformLocation("uCameraPos", &uniformCameraPosLocation);
 
 	glUniform2f(uniformAtlasCellSizeLocation, cellW, cellH);
@@ -39,9 +39,7 @@ void ForwardBlockShader::use()
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewProjMatrix()));
 
-	DirectionalLight& sunLight = GameRenderer::getInstance().getWorldRenderer()->getSkyRenderer()->getSunLight();
-	glUniform3f(uniformSunDirLocation, sunLight.lightDirection.x, sunLight.lightDirection.y, sunLight.lightDirection.z);
-	glUniform3f(uniformSunColorLocation, sunLight.lightColor.r, sunLight.lightColor.g, sunLight.lightColor.b);
+	dirLightLocationArray.updateLights(true);
 
 	glm::vec3 camPos = camera->getLocation();
 	glUniform3f(uniformCameraPosLocation, camPos.x, camPos.y, camPos.z);

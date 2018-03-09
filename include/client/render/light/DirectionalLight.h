@@ -9,7 +9,7 @@ class DirectionalLight : public Light
 public:
 	glm::vec3 lightDirection;
 
-	DirectionalLight(Color color, glm::vec3 direction);
+	DirectionalLight(Color color, float ambiantAmount, glm::vec3 direction);
 
 	void setLightDirection(glm::vec3 direction);
 };

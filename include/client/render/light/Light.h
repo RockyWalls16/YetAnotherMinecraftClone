@@ -8,10 +8,13 @@ class Light
 public:
 	bool dirty;
 	Color lightColor;
+	float ambiantAmount;
 
-	Light(Color color);
+	Light(Color color, float ambiantAmount);
 
 	void setColor(Color color);
+
+	void setAmbientAmount(float amount);
 };
 
 #endif

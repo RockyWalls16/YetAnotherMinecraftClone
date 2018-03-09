@@ -9,9 +9,10 @@ DirectionalLightLocationArray::DirectionalLightLocationArray(Shader* shader, int
 {
 	lightColor = new int[size] {0};
 	lightDirection = new int[size] {0};
+	lightAmbiant = new int[size] {0};
 }
 
-void DirectionalLightLocationArray::init(std::string dirLightAmount, std::string arrayName, std::string directionVariableName, std::string colorVariableName)
+void DirectionalLightLocationArray::init(std::string dirLightAmount, std::string arrayName, std::string directionVariableName, std::string colorVariableName, std::string ambiantVariableName)
 {
 	nbLightLocation = glGetUniformLocation(shader->getProgramId(), dirLightAmount.c_str());
 
@@ -19,10 +20,11 @@ void DirectionalLightLocationArray::init(std::string dirLightAmount, std::string
 	{
 		lightDirection[i] = glGetUniformLocation(shader->getProgramId(), (arrayName + "[" + std::to_string(i) + "]." + directionVariableName).c_str());
 		lightColor[i] = glGetUniformLocation(shader->getProgramId(), (arrayName + "[" + std::to_string(i) + "]." + colorVariableName).c_str());
+		lightAmbiant[i] = glGetUniformLocation(shader->getProgramId(), (arrayName + "[" + std::to_string(i) + "]." + ambiantVariableName).c_str());
 	}
 }
 
-void DirectionalLightLocationArray::updateLights()
+void DirectionalLightLocationArray::updateLights(bool cleanDirty)
 {
 	std::vector<DirectionalLight*>& lights = LightCache::getDirectionalLights();
 	int length = std::min((int)lights.size(), size);
@@ -32,7 +34,8 @@ void DirectionalLightLocationArray::updateLights()
 		{
 			glUniform3f(lightDirection[i], lights[i]->lightDirection.x, lights[i]->lightDirection.y, lights[i]->lightDirection.z);
 			glUniform3f(lightColor[i], lights[i]->lightColor.r, lights[i]->lightColor.g, lights[i]->lightColor.b);
-			lights[i]->dirty = false;
+			glUniform1f(lightAmbiant[i], lights[i]->ambiantAmount);
+			lights[i]->dirty = !cleanDirty;
 		}
 	}
 	glUniform1i(nbLightLocation, length);

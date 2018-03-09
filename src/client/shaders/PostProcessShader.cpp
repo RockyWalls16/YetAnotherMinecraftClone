@@ -9,7 +9,7 @@ void PostProcessShader::use()
 {
 	Shader::use();
 
-	dirLightLocationArray.updateLights();
+	dirLightLocationArray.updateLights(false);
 
 	Camera* camera = GameRenderer::getInstance().getGameCamera();
 	glm::vec3 camPos = camera->getLocation();
@@ -40,7 +40,7 @@ void PostProcessShader::bindAttributesAndUniforms()
 	bindUniformLocation("pixelSize", &pixelSizeUniformLocation);
 
 
-	dirLightLocationArray.init("uDirLightAmount", "uDirLights", "direction", "color");
+	dirLightLocationArray.init("uDirLightAmount", "uDirLights", "direction", "color", "minAmbiant");
 	bindUniformLocation("uCameraPos", &uniformCameraPosLocation);
 
 	// Set G Buffer textures

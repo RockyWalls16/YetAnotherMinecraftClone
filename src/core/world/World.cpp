@@ -17,7 +17,7 @@
 World::World() : chunkGenerator(ChunkGenerator(*this)), chunkGeneratorQueue(*this)
 {
 	chunkGeneratorQueue.start();
-	time = 0;
+	time = 900;
 }
 
 void World::tick()
