@@ -9,7 +9,10 @@
 #define CLIENT_SHADERS_POSTPROCESSSHADER_H_
 
 #include <client/shaders/Shader.h>
+#include <client/render/light/LightCache.h>
+#include <client/render/light/DirectionalLightLocationArray.h>
 #include <string>
+
 
 class PostProcessShader : public Shader
 {
@@ -19,9 +22,10 @@ private:
 	int uniformSunColorLocation;
 	int uniformSunDirLocation;
 	int uniformCameraPosLocation;
+	DirectionalLightLocationArray dirLightLocationArray;
 
 public:
-	PostProcessShader(std::string name) : Shader(name), screenSizeUniformLocation(0), pixelSizeUniformLocation(0), uniformSunDirLocation(0){}
+	PostProcessShader(std::string name) : Shader(name), screenSizeUniformLocation(0), pixelSizeUniformLocation(0), uniformSunDirLocation(0), dirLightLocationArray(this, MAX_DIR_LIGHT){}
 
 	virtual void use() override;
 	virtual void stop() override;

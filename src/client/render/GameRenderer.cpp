@@ -153,7 +153,7 @@ int GameRenderer::initGameRenderer()
 
 		frameBuffer = FrameBuffer::makeFBO();
 		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
-		frameBuffer->attachColorTexture(width, height, 1, GL_RGB10_A2, GL_RGB, GL_FLOAT); // Normals buffer
+		frameBuffer->attachColorTexture(width, height, 1, GL_RGBA8_SNORM, GL_RGB, GL_FLOAT); // Normals buffer
 		frameBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
 		frameBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
 		frameBuffer->attachDepthTexture(width, height);

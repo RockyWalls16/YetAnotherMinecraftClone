@@ -1,14 +1,22 @@
 #ifndef CLIENT_RENDER_LIGHT_LIGHTCACHE_H_
 #define CLIENT_RENDER_LIGHT_LIGHTCACHE_H_
 
-#define MAX_LIGHT 50
+#define MAX_DIR_LIGHT 4
+
+#include <vector>
+#include <client/render/light/DirectionalLight.h>
 
 class Light;
 
 class LightCache
 {
 private:
-	Light * lights[MAX_LIGHT];
+	static std::vector<DirectionalLight*> directionalLights;
+
+public:
+	static void addDirectionalLight(DirectionalLight* light);
+
+	static std::vector<DirectionalLight*>& getDirectionalLights();
 };
 
 #endif

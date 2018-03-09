@@ -6,14 +6,17 @@ in vec2 outTex;
 uniform vec2 screenSize;
 uniform vec2 pixelSize;
 
-// Lights
+// Directional Lights
 struct DirLight
 {
     vec3 direction;
     vec3 color;
-};  
+};
 
-uniform DirLight uSunLight;
+#define NB_DIR_LIGHTS 4
+uniform DirLight uDirLights[NB_DIR_LIGHTS];
+uniform int uDirLightAmount;
+
 uniform vec3 uCameraPos;
 
 uniform sampler2D gPosition;
@@ -46,16 +49,25 @@ void main()
 	vec3 fragPos = texture(gPosition, outTex).rgb;
     vec3 normal = texture(gNormal, outTex).rgb;
 
-	// Diffuse
-	vec3 unitToLight = normalize(-uSunLight.direction);
-	vec3 diffuse = max(dot(normal, unitToLight), 0.2) * uSunLight.color;
+	/// Directional lights
+	vec3 finalColor = vec3(0.0, 0.0, 0.0);
 
-	// Specular
-	vec3 unitToCamera = normalize(uCameraPos - fragPos);
-	vec3 reflectDir = reflect(-unitToLight, normal);
+	for(int i = 0; i < uDirLightAmount; i++)
+	{
+		// Diffuse
+		vec3 unitToLight = normalize(uDirLights[i].direction);
+		vec3 ambiant = albedo.rgb * uDirLights[i].color * 0.2; 
+		vec3 diffuse = albedo.rgb * max(dot(normal, unitToLight), 0.0) * uDirLights[i].color;
+
+		// Specular
+		vec3 unitToCamera = normalize(uCameraPos - fragPos);
+		vec3 reflectDir = reflect(-unitToLight, normal);
 	
-    float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
-	vec3 specular = lightInfo.g * specAmount * uSunLight.color;  
+		float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
+		vec3 specular = lightInfo.g * specAmount * uDirLights[i].color;
+		
+		finalColor += ambiant + diffuse + specular;
+	}
 
-	gl_Color = vec4(albedo.rgb * diffuse + specular, 1.0);
+	gl_Color = vec4(finalColor, 1.0);
 } 

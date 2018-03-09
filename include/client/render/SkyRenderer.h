@@ -18,6 +18,7 @@ private:
 	int skySphereVertexAmount;
 
 	DirectionalLight sunLight;
+	DirectionalLight moonLight;
 
 public:
 	SkyRenderer(WorldRenderer* worldRenderer);

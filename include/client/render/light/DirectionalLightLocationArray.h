@@ -10,10 +10,14 @@ public:
 	Shader* shader;
 	int* lightColor;
 	int* lightDirection;
+	int nbLightLocation;
+	int size;
 
 	DirectionalLightLocationArray(Shader* shader, int size);
 
-	void init(std::string arrayName, std::string variableName);
+	void init(std::string dirLightAmount, std::string arrayName, std::string directionVariableName, std::string colorVariableName);
+
+	void updateLights();
 };
 
 #endif

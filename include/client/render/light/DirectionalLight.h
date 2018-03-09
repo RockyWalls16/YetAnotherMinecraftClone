@@ -10,6 +10,8 @@ public:
 	glm::vec3 lightDirection;
 
 	DirectionalLight(Color color, glm::vec3 direction);
+
+	void setLightDirection(glm::vec3 direction);
 };
 
 #endif

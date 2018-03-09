@@ -6,9 +6,12 @@
 class Light
 {
 public:
+	bool dirty;
 	Color lightColor;
 
 	Light(Color color);
+
+	void setColor(Color color);
 };
 
 #endif
