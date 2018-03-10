@@ -60,14 +60,13 @@ void main()
 	{
 		// Diffuse
 		vec3 unitNormal = normalize(outNormal);
-		vec3 unitToLight = normalize(uDirLights[i].direction);
-		float diff = max(dot(unitNormal, unitToLight), 0.0);
+		float diff = max(dot(unitNormal, uDirLights[i].direction), 0.0);
 		vec3 diffuse = texColor.rgb * diff * uDirLights[i].color;
 		vec3 ambiant = texColor.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff); 
 
 		// Specular
 		vec3 unitToCamera = normalize(toCamera);
-		vec3 reflectDir = reflect(-unitToLight, unitNormal);
+		vec3 reflectDir = reflect(-uDirLights[i].direction, unitNormal);
 	
 		float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), specularTex.r * 255.0);
 		vec3 specular = specularTex.g * specAmount * uDirLights[i].color;

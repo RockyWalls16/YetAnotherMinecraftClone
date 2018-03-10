@@ -1,4 +1,5 @@
 #include <client/render/light/DirectionalLight.h>
+#include <glm/geometric.hpp>
 
 DirectionalLight::DirectionalLight(Color color, float ambiantAmount, glm::vec3 direction) : Light(color, ambiantAmount), lightDirection(direction)
 {
@@ -6,6 +7,6 @@ DirectionalLight::DirectionalLight(Color color, float ambiantAmount, glm::vec3 d
 
 void DirectionalLight::setLightDirection(glm::vec3 direction)
 {
-	lightDirection = direction;
+	lightDirection = glm::normalize(direction);
 	dirty = true;
 }

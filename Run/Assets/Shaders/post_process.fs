@@ -56,14 +56,13 @@ void main()
 	for(int i = 0; i < uDirLightAmount; i++)
 	{
 		// Diffuse
-		vec3 unitToLight = normalize(uDirLights[i].direction);
-		float diff = max(dot(normal, unitToLight), 0.0);
+		float diff = max(dot(normal, uDirLights[i].direction), 0.0);
 		vec3 diffuse = albedo.rgb * diff * uDirLights[i].color;
 		vec3 ambiant = albedo.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff); 
 
 		// Specular
 		vec3 unitToCamera = normalize(uCameraPos - fragPos);
-		vec3 reflectDir = reflect(-unitToLight, normal);
+		vec3 reflectDir = reflect(-uDirLights[i].direction, normal);
 	
 		float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
 		vec3 specular = lightInfo.g * specAmount * uDirLights[i].color;
