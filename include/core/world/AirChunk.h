@@ -46,7 +46,7 @@ protected:
 	int chunkY;
 	int chunkZ;
 	int neighbourCount;
-	weak_ptr<AirChunk> neighbours[27];
+	weak_ptr<AirChunk> neighbours[6];
 	int timeToLive;
 	bool generated;
 
@@ -69,9 +69,7 @@ public:
 
 	bool isReady();
 
-	weak_ptr<AirChunk> getNeighbour(int x, int y, int z);
-
-	int getNeighbourIndex(int x, int y, int z);
+	weak_ptr<AirChunk> getNeighbour(Side fromSide);
 
 	void onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide);
 
