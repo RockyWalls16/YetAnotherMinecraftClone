@@ -13,8 +13,9 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <iostream>
 
-VertexArray::VertexArray(unsigned int id) : idVAO(id), idEBO(0), dirty(true), useNormals(true)
+VertexArray::VertexArray() : idVAO(0), idEBO(0), dirty(true), useNormals(true)
 {
+	glGenVertexArrays(1, &idVAO);
 	setIdentity();
 }
 
@@ -31,17 +32,6 @@ VertexArray::~VertexArray()
 	{
 		glDeleteBuffers(1, &idVBO);
 	}
-}
-
-VertexArray* VertexArray::makeVAO()
-{
-	// Generate new VAO Id
-	unsigned int vaoId;
-	glGenVertexArrays(1, &vaoId);
-
-	VertexArray* vao = new VertexArray(vaoId);
-
-	return vao;
 }
 
 void VertexArray::drawVAO(int vertexAmount, int offset, int drawShape, bool addModelMatrix)

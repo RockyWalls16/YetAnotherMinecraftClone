@@ -11,7 +11,7 @@ private:
 	int uniformViewProjLocation;
 
 public:
-	UnlitShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0){}
+	UnlitShader(std::string name) : Shader(name) {}
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 	virtual void use() override;
 

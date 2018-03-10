@@ -22,7 +22,7 @@ private:
 	float cellH;
 
 public:
-	ForwardBlockShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformNormalLocation(0), uniformAtlasCellSizeLocation(0), uniformAlbedoTexture(0), uniformSpecularTexture(0), dirLightLocationArray(this, MAX_DIR_LIGHT), uniformCameraPosLocation(0), cellW(1.0F), cellH(1.0F) {}
+	ForwardBlockShader(std::string name) : Shader(name), dirLightLocationArray(this, MAX_DIR_LIGHT), cellW(1.0F), cellH(1.0F) {}
 
 	virtual void use() override;
 	virtual void stop() override;

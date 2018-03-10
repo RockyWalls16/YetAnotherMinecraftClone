@@ -7,6 +7,9 @@
 #include <glm/gtc/constants.hpp>
 
 CameraRay::CameraRay(const Camera& camera) : camera(camera), lookingBlock(RaycastResult(nullptr, 0, 0, 0))
+{}
+
+void CameraRay::initCameraRay()
 {
 	createCubeHoverMesh();
 }
@@ -211,7 +214,7 @@ void CameraRay::createCubeHoverMesh()
 		0.0F, 0.0F, 0.0F, 0.5F, // C
 	};
 
-	cubeHover = VertexArray::makeVAO();
+	cubeHover = new VertexArray();
 	cubeHover->disableNormals();
 	cubeHover->addVBO(vertices, 336 * sizeof(float), GL_STATIC_DRAW);
 	cubeHover->assignPositionAttrib(0, 0, sizeof(float) * 7);

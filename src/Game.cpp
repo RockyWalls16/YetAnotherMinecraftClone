@@ -36,7 +36,7 @@ int Game::initGame()
 			return rendererStatus;
 		}
 
-		GameRenderer::getInstance().getGameCamera()->setTrackedEntity(*player);
+		GameRenderer::getInstance().getGameCamera().setTrackedEntity(*player);
 
 		return 0;
 	}
@@ -82,7 +82,7 @@ void Game::clearGame()
 
 bool Game::shouldExit()
 {
-	return GameRenderer::getInstance().getWindowManager()->shouldClose() || closeAsked;
+	return GameRenderer::getInstance().getWindowManager().shouldClose() || closeAsked;
 }
 
 World* Game::getWorld()

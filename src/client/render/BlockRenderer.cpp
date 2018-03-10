@@ -84,7 +84,7 @@ short BlockRenderer::getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk,
 		return chunk->getBlockAt(x, y, z);
 	}
 
-	shared_ptr<AirChunk> other = neighbours[side];
+	const shared_ptr<AirChunk>& other = neighbours[side];
 	if (other)
 	{
 		switch (side)

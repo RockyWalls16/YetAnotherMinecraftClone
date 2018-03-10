@@ -11,7 +11,7 @@ private:
 	int uniformOrthoLocation;
 
 public:
-	Shader2D(std::string name) : Shader(name), uniformModelLocation(0) {}
+	Shader2D(std::string name) : Shader(name) {}
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 
 private:

@@ -39,6 +39,7 @@ private:
 
 public:
 	Camera();
+	void initCamera();
 
 	float yaw;
 	float pitch;

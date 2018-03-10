@@ -154,7 +154,7 @@ void World::onChunkUnReady(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{
-		GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer()->removeChunk(chunk);
+		GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer().removeChunk(chunk);
 	}
 }
 
@@ -162,7 +162,7 @@ void World::onChunkDirty(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{
-		GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer()->addChunkToRenderQueue(chunk);
+		GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer().addChunkToRenderQueue(chunk);
 	}
 }
 

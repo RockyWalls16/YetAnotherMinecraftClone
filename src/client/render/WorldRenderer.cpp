@@ -14,18 +14,14 @@
 #include <client/render/SkyRenderer.h>
 #include <core/world/World.h>
 
-WorldRenderer::WorldRenderer(World* world) : world(world)
+WorldRenderer::WorldRenderer(World& world) : world(world), skyRenderer(SkyRenderer(*this))
 {
 	BlockRenderer::initBlockRenderer();
-
-	chunkRenderer = new ChunkRenderer();
-
-	skyRenderer = new SkyRenderer(this);
 }
 
 WorldRenderer::~WorldRenderer()
 {
-	delete(chunkRenderer);
+	
 }
 
 void WorldRenderer::render(RenderLayer renderLayer)
@@ -33,27 +29,27 @@ void WorldRenderer::render(RenderLayer renderLayer)
 	// Render sky
 	if (renderLayer == RenderLayer::RL_PRE_PP)
 	{
-		skyRenderer->render();
+		skyRenderer.render();
 	}
 
 	// Render chunks
 	if (renderLayer <= RenderLayer::RL_TRANSPARENT)
 	{
-		chunkRenderer->render(renderLayer);
+		chunkRenderer.render(renderLayer);
 	}
 }
 
-ChunkRenderer * WorldRenderer::getChunkRenderer()
+ChunkRenderer& WorldRenderer::getChunkRenderer()
 {
 	return chunkRenderer;
 }
 
-SkyRenderer * WorldRenderer::getSkyRenderer()
+SkyRenderer& WorldRenderer::getSkyRenderer()
 {
 	return skyRenderer;
 }
 
-World * WorldRenderer::getWorld()
+World& WorldRenderer::getWorld()
 {
 	return world;
 }

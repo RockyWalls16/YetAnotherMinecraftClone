@@ -28,7 +28,7 @@ KeyBind::KeyBind(int keyId, InputType inputType) : keyId(keyId), inputType(input
 
 GameController::GameController() : mouseCaptured(false)
 {
-	GLFWwindow* window = WindowManager::getMainInstance()->getGameWindow();
+	GLFWwindow* window = WindowManager::getMainInstance().getGameWindow();
 	glfwSetKeyCallback(window, keyCallBack);
 	glfwSetCursorPosCallback(window, mousePosCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -65,7 +65,7 @@ void GameController::processInput()
 
 	static int selectedBlock = 1;
 
-	Camera* camera = GameRenderer::getInstance().getGameCamera();
+	Camera& camera = GameRenderer::getInstance().getGameCamera();
 	glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
 
 	if(W_KEY->isHeld())
@@ -93,11 +93,11 @@ void GameController::processInput()
 		inputVec.y -= 1.0F;
 	}
 
-	if((!camera->canRepeatJump() && SPACE_KEY->isPressed()) || (camera->canRepeatJump() && SPACE_KEY->isHeld()))
+	if((!camera.canRepeatJump() && SPACE_KEY->isPressed()) || (camera.canRepeatJump() && SPACE_KEY->isHeld()))
 	{
 		inputVec.y += 1.0F;
 	}
-	camera->inputMove(inputVec);
+	camera.inputMove(inputVec);
 
 
 	// Toggle wireframe
@@ -134,15 +134,15 @@ void GameController::processInput()
 	// Vsync key
 	if (F10_KEY->isPressed())
 	{
-		WindowManager* wm = GameRenderer::getInstance().getWindowManager();
-		wm->setVsync(!wm->isVsync());
+		WindowManager& wm = GameRenderer::getInstance().getWindowManager();
+		wm.setVsync(!wm.isVsync());
 	}
 
 	// Toggle Fullscreen
 	if (F11_KEY->isPressed())
 	{
-		WindowManager* wm = GameRenderer::getInstance().getWindowManager();
-		wm->setFullScreen(!wm->isFullScreen());
+		WindowManager& wm = GameRenderer::getInstance().getWindowManager();
+		wm.setFullScreen(!wm.isFullScreen());
 	}
 
 	// Reload shaders
@@ -156,7 +156,7 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			const RaycastResult& lookingBlock = camera->getCameraRay().getLookingBlock();
+			const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
 
 			if (lookingBlock.blockInfo)
 			{
@@ -171,7 +171,7 @@ void GameController::processInput()
 	{
 		if (isMouseCaptured())
 		{
-			const RaycastResult& lookingBlock = camera->getCameraRay().getLookingBlock();
+			const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
 
 			if (lookingBlock.blockInfo)
 			{
@@ -200,12 +200,12 @@ void GameController::updateCameraRotation()
 		int dY = lastMouseY - mouseY;
 
 		// Apply movement to camera
-		Camera* camera = GameRenderer::getInstance().getGameCamera();
-		glm::vec3 cameraRotation = camera->getRotation();
+		Camera& camera = GameRenderer::getInstance().getGameCamera();
+		glm::vec3 cameraRotation = camera.getRotation();
 
 		// Create new rotation
 		glm::vec3 newRotation = glm::vec3(cameraRotation.x + dY * 0.1F, cameraRotation.y + dX * 0.1F, cameraRotation.z);
-		camera->setRotation(newRotation);
+		camera.setRotation(newRotation);
 	}
 }
 
@@ -241,11 +241,11 @@ int GameController::actualInputState(KeyBind* keybind)
 	{
 		case KEYBOARD:
 		{
-			return glfwGetKey(WindowManager::getMainInstance()->getGameWindow(), keybind->keyId);
+			return glfwGetKey(WindowManager::getMainInstance().getGameWindow(), keybind->keyId);
 		}
 		case MOUSE:
 		{
-			return glfwGetMouseButton(WindowManager::getMainInstance()->getGameWindow(), keybind->keyId);
+			return glfwGetMouseButton(WindowManager::getMainInstance().getGameWindow(), keybind->keyId);
 		}
 		case GAMEPAD:
 		{
@@ -302,7 +302,7 @@ void GameController::mouseButtonCallback(GLFWwindow * window, int key, int actio
 
 void GameController::setMouseCaptured(bool captured)
 {
-	glfwSetInputMode(WindowManager::getMainInstance()->getGameWindow(), GLFW_CURSOR, captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(WindowManager::getMainInstance().getGameWindow(), GLFW_CURSOR, captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 	mouseCaptured = captured;
 }
 

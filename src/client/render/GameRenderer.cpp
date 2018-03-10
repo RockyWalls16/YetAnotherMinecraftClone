@@ -19,6 +19,9 @@
 #include <util/TimeManager.h>
 #include <Game.h>
 
+GameRenderer::GameRenderer()
+{}
+
 void GameRenderer::clearGameRenderer()
 {
 	// Remove all shaders & textures
@@ -28,12 +31,7 @@ void GameRenderer::clearGameRenderer()
 
 	// Destroy renderers
 	delete(worldRenderer);
-
-	// Destroy window
-	delete(windowManager);
 	delete(frameBuffer);
-
-	delete(gameCamera);
 }
 
 void GameRenderer::renderGame()
@@ -44,13 +42,13 @@ void GameRenderer::renderGame()
 	if (testFont == nullptr)
 	{
 		testFont = FontCache::loadFont("default");
-		fvao = FontRenderer::makeVao(testFont, "FPS: ");
+		fvao = FontRenderer::makeVao(*testFont, "FPS: ");
 	}
 
 	if (TimeManager::fps == 0)
 	{ 
 		delete(fvao);
-		fvao = FontRenderer::makeVao(testFont, "FPS: " + std::to_string(TimeManager::lastFps));
+		fvao = FontRenderer::makeVao(*testFont, "FPS: " + std::to_string(TimeManager::lastFps));
 	}
 
 	if (coords != nullptr)
@@ -68,7 +66,7 @@ void GameRenderer::renderGame()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
-	gameCamera->updateCameraRender();
+	gameCamera.updateCameraRender();
 
 	// Opaque layer
 	glDisable(GL_BLEND);
@@ -99,7 +97,7 @@ void GameRenderer::renderGame()
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	frameBuffer->blitFrameBuffer(frameWidth, frameHeight);
-	gameCamera->getCameraRay().tick();
+	gameCamera.getCameraRay().tick();
 	worldRenderer->render(RenderLayer::RL_TRANSPARENT);
 
 
@@ -111,7 +109,7 @@ void GameRenderer::renderGame()
 
 	//checkGLError("Frame");
 
-	windowManager->swapBuffers();
+	windowManager.swapBuffers();
 	
 }
 
@@ -124,22 +122,20 @@ int GameRenderer::initGameRenderer()
 		ready = true;
 		Info("Game renderer initializing...");
 
-		WindowManager* wM = new WindowManager();
-		int windowCode = wM->initWindow();
+		int windowCode = windowManager.initWindow();
 		if(windowCode)
 		{
 			return windowCode;
 		}
-		windowManager = wM;
-
+		
 		// Load Shaders
 		ShaderCache::initShaderCache();
 
-		gameCamera = new Camera();
+		gameCamera.initCamera();
 
 		// Set perspective view based on frame buffer size
 		int width, height;
-		windowManager->getFramebufferSize(&width, &height);
+		windowManager.getFramebufferSize(&width, &height);
 		onResize(width, height);
 
 		glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
@@ -151,16 +147,15 @@ int GameRenderer::initGameRenderer()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_PROGRAM_POINT_SIZE);
 
-		frameBuffer = FrameBuffer::makeFBO();
+		frameBuffer = new FrameBuffer();
 		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
 		frameBuffer->attachColorTexture(width, height, 1, GL_RGBA8_SNORM, GL_RGB, GL_FLOAT); // Normals buffer
 		frameBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
 		frameBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
 		frameBuffer->attachDepthTexture(width, height);
-		//frameBuffer->attachDepthBuffer(width, height);
 		frameBuffer->checkAndUnbind();
 
-		worldRenderer = new WorldRenderer(Game::getInstance().getWorld());
+		worldRenderer = new WorldRenderer(*Game::getInstance().getWorld());
 
 		return 0;
 	}
@@ -181,7 +176,7 @@ void GameRenderer::onResize(int width, int height)
 
 		// Update matrices
 		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
-		gameCamera->setCameraPerspective(60.0F, width, height);
+		gameCamera.setCameraPerspective(60.0F, width, height);
 		
 		ShaderCache::postShader->onResize(width, height);
 
@@ -192,12 +187,12 @@ void GameRenderer::onResize(int width, int height)
 	}
 }
 
-WindowManager* GameRenderer::getWindowManager()
+WindowManager& GameRenderer::getWindowManager()
 {
 	return windowManager;
 }
 
-Camera* GameRenderer::getGameCamera()
+Camera& GameRenderer::getGameCamera()
 {
 	return gameCamera;
 }

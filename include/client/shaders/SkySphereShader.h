@@ -14,7 +14,7 @@ private:
 	int uniformBottomColorLocation;
 
 public:
-	SkySphereShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformTopColorLocation(0), uniformBottomColorLocation(0) {}
+	SkySphereShader(std::string name) : Shader(name) {}
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 	virtual void use() override;
 	void setColors(Color& topColor, Color& bottomColor);

@@ -171,9 +171,6 @@
     <ClCompile Include="src\client\shaders\StarShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\util\Color.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\client\render\light\LightCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -184,6 +181,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\client\render\light\DirectionalLightLocationArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

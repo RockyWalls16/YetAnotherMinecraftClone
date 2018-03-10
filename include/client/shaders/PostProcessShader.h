@@ -25,7 +25,7 @@ private:
 	DirectionalLightLocationArray dirLightLocationArray;
 
 public:
-	PostProcessShader(std::string name) : Shader(name), screenSizeUniformLocation(0), pixelSizeUniformLocation(0), uniformSunDirLocation(0), dirLightLocationArray(this, MAX_DIR_LIGHT){}
+	PostProcessShader(std::string name) : Shader(name), dirLightLocationArray(this, MAX_DIR_LIGHT){}
 
 	virtual void use() override;
 	virtual void stop() override;

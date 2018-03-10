@@ -11,8 +11,8 @@ void PostProcessShader::use()
 
 	dirLightLocationArray.updateLights(false);
 
-	Camera* camera = GameRenderer::getInstance().getGameCamera();
-	glm::vec3 camPos = camera->getLocation();
+	Camera& camera = GameRenderer::getInstance().getGameCamera();
+	glm::vec3 camPos = camera.getLocation();
 	glUniform3f(uniformCameraPosLocation, camPos.x, camPos.y, camPos.z);
 }
 

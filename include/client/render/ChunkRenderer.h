@@ -21,6 +21,7 @@
 using namespace std;
 
 class AirChunk;
+class WorldRenderer;
 enum RenderLayer;
 
 class ChunkRenderColumn

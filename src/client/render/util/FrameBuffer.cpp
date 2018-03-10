@@ -12,7 +12,7 @@
 #include <util/GLHeader.h>
 #include <client/render/GameRenderer.h>
 
-FrameBuffer* FrameBuffer::makeFBO()
+FrameBuffer::FrameBuffer()
 {
 	static float vertices[] =
 	{
@@ -35,19 +35,12 @@ FrameBuffer* FrameBuffer::makeFBO()
 		2, 3, 0
 	};
 
-	// Create new frame buffer
-	unsigned int fboId;
-	glGenFramebuffers(1, &fboId);
-	FrameBuffer* framebuffer = new FrameBuffer(fboId);
-
-	VertexArray* sc = VertexArray::makeVAO();
-	sc->addVBO(vertices, sizeof(float) * 16, GL_STATIC_DRAW);
-	sc->enableEBO(indices, sizeof(unsigned int) * 6, GL_STATIC_DRAW);
-	sc->assignPositionAttrib(0, 0, 4 * sizeof(float)); // Position
-	sc->assignUVAttrib(0, 1, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
-	framebuffer->screenQuad = sc;
-
-	return framebuffer;
+	// Register new frame buffer
+	glGenFramebuffers(1, &framebufferId);
+	screenQuad.addVBO(vertices, sizeof(float) * 16, GL_STATIC_DRAW);
+	screenQuad.enableEBO(indices, sizeof(unsigned int) * 6, GL_STATIC_DRAW);
+	screenQuad.assignPositionAttrib(0, 0, 4 * sizeof(float)); // Position
+	screenQuad.assignUVAttrib(0, 1, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
 }
 
 FrameBuffer::FrameBuffer(unsigned int id) :
@@ -127,7 +120,7 @@ void FrameBuffer::bindTexture(int attachedTextureId)
 
 void FrameBuffer::drawOverlay()
 {
-	screenQuad->drawEBO(6, 0, GL_TRIANGLES, false); // Draw fbo overlay
+	screenQuad.drawEBO(6, 0, GL_TRIANGLES, false); // Draw fbo overlay
 }
 
 void FrameBuffer::blitFrameBuffer(int width, int height)

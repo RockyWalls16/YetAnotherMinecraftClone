@@ -45,7 +45,7 @@ public:
 
 	bool isVsync();
 
-	static WindowManager* getMainInstance();
+	static WindowManager& getMainInstance();
 };
 
 void onWindowResize(GLFWwindow* window, int width, int height);

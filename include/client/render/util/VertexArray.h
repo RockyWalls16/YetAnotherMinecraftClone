@@ -25,7 +25,8 @@ private:
 	bool useNormals;
 
 public:
-	static VertexArray* makeVAO();
+	VertexArray();
+	~VertexArray();
 
 	//void addSingleDataVBO(unsigned int index, float* buffer, unsigned int length);
 	void bind();
@@ -48,11 +49,6 @@ public:
 	void scale(const glm::vec3& scale);
 	void processNormalMatrix();
 	void disableNormals();
-
-	~VertexArray();
-
-private:
-	VertexArray(unsigned int idVAO);
 };
 
 #endif /* CLIENT_RENDER_UTIL_VERTEXARRAY_H_ */

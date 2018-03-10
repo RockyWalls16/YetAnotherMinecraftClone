@@ -4,7 +4,7 @@
 #include <client/render/util/VertexArray.h>
 #include <util/Logger.h>
 
-FontVAO * FontRenderer::makeVao(Font* font, std::string text)
+FontVAO * FontRenderer::makeVao(Font& font, std::string text)
 {
 	static unsigned int indices[] =
 	{
@@ -27,8 +27,8 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 		1.0F, 0.0F        //uv
 	};
 
-	static VertexBuilder* vb = new VertexBuilder(5, 1000);
-	vb->rewind();
+	static VertexBuilder vb(5, 1000);
+	vb.rewind();
 
 	int charAmount = text.size();
 	const char* charaters = text.c_str();
@@ -54,8 +54,8 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 		// Handle new line
 		else if (c == '\n')
 		{
-			currentHeight -= font->getLineHeight();
-			totalHeight += font->getLineHeight();
+			currentHeight -= font.getLineHeight();
+			totalHeight += font.getLineHeight();
 
 			if (currentWidth > totalWidth)
 			{
@@ -67,7 +67,7 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 		}
 
 		// Get char info
-		chInfo = font->getCharInfo(c);
+		chInfo = font.getCharInfo(c);
 		if (chInfo == nullptr)
 		{
 			continue;
@@ -78,10 +78,10 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 		int height = chInfo->y2 - chInfo->y;
 
 		float u, v, u2, v2;
-		font->getUV(chInfo, &u, &v, &u2, &v2);
+		font.getUV(chInfo, &u, &v, &u2, &v2);
 
-		int yPos = - totalHeight - font->getBaseLine();
-		int yOffset = (font->getBaseLine() - height) - chInfo->offsetY;
+		int yPos = - totalHeight - font.getBaseLine();
+		int yOffset = (font.getBaseLine() - height) - chInfo->offsetY;
 
 		// Prepare vertices
 		float charVertices[20];
@@ -99,15 +99,15 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 
 		// Indices
 		unsigned int charIndices[6];
-		unsigned int lastIndice = vb->getLastIndice();
+		unsigned int lastIndice = vb.getLastIndice();
 		for (int j = 0; j < 6; j++)
 		{
 			charIndices[j] = indices[j] + lastIndice;
 		}
 
 		// Update vertex builder
-		vb->setLastIndice(lastIndice + 6);
-		vb->addVertices(charVertices, charIndices, 6);
+		vb.setLastIndice(lastIndice + 6);
+		vb.addVertices(charVertices, charIndices, 6);
 
 		// Update offset
 		currentWidth += chInfo->xAdvance;
@@ -125,14 +125,14 @@ FontVAO * FontRenderer::makeVao(Font* font, std::string text)
 	totalHeight += currentHeight;
 
 	// Generate Vertex data
-	VertexArray* vao = VertexArray::makeVAO();
+	VertexArray* vao = new VertexArray();
 	vao->disableNormals();
-	vao->addVBO(vb->getVertexBuffer(), vb->getVBOSize(), GL_STATIC_DRAW);
-	vao->enableEBO(vb->getIndicesBuffer(), vb->getEOBSize(), GL_STATIC_DRAW);
+	vao->addVBO(vb.getVertexBuffer(), vb.getVBOSize(), GL_STATIC_DRAW);
+	vao->enableEBO(vb.getIndicesBuffer(), vb.getEOBSize(), GL_STATIC_DRAW);
 	vao->assignPositionAttrib(0, 0, sizeof(float) * 5);
 	vao->assignUVAttrib(0, 1, sizeof(float) * 5, (void*)(3 * sizeof(float)));
 	vao->scale(glm::vec3(0.1F, 0.1F, 0.1F));
-	FontVAO* fvao = new FontVAO(font, vao, vb->getEOBSize(), totalWidth, totalHeight);
+	FontVAO* fvao = new FontVAO(font, vao, vb.getEOBSize(), totalWidth, totalHeight);
 
 	return fvao;
 }

@@ -49,7 +49,7 @@ void ChunkRenderQueue::onThreadStart()
 				continue;
 			}
 
-			VertexBuilder** outputVb = GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer()->prepareChunkMesh(inputChunk);
+			VertexBuilder** outputVb = GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer().prepareChunkMesh(inputChunk);
 			
 			// Some chunks contains no vertices
 			if (outputVb != nullptr)

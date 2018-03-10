@@ -51,8 +51,6 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 
 	fetchReadyChunks();
 
-	World* world = Game::getInstance().getWorld();
-
 	// Render chunks opaque then transparent
 	renderChunkLayer(renderLayer);
 
@@ -61,8 +59,8 @@ void ChunkRenderer::render(RenderLayer renderLayer)
 
 void ChunkRenderer::renderChunkLayer(RenderLayer renderLayer)
 {
-	Camera* camera = GameRenderer::getInstance().getGameCamera();
-	float cameraY = camera->getLocation().y;
+	Camera& camera = GameRenderer::getInstance().getGameCamera();
+	float cameraY = camera.getLocation().y;
 	ChunkRenderContainer& container = getColumnContainer(renderLayer);
 
 	for (auto columnPair : container.columnsMap)
@@ -111,7 +109,7 @@ void ChunkRenderer::addChunkToContainer(ChunkRenderContainer& columnContainer, s
 	ChunkRenderIndex* cri = nullptr;
 	if (vertexAmount > 0)
 	{
-		VertexArray* vao = VertexArray::makeVAO();
+		VertexArray* vao = new VertexArray();
 		configureVAO(chunk, builders, vao);
 		cri = new ChunkRenderIndex(chunk, vao, builders->getIndicesWriteIndex());
 	}

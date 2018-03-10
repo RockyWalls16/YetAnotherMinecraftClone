@@ -27,14 +27,15 @@ private:
 	int frameWidth;
 	int frameHeight;
 
-	WindowManager* windowManager;
-	Camera* gameCamera;
+	WindowManager windowManager;
+	Camera gameCamera;
 	WorldRenderer* worldRenderer;
 	FrameBuffer* frameBuffer;
 	glm::mat4 orthoProjectionMatrix;
 	bool wireframe;
 
 public:
+	GameRenderer();
 	int initGameRenderer();
 	void renderGame();
 
@@ -42,10 +43,10 @@ public:
 
 	void clearGameRenderer();
 
-	WindowManager* getWindowManager();
+	WindowManager& getWindowManager();
 	
 	static GameRenderer& getInstance();
-	Camera* getGameCamera();
+	Camera& getGameCamera();
 	WorldRenderer* getWorldRenderer();
 
 	bool isWireframeMode();

@@ -29,6 +29,7 @@ private:
 
 public:
 	CameraRay(const Camera& camera);
+	void initCameraRay();
 
 	void tick();
 

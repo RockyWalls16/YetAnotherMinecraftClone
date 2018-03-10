@@ -7,14 +7,14 @@
 class FontVAO
 {
 private:
-	Font* font;
+	Font& font;
 	VertexArray* fontVao;
 	int vertexAmount;
 	int width;
 	int height;
 
 public:
-	FontVAO(Font* font, VertexArray* fontVao, int vertexAmount, int width, int height);
+	FontVAO(Font& font, VertexArray* fontVao, int vertexAmount, int width, int height);
 
 	~FontVAO();
 

@@ -2,7 +2,6 @@
 #include <client/shaders/ShaderCache.h>
 #include <client/render/WorldRenderer.h>
 #include <client/render/util/VertexBuilder.h>
-#include <client/render/util/VertexArray.h>
 #include <glm/gtc/constants.hpp>
 #include <glm/trigonometric.hpp>
 #include <util/Logger.h>
@@ -44,7 +43,7 @@
 #define DAY_SUN_LIGHT Color(1.0F, 0.95F, 0.9F)
 #define DAY_MOON_LIGHT Color(0.0F, 0.0F, 0.0F)
 
-SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRenderer), sunLight(DAY_SUN_LIGHT, 0.2F, glm::vec3(0.0F)), moonLight(DAY_MOON_LIGHT, 0.4F, glm::vec3(0.0F))
+SkyRenderer::SkyRenderer(WorldRenderer& worldRenderer) : worldRenderer(worldRenderer), sunLight(DAY_SUN_LIGHT, 0.2F, glm::vec3(0.0F)), moonLight(DAY_MOON_LIGHT, 0.4F, glm::vec3(0.0F))
 {
 	starTexture = TextureLoader::loadTexture("star");
 	createSphere(6, 6);
@@ -55,7 +54,7 @@ SkyRenderer::SkyRenderer(WorldRenderer* worldRenderer) : worldRenderer(worldRend
 
 void SkyRenderer::render()
 {
-	float dayPercent = worldRenderer->getWorld()->getDayPercent();
+	float dayPercent = worldRenderer.getWorld().getDayPercent();
 
 	ShaderCache::skyShader->use();
 
@@ -123,18 +122,18 @@ void SkyRenderer::render()
 	moonLight.setLightDirection(glm::vec3(moonX, sin(moonPercent * M_PI), moonX * -0.5F));
 
 	ShaderCache::skyShader->setColors(topColor, bottomColor);
-	skySphere->setTranslate(GameRenderer::getInstance().getGameCamera()->getLocation());
-	skySphere->drawVAO(skySphereVertexAmount, 0, GL_TRIANGLE_STRIP);
+	skySphere.setTranslate(GameRenderer::getInstance().getGameCamera().getLocation());
+	skySphere.drawVAO(skySphereVertexAmount, 0, GL_TRIANGLE_STRIP);
 	 
 	glEnable(GL_BLEND);
 
 	starTexture->bind();
 	ShaderCache::starShader->use();
 	ShaderCache::starShader->setStarAlpha(starAlpha);
-	starField->setIdentity();
-	starField->translate(GameRenderer::getInstance().getGameCamera()->getLocation());
-	starField->rotate(glm::radians((worldRenderer->getWorld()->getTime() / (float) DAY_DURATION) * 20.5), glm::vec3(0.0F, 0.33F, 1.0F));
-	starField->drawVAO(STARS_AMOUNT, 0, GL_POINTS);
+	starField.setIdentity();
+	starField.translate(GameRenderer::getInstance().getGameCamera().getLocation());
+	starField.rotate(glm::radians((worldRenderer.getWorld().getTime() / (float) DAY_DURATION) * 20.5), glm::vec3(0.0F, 0.33F, 1.0F));
+	starField.drawVAO(STARS_AMOUNT, 0, GL_POINTS);
 
 	glDisable(GL_BLEND);
 }
@@ -173,11 +172,10 @@ void SkyRenderer::createSphere(int lats, int longs)
 		}
 	}
 
-	skySphere = VertexArray::makeVAO();
-	skySphere->disableNormals();
-	skySphere->addVBO(vertices, vertexAmount * sizeof(float), GL_STATIC_DRAW);
-	skySphere->assignPositionAttrib(0, 0, sizeof(float) * 3);
-	skySphere->scale(glm::vec3(FAR_PLANE - 200, FAR_PLANE - 200, FAR_PLANE - 200));
+	skySphere.disableNormals();
+	skySphere.addVBO(vertices, vertexAmount * sizeof(float), GL_STATIC_DRAW);
+	skySphere.assignPositionAttrib(0, 0, sizeof(float) * 3);
+	skySphere.scale(glm::vec3(FAR_PLANE - 200, FAR_PLANE - 200, FAR_PLANE - 200));
 	
 	skySphereVertexAmount = vertexAmount / 3;
 }
@@ -198,13 +196,7 @@ void SkyRenderer::createStarField()
 		starsVertices[i + 4] = MathUtil::randF(2.5F, 3.5F); // Star size
 	}
 
-	starField = VertexArray::makeVAO();
-	starField->addVBO(starsVertices, STARS_AMOUNT * 5 * sizeof(float), GL_STATIC_DRAW);
-	starField->assignPositionAttrib(0, 0, 5 * sizeof(float));
-	starField->assignVertexAttrib(0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*) (3 * sizeof(float)));
-}
-
-DirectionalLight & SkyRenderer::getSunLight()
-{
-	return sunLight;
+	starField.addVBO(starsVertices, STARS_AMOUNT * 5 * sizeof(float), GL_STATIC_DRAW);
+	starField.assignPositionAttrib(0, 0, 5 * sizeof(float));
+	starField.assignVertexAttrib(0, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*) (3 * sizeof(float)));
 }

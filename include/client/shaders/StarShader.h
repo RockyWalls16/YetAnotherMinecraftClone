@@ -12,7 +12,7 @@ private:
 	int uniformStarAlphaLocation;
 
 public:
-	StarShader(std::string name) : Shader(name), uniformModelLocation(0), uniformViewProjLocation(0), uniformStarAlphaLocation(0) {}
+	StarShader(std::string name) : Shader(name) {}
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) override;
 	virtual void use() override;
 	void setStarAlpha(float alpha);

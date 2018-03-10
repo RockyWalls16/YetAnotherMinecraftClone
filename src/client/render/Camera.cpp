@@ -21,6 +21,11 @@ Camera::Camera() : cameraRay(CameraRay(*this))
 
 }
 
+void Camera::initCamera()
+{
+	cameraRay.initCameraRay();
+}
+
 void Camera::setCameraPerspective(float fov, int width, int height)
 {
 	this->fov = fov;
@@ -106,8 +111,7 @@ void Camera::moveStrafingVector(float value)
 
 void Camera::moveUpVector(float value)
 {
-	glm::vec3 velocity;
-	velocity.y = value;
+	glm::vec3 velocity(0.0F, value, 0.0F);
 	move(velocity);
 }
 

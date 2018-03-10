@@ -30,11 +30,10 @@ private:
 	unsigned int rbo;
 	std::vector<AttachedTexture*> attachedTextures;
 	std::vector<unsigned int> attachedColors;
-	VertexArray* screenQuad;
+	VertexArray screenQuad;
 
 public:
-	static FrameBuffer* makeFBO();
-
+	FrameBuffer();
 	void bind();
 	void unbind();
 	void checkAndUnbind();

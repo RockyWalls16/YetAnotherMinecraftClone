@@ -158,7 +158,7 @@
     <ClCompile Include="external\glm\detail\dummy.cpp" />
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
-    <ClCompile Include="include\util\Color.cpp" />
+    <ClCompile Include="src\util\Color.cpp" />
     <ClCompile Include="src\client\input\CameraRay.cpp" />
     <ClCompile Include="src\client\render\font\Font.cpp" />
     <ClCompile Include="src\client\input\GameController.cpp" />

@@ -123,7 +123,7 @@ void onWindowResize(GLFWwindow* window, int width, int height)
 	GameRenderer::getInstance().onResize(width, height);
 }
 
-WindowManager* WindowManager::getMainInstance()
+WindowManager& WindowManager::getMainInstance()
 {
 	return GameRenderer::getInstance().getWindowManager();
 }
