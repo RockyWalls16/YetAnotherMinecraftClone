@@ -102,9 +102,6 @@
     <ClCompile Include="src\core\block\Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client\shaders\PostProcessShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\Side.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,9 +144,6 @@
     <ClCompile Include="src\client\input\CameraRay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\client\shaders\UnlitShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -184,6 +178,42 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_avx2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_avx512.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_internal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_neon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_sse2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_sse41.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\DeferredLightingShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\SSAOShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\client\shaders\BlurShader.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\shaders\BlurShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -704,9 +734,6 @@
     <ClInclude Include="external\PerlinNoise.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\client\shaders\PostProcessShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\core\block\BlockGrass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -762,9 +789,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\input\CameraRay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\world\ChunkGeneratorQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\shaders\UnlitShader.h">
@@ -831,6 +855,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\render\light\DirectionalLightLocationArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\world\ChunkGeneratorQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\FastNoiseSIMD\FastNoiseSIMD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\FastNoiseSIMD\FastNoiseSIMD_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\block\BlockPlant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\block\BlockLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\DeferredLightingShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\SSAOShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

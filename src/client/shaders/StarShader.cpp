@@ -20,6 +20,8 @@ void StarShader::use()
 
 void StarShader::setStarAlpha(float alpha)
 {
+	Shader::use();
+
 	glUniform1f(uniformStarAlphaLocation, alpha);
 }
 

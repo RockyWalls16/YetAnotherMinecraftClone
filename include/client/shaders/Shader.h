@@ -13,7 +13,7 @@
 
 class Shader
 {
-private:
+protected:
 	std::string shaderName;
 	unsigned int programId;
 
@@ -30,6 +30,7 @@ public:
 	virtual void use();
 	virtual void stop();
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix) = 0;
+	virtual void onResize(int width, int height) {};
 	const std::string& getShaderName() const;
 	unsigned int getProgramId();
 

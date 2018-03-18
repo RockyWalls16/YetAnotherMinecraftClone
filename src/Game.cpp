@@ -27,7 +27,7 @@ int Game::initGame()
 		world = new World();
 		player = new EntityPlayer(*world);
 		player->setRotation(glm::vec3(0.0F, 0.0F, -1.0F));
-		player->setPosition(glm::vec3(20.0F, 91.0F, 20.0F));
+		player->setPosition(glm::vec3(20.0F, 35.0F, 20.0F));
 
 		//Try to initialize game renderer
 		int rendererStatus = GameRenderer::getInstance().initGameRenderer();

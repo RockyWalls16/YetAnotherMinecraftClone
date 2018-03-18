@@ -23,6 +23,7 @@ private:
 public:
 	SkyRenderer(WorldRenderer& worldRenderer);
 
+	void updateLights();
 	void render();
 	void createSphere(int lats, int longs);
 	void createStarField();

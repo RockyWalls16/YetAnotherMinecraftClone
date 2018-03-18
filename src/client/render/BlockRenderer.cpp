@@ -5,6 +5,7 @@
  *      Author: Valentin
  */
 
+#include <core/block/Block.h>
 #include <client/render/BlockRenderer.h>
 #include <client/textures/TextureLoader.h>
 #include <client/textures/TextureCache.h>
@@ -12,8 +13,8 @@
 #include <util/Side.h>
 #include <util/Logger.h>
 
-#define DATA_PER_VERTEX_ARRAY 36
-#define DATA_PER_VERTEX 44
+#define DATA_PER_FACE_ARRAY 36
+#define DATA_PER_FACE 44
 #define VERTEX_STRIDE 11
 #define VERTEX_STRIDE_ARRAY 9
 
@@ -31,39 +32,6 @@ void BlockRenderer::initBlockRenderer()
 
 	ShaderCache::deferredBlockShader->setAtlasCellSize(atlasCellW, atlasCellH);
 	ShaderCache::forwardBlockShader->setAtlasCellSize(atlasCellW, atlasCellH);
-}
-
-void BlockRenderer::renderBlock(VertexBuilder* vertexBuilder, const shared_ptr<AirChunk>& chunk, Block* blockId, int x, int y, int z)
-{
-	/*if(shallRenderFace(chunk, blockId, x, y + 1, z, Side::TOP))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::TOP); // Top face
-	}
-
-	if(shallRenderFace(chunk, blockId, x, y - 1, z, Side::BOTTOM))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::BOTTOM); // Bottom face
-	}
-
-	if(shallRenderFace(chunk, blockId, x + 1, y, z, Side::EAST))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::EAST); // X+ face
-	}
-
-	if(shallRenderFace(chunk, blockId, x, y, z - 1, Side::NORTH))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::NORTH); // Z- face
-	}
-
-	if(shallRenderFace(chunk, blockId, x - 1, y, z, Side::WEST))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::WEST); // X- face
-	}
-
-	if(shallRenderFace(chunk, blockId, x, y, z + 1, Side::SOUTH))
-	{
-		renderFace(vertexBuilder, chunk, blockId, x, y, z, Side::SOUTH); // Z+ face
-	}*/
 }
 
 bool BlockRenderer::isSideVisible(const shared_ptr<AirChunk>& chunk, shared_ptr<AirChunk> neighbours[6], Block * blockId, int x, int y, int z, Side faceSide)
@@ -104,37 +72,31 @@ short BlockRenderer::getBlockAtWithNeighbours(const shared_ptr<AirChunk>& chunk,
 
 void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, AABB& renderBox, int x, int y, int z, int sX, int sY, int sZ, Side faceSide)
 {
-	static unsigned int indices[] =
-	{
-		0, 1, 2,
-		1, 3, 2
-	};
-
 	// Calculate texture coordinates
 	int cellId = blockId->getTexture(faceSide);
 	int u = (cellId % ATLAS_COLUMNS);
 	int v = ATLAS_COLUMNS - (cellId / ATLAS_COLUMNS) - 1;
 
-	float cubePos[DATA_PER_VERTEX];
+	float cubePos[DATA_PER_FACE];
 
-	int verticeOffset = (DATA_PER_VERTEX_ARRAY * faceSide);
+	int verticeOffset = (DATA_PER_FACE_ARRAY * faceSide);
 	int j = 0;
-	for(int i = 0; i < DATA_PER_VERTEX; i += VERTEX_STRIDE)
+	for(int i = 0; i < DATA_PER_FACE; i += VERTEX_STRIDE)
 	{
 		// Positions
-		cubePos[i] = vertices[verticeOffset + j] * sX * renderBox.endPos.x + x + renderBox.startPos.x;
-		cubePos[i + 1] = vertices[verticeOffset + j + 1] * sY * renderBox.endPos.y + y + renderBox.startPos.y;
-		cubePos[i + 2] = vertices[verticeOffset + j + 2] * sZ * renderBox.endPos.z + z + renderBox.startPos.z;
+		cubePos[i] = blockVertices[verticeOffset + j] * sX * renderBox.endPos.x + x + renderBox.startPos.x;
+		cubePos[i + 1] = blockVertices[verticeOffset + j + 1] * sY * renderBox.endPos.y + y + renderBox.startPos.y;
+		cubePos[i + 2] = blockVertices[verticeOffset + j + 2] * sZ * renderBox.endPos.z + z + renderBox.startPos.z;
 
 		// Colors
-		cubePos[i + 3] = vertices[verticeOffset + j + 3];
-		cubePos[i + 4] = vertices[verticeOffset + j + 4];
-		cubePos[i + 5] = vertices[verticeOffset + j + 5];
+		cubePos[i + 3] = blockVertices[verticeOffset + j + 3];
+		cubePos[i + 4] = blockVertices[verticeOffset + j + 4];
+		cubePos[i + 5] = blockVertices[verticeOffset + j + 5];
 
 		// Normals
-		cubePos[i + 6] = vertices[verticeOffset + j + 6];
-		cubePos[i + 7] = vertices[verticeOffset + j + 7];
-		cubePos[i + 8] = vertices[verticeOffset + j + 8];
+		cubePos[i + 6] = blockVertices[verticeOffset + j + 6];
+		cubePos[i + 7] = blockVertices[verticeOffset + j + 7];
+		cubePos[i + 8] = blockVertices[verticeOffset + j + 8];
 
 		// Atlas pos
 		cubePos[i + 9] = u * atlasCellW;
@@ -151,14 +113,121 @@ void BlockRenderer::renderFace(VertexBuilder* vertexBuilder, Block* blockId, AAB
 		cubeIndices[j] = indices[j] + lastIndice;
 	}
 
-	vertexBuilder->setLastIndice(lastIndice + 6);
-	vertexBuilder->addVertices(cubePos, cubeIndices, 6);
+	vertexBuilder->setLastIndice(lastIndice + 4);
+	vertexBuilder->addVertices(cubePos, 4, cubeIndices, 6);
+}
+
+void BlockRenderer::renderSimpleFace(VertexBuilder * vertexBuilder, Block * blockId, AABB & renderBox, int x, int y, int z, Side faceSide)
+{
+	// Calculate texture coordinates
+	int cellId = blockId->getTexture(faceSide);
+	int u = (cellId % ATLAS_COLUMNS);
+	int v = ATLAS_COLUMNS - (cellId / ATLAS_COLUMNS) - 1;
+
+	float cubePos[DATA_PER_FACE];
+
+	int verticeOffset = (DATA_PER_FACE_ARRAY * faceSide);
+	int j = 0;
+	for (int i = 0; i < DATA_PER_FACE; i += VERTEX_STRIDE)
+	{
+		// Positions
+		cubePos[i] = blockVertices[verticeOffset + j] * renderBox.endPos.x + x + renderBox.startPos.x;
+		cubePos[i + 1] = blockVertices[verticeOffset + j + 1] * renderBox.endPos.y + y + renderBox.startPos.y;
+		cubePos[i + 2] = blockVertices[verticeOffset + j + 2] * renderBox.endPos.z + z + renderBox.startPos.z;
+
+		// Colors
+		cubePos[i + 3] = blockVertices[verticeOffset + j + 3];
+		cubePos[i + 4] = blockVertices[verticeOffset + j + 4];
+		cubePos[i + 5] = blockVertices[verticeOffset + j + 5];
+
+		// Normals
+		cubePos[i + 6] = blockVertices[verticeOffset + j + 6];
+		cubePos[i + 7] = blockVertices[verticeOffset + j + 7];
+		cubePos[i + 8] = blockVertices[verticeOffset + j + 8];
+
+		// Atlas pos
+		cubePos[i + 9] = u * atlasCellW;
+		cubePos[i + 10] = v * atlasCellH;
+
+		j += VERTEX_STRIDE_ARRAY;
+	}
+
+	// Set indices
+	unsigned int cubeIndices[6];
+	unsigned int lastIndice = vertexBuilder->getLastIndice();
+	for (j = 0; j < 6; j++)
+	{
+		cubeIndices[j] = indices[j] + lastIndice;
+	}
+
+	vertexBuilder->setLastIndice(lastIndice + 4);
+	vertexBuilder->addVertices(cubePos, 4, cubeIndices, 6);
+}
+
+void BlockRenderer::renderBlock(VertexBuilder * vertexBuilder, Block * blockId, RenderType renderType, int x, int y, int z)
+{
+	int cellId = blockId->getTexture(Side::TOP);
+	int u = (cellId % ATLAS_COLUMNS);
+	int v = ATLAS_COLUMNS - (cellId / ATLAS_COLUMNS) - 1;
+
+	switch (renderType)
+	{
+		case RenderType::CROSS:
+		{
+			// Vertices
+			float cubePos[DATA_PER_FACE * 4];
+			for (int i = 0, j = 0; i < DATA_PER_FACE * 4; i += VERTEX_STRIDE)
+			{
+				// Positions
+				cubePos[i] = crossVertices[j] + x;
+				cubePos[i + 1] = crossVertices[j + 1] + y;
+				cubePos[i + 2] = crossVertices[j + 2] + z;
+
+				// Colors
+				cubePos[i + 3] = crossVertices[j + 3];
+				cubePos[i + 4] = crossVertices[j + 4];
+				cubePos[i + 5] = crossVertices[j + 5];
+
+				// Normals
+				cubePos[i + 6] = crossVertices[j + 6];
+				cubePos[i + 7] = crossVertices[j + 7];
+				cubePos[i + 8] = crossVertices[j + 8];
+
+				// Atlas pos
+				cubePos[i + 9] = u * atlasCellW;
+				cubePos[i + 10] = v * atlasCellH;
+
+				j += VERTEX_STRIDE_ARRAY;
+			}
+
+			// Indices
+			unsigned int cubeIndices[24];
+			unsigned int lastIndice = vertexBuilder->getLastIndice();
+			for (int side = 0; side < 4; side++)
+			{
+				for (int j = 0; j < 6; j++)
+				{
+					cubeIndices[j + side * 6] = indices[j] + lastIndice;
+				}
+				lastIndice += 4;
+			}
+
+			vertexBuilder->setLastIndice(lastIndice);
+			vertexBuilder->addVertices(cubePos, 16, cubeIndices, 24);
+		}
+	}
 }
 
 float BlockRenderer::atlasCellW = 1.0F;
 float BlockRenderer::atlasCellH = 1.0F;
 
-float BlockRenderer::vertices[] =
+unsigned int BlockRenderer::indices[] =
+{
+	0, 1, 2,
+	1, 3, 2
+};
+
+float BlockRenderer::blockVertices[] =
 {
 	//Top Face - Positions, Colors, Normal
 	0.0F, 1.0F, 0.0F, //p
@@ -261,4 +330,75 @@ float BlockRenderer::vertices[] =
 	1.0F, 0.0F, 1.0F, //p
 	1.0F, 1.0F, 1.0F, //c
 	0.0F, 0.0F, 1.0F, //n
+};
+
+float BlockRenderer::crossVertices[] =
+{
+	//1st Face - Positions, Colors, Normal
+	0.0F, 1.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, -0.5F, //n
+
+	0.0F, 0.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, -0.5F, //n
+
+	1.0F, 1.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, -0.5F, //n
+
+	1.0F, 0.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, -0.5F, //n
+
+	//2nd Face - Positions, Colors, Normal
+	0.0F, 0.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, -0.5F,//n
+
+	1.0F, 0.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, -0.5F,//n
+
+	0.0F, 1.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, -0.5F,//n
+
+	1.0F, 1.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, -0.5F,//n
+
+	//3rd Face - Positions, Colors, Normal
+	0.0F, 0.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, 0.5F,//n
+
+	0.0F, 1.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, 0.5F,//n
+
+	1.0F, 0.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, 0.5F,//n
+
+	1.0F, 1.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	0.5F, 0.0F, 0.5F,//n
+
+	//Z+ Face - Positions, Colors, Normal
+	0.0F, 0.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, 0.5F, //n
+
+	0.0F, 1.0F, 1.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, 0.5F, //n
+
+	1.0F, 0.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, 0.5F, //n
+
+	1.0F, 1.0F, 0.0F, //p
+	1.0F, 1.0F, 1.0F, //c
+	-0.5F, 0.0F, 0.5F, //n
 };

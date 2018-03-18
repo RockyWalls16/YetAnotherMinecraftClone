@@ -15,6 +15,7 @@ class DeferredBlockShader : public Shader
 {
 private:
 	int uniformModelLocation;
+	int uniformViewLocation;
 	int uniformViewProjLocation;
 	int uniformNormalLocation;
 	int uniformAtlasCellSizeLocation;

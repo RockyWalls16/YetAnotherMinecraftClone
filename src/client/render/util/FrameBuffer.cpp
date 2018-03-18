@@ -8,6 +8,7 @@
 #include <client/render/util/FrameBuffer.h>
 #include <client/textures/TextureLoader.h>
 #include <client/textures/Texture.h>
+#include <client/shaders/Shader.h>
 #include <util/Logger.h>
 #include <util/GLHeader.h>
 #include <client/render/GameRenderer.h>
@@ -88,6 +89,16 @@ void FrameBuffer::attachColorTexture(int width, int height, int colorIndex, int 
 	attachedColors.push_back(GL_COLOR_ATTACHMENT0 + colorIndex);
 }
 
+void FrameBuffer::attachColorTexture(int colorIndex, Texture * texture)
+{
+	AttachedTexture* attachedTexture = new AttachedTexture(texture, GL_COLOR_ATTACHMENT0 + colorIndex);
+	attachedTextures.push_back(attachedTexture);
+
+	// Attach it
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_2D, texture->getTextureId(), 0);
+	attachedColors.push_back(GL_COLOR_ATTACHMENT0 + colorIndex);
+}
+
 void FrameBuffer::attachDepthTexture(int width, int height)
 {
 	attachTexture(GL_DEPTH_ATTACHMENT, width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
@@ -115,6 +126,12 @@ void FrameBuffer::resizeAttachedTexture(int width, int height)
 void FrameBuffer::bindTexture(int attachedTextureId)
 {
 	glActiveTexture(GL_TEXTURE0 + attachedTextureId);
+	glBindTexture(GL_TEXTURE_2D, attachedTextures[attachedTextureId]->texture->getTextureId());
+}
+
+void FrameBuffer::bindTexture(int glTextureId, int attachedTextureId)
+{
+	glActiveTexture(GL_TEXTURE0 + glTextureId);
 	glBindTexture(GL_TEXTURE_2D, attachedTextures[attachedTextureId]->texture->getTextureId());
 }
 

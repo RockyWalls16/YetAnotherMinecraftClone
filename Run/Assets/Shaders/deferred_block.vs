@@ -5,6 +5,7 @@ in vec3 aNormal;
 in vec2 aAtlasPos;
 
 out vec3 outFragPos;
+out vec3 outFragPosView;
 out vec3 outColor;
 out vec3 outNormal;
 out vec3 outRawNormal;
@@ -20,9 +21,10 @@ void main()
 	// Set vertex pos
 	vec4 worldPosition = uModel * vec4(aPos, 1.0);
 	outFragPos = worldPosition.xyz;
+	outFragPosView = (uViewMat * worldPosition).xyz;
 	gl_Position = uViewProj * worldPosition;
 
-	outNormal = normalize(uNormalMat * aNormal);
+	outNormal = normalize(mat3(uViewMat * uModel) * normalize(aNormal));
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;

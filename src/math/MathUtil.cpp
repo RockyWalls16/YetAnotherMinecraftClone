@@ -89,3 +89,13 @@ float MathUtil::randF(float min, float max)
 {
 	return (std::rand() / (float) RAND_MAX) * (max - min) + min;
 }
+
+float MathUtil::percent(float min, float max, float value)
+{
+	return (value - min) / (max - min);
+}
+
+float MathUtil::clamp(float value, float min, float max)
+{
+	return value < min ? min : value > max ? max : value;
+}

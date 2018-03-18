@@ -3,6 +3,8 @@
 #include <core/block/BlockGrass.h>
 #include <core/block/BlockWater.h>
 #include <core/block/BlockLeaves.h>
+#include <core/block/BlockLog.h>
+#include <core/block/BlockPlant.h>
 #include <client/render/GameRenderer.h>
 #include <math/AABB.h>
 
@@ -14,7 +16,16 @@ Block* Block::DIRT = new Block(2, 2);
 Block* Block::GRASS = new BlockGrass(3);
 Block* Block::SAND = new Block(4, 18);
 Block* Block::WATER = new BlockWater(5, 205);
-Block* Block::LEAVES = new BlockLeaves(6, 52);
+Block* Block::LEAVES_OAK = new BlockLeaves(6, 52);
+Block* Block::LEAVES_BIRCH = new BlockLeaves(7, 26);
+Block* Block::WOOD_OAK_LOG = new BlockLog(8, 20, 21);
+Block* Block::WOOD_BIRCH_LOG = new BlockLog(9, 117, 21);
+Block* Block::TALL_GRASS = new BlockPlant(10, 39);
+Block* Block::FLOWER_ROSE = new BlockPlant(11, 12);
+Block* Block::FLOWER_DANDELION = new BlockPlant(12, 13);
+Block* Block::SUGAR_CANE = new  BlockPlant(13, 73);
+Block* Block::RED_MUSHROOM = new BlockPlant(14, 28);
+Block* Block::BROWN_MUSHROOM = new BlockPlant(15, 29);
 
 Block::Block(unsigned short id, int textureId)
 {
@@ -25,7 +36,7 @@ Block::Block(unsigned short id, int textureId)
 
 Block* Block::getBlock(unsigned short id)
 {
-	return blockList[id];
+	return blockList[(int) id];
 }
 
 std::vector<Block*>& Block::getBlockList()
@@ -81,4 +92,9 @@ bool Block::canCollide()
 bool Block::isSimpleBlock()
 {
 	return true;
+}
+
+RenderType Block::getRenderType()
+{
+	return RenderType::BLOCK;
 }

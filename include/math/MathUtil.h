@@ -11,6 +11,7 @@
 #include <glm/vec3.hpp>
 
 #define M_PI 3.14159265358979323846
+#define M_PI_F 3.14159265358979323846F
 
 class MathUtil
 {
@@ -34,6 +35,10 @@ public:
 	static float randF();
 
 	static float randF(float min, float max);
+
+	static float percent(float min, float max, float value);
+
+	static float clamp(float value, float min, float max);
 };
 
 #endif /* UTIL_MATHUTIL_H_ */

@@ -1,130 +1,135 @@
 #include <core/world/ChunkManager.h>
+#include <core/world/World.h>
 
-ChunkManager::ChunkManager()
+ChunkManager::ChunkManager(World& world) : world(world)
 {
-	
+	chunkMap.reserve(4096);
+	loadingChunkMap.reserve(1024);
+}
+
+shared_ptr<AirChunk> ChunkManager::provideChunkAt(int x, int y, int z)
+{
+	ChunkCoordKey key = ChunkCoordKey(x, y, z);
+
+	auto it = chunkMap.find(key);
+
+	// Chunk already exists
+	if (it != chunkMap.end())
+	{
+		return it->second;
+	}
+
+	bool isGeneratorThread = world.getChunkGeneratorQueue().isGeneratorThread();
+
+	// Fetch in second map
+	if (isGeneratorThread)
+	{
+		auto it = loadingChunkMap.find(key);
+
+		// Chunk already exists
+		if (it != loadingChunkMap.end())
+		{
+			return it->second;
+		}
+	}
+
+	// Chunk does not exists
+	shared_ptr<AirChunk> newChunk = world.getChunkGenerator().generateChunk(x, y, z);
+	if (newChunk->getChunkType() == AIR)
+	{
+		newChunk->setDecorated();
+	}
+
+	// Is from main thread ?
+	if (!isGeneratorThread)
+	{
+		chunkMap[key] = newChunk;
+		loadedChunks.push_back(newChunk);
+
+		if (newChunk->isDecorated())
+		{
+			world.notifyNeighbours(newChunk, NeighbourNotification::LOADED);
+		}
+	}
+	else
+	{
+		loadingChunkMap[key] = newChunk;
+	}
+
+	return newChunk;
 }
 
 shared_ptr<AirChunk> ChunkManager::getChunkAt(int x, int y, int z)
 {
-	ChunkLineZ lineZ = getZLineFromX(x);
-	if (lineZ)
+	auto it = chunkMap.find(ChunkCoordKey(x, y, z));
+	return it != chunkMap.end() ? it->second : nullptr;
+}
+
+void ChunkManager::insertChunkAt(shared_ptr<AirChunk> chunk)
+{
+	int x = chunk->getChunkX();
+	int y = chunk->getChunkY();
+	int z = chunk->getChunkZ();
+
+	ChunkCoordKey key(x, y, z);
+
+	if (!chunkMap.contains(key))
 	{
-		ChunkLineY lineY = getYLineFromZ(lineZ, z);
-		if (lineY)
-		{
-			return getChunkFromY(lineY, y);
-		}
+		chunkMap[key] = chunk;
+		loadedChunks.push_back(chunk);
 	}
 
-	return nullptr;
+	if (chunk->isDecorated())
+	{
+		world.notifyNeighbours(chunk, NeighbourNotification::LOADED);
+	}
 }
 
-ChunkLineZ ChunkManager::getZLineFromX(int x)
+void ChunkManager::setChunkAt(shared_ptr<AirChunk> chunk)
 {
-	auto it = chunkLines.find(x);
-	return it != chunkLines.end() ? it->second : nullptr;
-}
-
-ChunkLineY ChunkManager::getYLineFromZ(const ChunkLineZ& lineZ, int z)
-{
-	auto it = lineZ->find(z);
-	return it != lineZ->end() ? it->second : nullptr;
-}
-
-shared_ptr<AirChunk> ChunkManager::getChunkFromY(const ChunkLineY& lineY, int y)
-{
-	auto it = lineY->find(y);
-	return it != lineY->end() ? it->second : nullptr;
+	// TODO REPLACE IN LOADED CHUNKS VECTOR
+	chunkMap[ChunkCoordKey(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())] = chunk;
 }
 
 void ChunkManager::tickChunks()
 {
-	for (int length = loadedChunks.size(), i = length - 1; i >= 0; i--)
+	std::vector<shared_ptr<AirChunk>>::iterator it;
+	for (it = loadedChunks.begin(); it != loadedChunks.end();)
 	{
-		shared_ptr<AirChunk>& chunk = loadedChunks[i];
+		shared_ptr<AirChunk>& chunk = (*it);
 
 		// Shall remove chunk ?
 		if (!chunk->tick())
 		{
-			loadedChunks.erase(loadedChunks.begin() + i);
+			unloadChunk(chunk);
+			it = loadedChunks.erase(it);
+		}
+		else
+		{
+			it++;
 		}
 	}
 }
 
-ChunkLineZ ChunkManager::loadZLineFromX(int x)
-{
-	ChunkLineZ lineZ = getZLineFromX(x);
-	if (lineZ)
-	{
-		return lineZ;
-	}
-
-	lineZ = make_shared<spp::sparse_hash_map<int, ChunkLineY>>();
-	chunkLines[x] = lineZ;
-
-	return lineZ;
-}
-
-ChunkLineY ChunkManager::loadYLineFromZ(const ChunkLineZ& lineZ, int z)
-{
-	ChunkLineY lineY = getYLineFromZ(lineZ, z);
-	if (lineY)
-	{
-		return lineY;
-	}
-
-	lineY = make_shared<spp::sparse_hash_map<int, shared_ptr<AirChunk>>>();
-	(*lineZ)[z] = lineY;
-
-	return lineY;
-}
-
-shared_ptr<AirChunk> ChunkManager::getChunkFromNeighbour(const shared_ptr<AirChunk>& chunk, Side side)
-{
-	return chunk->getNeighbour(side).lock();
-}
-
-void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk, ChunkLineY& lineY)
-{
-	(*lineY)[chunk->getChunkY()] = chunk;
-}
-
-void ChunkManager::setChunkAt(const shared_ptr<AirChunk>& chunk)
+void ChunkManager::unloadChunk(const shared_ptr<AirChunk>& chunk)
 {
 	int x = chunk->getChunkX();
 	int y = chunk->getChunkY();
 	int z = chunk->getChunkZ();
 
-	ChunkLineZ lineZ = getZLineFromX(x);
-	if (lineZ)
-	{
+	chunkMap.erase(ChunkCoordKey(x, y, z));
 
-		ChunkLineY lineY = getYLineFromZ(lineZ, z);
-		if (lineY)
-		{
-			setChunkAt(chunk, lineY);
-			loadedChunks.push_back(chunk);
-		}
-	}
+	world.notifyNeighbours(chunk, NeighbourNotification::UNLOADED);
+	world.onChunkUnloaded(chunk);
 }
 
-void ChunkManager::removeChunk(const shared_ptr<AirChunk>& chunk)
+void ChunkManager::clearLoadingChunkMap()
 {
-	int x = chunk->getChunkX();
-	int y = chunk->getChunkY();
-	int z = chunk->getChunkZ();
+	loadingChunkMap.clear();
+}
 
-	ChunkLineZ lineZ = getZLineFromX(x);
-	ChunkLineY lineY = getYLineFromZ(lineZ, z);
-
-	lineY->erase(y);
-	if (lineY->empty())
-	{
-		lineZ->erase(z);
-		if (lineZ->empty())
-		{
-			chunkLines.erase(x);
-		}
-	}
+shared_ptr<AirChunk> ChunkManager::getLoadingChunkAt(int x, int y, int z)
+{
+	auto it = loadingChunkMap.find(ChunkCoordKey(x, y, z));
+	return it != loadingChunkMap.end() ? it->second : nullptr;
 }

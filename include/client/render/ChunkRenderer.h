@@ -84,12 +84,15 @@ public:
 
 	VertexBuilder** prepareChunkMesh(const shared_ptr<AirChunk>& chunk);
 	void applyGreedyMeshing(VertexBuilder** builders, const shared_ptr<AirChunk>& ch);
+	void applyStandardMesh(VertexBuilder** builders, const shared_ptr<AirChunk>& ch);
 	void removeChunk(const shared_ptr<AirChunk>& chunk);
 	void removeChunkAtLayer(const shared_ptr<AirChunk>& chunk, RenderLayer renderLayer);
 	ChunkRenderContainer& getColumnContainer(RenderLayer layer);
 	shared_ptr<ChunkRenderColumn> getRenderColumn(RenderLayer layer, int x, int z);
 
 	long long getColumnIndex(int chunkX, int chunkZ);
+
+	ChunkRenderQueue& getChunkRenderQueue();
 
 private:
 	void configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilder* builder, VertexArray* vertexArray);

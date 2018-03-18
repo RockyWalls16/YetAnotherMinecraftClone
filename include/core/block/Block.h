@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <client/render/WorldRenderer.h>
+#include <client/render/BlockRenderer.h>
 #include <util/Side.h>
 
 enum RenderLayer;
@@ -12,6 +13,7 @@ class Block
 {
 private:
 	static std::vector<Block*> blockList;
+protected:
 	unsigned short id;
 	unsigned int textureId;
 
@@ -23,7 +25,16 @@ public:
 	static Block* GRASS;
 	static Block* SAND;
 	static Block* WATER;
-	static Block* LEAVES;
+	static Block* LEAVES_OAK;
+	static Block* LEAVES_BIRCH;
+	static Block* WOOD_OAK_LOG;
+	static Block* WOOD_BIRCH_LOG;
+	static Block* TALL_GRASS;
+	static Block* FLOWER_ROSE;
+	static Block* FLOWER_DANDELION;
+	static Block* SUGAR_CANE;
+	static Block* RED_MUSHROOM;
+	static Block* BROWN_MUSHROOM;
 
 	Block(unsigned short id, int textureId);
 
@@ -46,6 +57,8 @@ public:
 	virtual bool canCollide();
 
 	virtual bool isSimpleBlock();
+
+	virtual RenderType getRenderType();
 
 	static Block* getBlock(unsigned short id);
 

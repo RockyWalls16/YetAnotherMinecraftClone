@@ -55,99 +55,13 @@ void AABB::blockInfoInBox(World& world, std::vector<BlockAABB>* aabbVector)
 
 	Block* block;
 
-	// Get first column & first chunk (reduce map inspection)
-	int lastCX = bX >> CHUNK_SHIFT;
-	int lastCY = bY >> CHUNK_SHIFT;
-	int lastCZ = bZ >> CHUNK_SHIFT;
-	int cX, cY, cZ;
-	int cbX, cbY, cbZ;
-
-	ChunkManager& cm = world.getChunkManager();
-
-	ChunkLineZ lineZ = cm.loadZLineFromX(lastCX);
-	ChunkLineY lineY = nullptr;
-	shared_ptr<AirChunk> chunk = nullptr;
-
-	if (lineZ)
-	{
-		lineY = cm.getYLineFromZ(lineZ, lastCZ);
-		if (lineY)
-		{
-			chunk = cm.getChunkFromY(lineY, lastCY);
-		}
-	}
-
 	for (x = bX; x < bX2; x++)
 	{
-		cX = x >> CHUNK_SHIFT;
-		cbX = MathUtil::getChunkTilePosFromWorld(x);
-
-		// Check is on another X line
-		if (cX != lastCX)
-		{
-			lineZ = cm.loadZLineFromX(cX);
-			lastCX = cX;
-
-			if (lineZ)
-			{
-				lineY = cm.getYLineFromZ(lineZ, lastCZ);
-				if (lineY)
-				{
-					chunk = cm.getChunkFromY(lineY, lastCY);
-				}
-			}
-		}
-
-		if (!lineZ)
-		{
-			continue;
-		}
-
 		for (z = bZ; z < bZ2; z++)
 		{
-			cZ = z >> CHUNK_SHIFT;
-			cbZ = MathUtil::getChunkTilePosFromWorld(z);
-
-			// Check is on another line
-			if (cZ != lastCZ)
-			{
-				lineY = cm.getYLineFromZ(lineZ, cZ);
-				lastCZ = cZ;
-
-				// Update chunk
-				if (lineY)
-				{
-					chunk = cm.getChunkFromY(lineY, lastCY);
-				}
-			}
-
-			// Check column is not null
-			if (!lineY)
-			{
-				continue;
-			}
-
 			for (y = bY; y < bY2; y++)
 			{
-				cY = y >> CHUNK_SHIFT;
-
-				// Check is on another chunk
-				if (cY != lastCY)
-				{
-					chunk = cm.getChunkFromY(lineY, cY);
-					lastCY = cY;
-
-					// Go to next chunk
-					if (!chunk)
-					{
-						y += CHUNK_SIZE - y - 1;
-						continue;
-					}
-				}
-
-				cbY = MathUtil::getChunkTilePosFromWorld(y);
-
-				block = Block::getBlock(chunk->getBlockAt(cbX, cbY, cbZ));
+				block = world.getBlockAt(x, y, z);
 
 				if (block->canCollide())
 				{

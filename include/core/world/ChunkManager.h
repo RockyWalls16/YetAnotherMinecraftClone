@@ -8,42 +8,33 @@
 #include <sparsepp/spp.h>
 
 using namespace std;
- 
-// Map for each axis
-typedef shared_ptr<spp::sparse_hash_map<int, shared_ptr<AirChunk>>> ChunkLineY;
-typedef shared_ptr<spp::sparse_hash_map<int, ChunkLineY>> ChunkLineZ;
-typedef spp::sparse_hash_map<int, ChunkLineZ> ChunkLineX;
+
+class World;
 
 class ChunkManager
 {
 private:
-	ChunkLineX chunkLines;
+	World& world;
+	spp::sparse_hash_map<ChunkCoordKey, shared_ptr<AirChunk>> chunkMap;
+	spp::sparse_hash_map<ChunkCoordKey, shared_ptr<AirChunk>> loadingChunkMap;
 	vector<shared_ptr<AirChunk>> loadedChunks;
 
 public:
-	ChunkManager();
-
-	shared_ptr<AirChunk> getChunkAt(int x, int y, int z);
-
-	ChunkLineZ getZLineFromX(int x);
-
-	ChunkLineY getYLineFromZ(const ChunkLineZ& lineZ, int z);
-
-	shared_ptr<AirChunk> getChunkFromY(const ChunkLineY& lineY, int y);
+	ChunkManager(World& world);
 
 	void tickChunks();
 
-	ChunkLineZ loadZLineFromX(int x);
+	shared_ptr<AirChunk> provideChunkAt(int x, int y, int z);
 
-	ChunkLineY loadYLineFromZ(const ChunkLineZ& lineZ, int z);
+	shared_ptr<AirChunk> getChunkAt(int x, int y, int z);
+	void insertChunkAt(shared_ptr<AirChunk> chunk);
+	void setChunkAt(shared_ptr<AirChunk> chunk);
 
-	shared_ptr<AirChunk> getChunkFromNeighbour(const shared_ptr<AirChunk>& chunk, Side side);
+	void unloadChunk(const shared_ptr<AirChunk>& chunk);
 
-	void setChunkAt(const shared_ptr<AirChunk>& chunk, ChunkLineY& lineY);
+	void clearLoadingChunkMap();
 
-	void setChunkAt(const shared_ptr<AirChunk>& chunk);
-
-	void removeChunk(const shared_ptr<AirChunk>& chunk);
+	shared_ptr<AirChunk> getLoadingChunkAt(int x, int y, int z);
 };
 
 #endif

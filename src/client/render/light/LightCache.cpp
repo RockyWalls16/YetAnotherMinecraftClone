@@ -11,3 +11,11 @@ std::vector<DirectionalLight*>& LightCache::getDirectionalLights()
 {
 	return directionalLights;
 }
+
+void LightCache::cleanLights()
+{
+	for (DirectionalLight* light : directionalLights)
+	{
+		light->dirty = false;
+	}
+}

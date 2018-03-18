@@ -47,6 +47,7 @@ public:
 
 	void pushInputChunk(shared_ptr<AirChunk> chunk);
 	int getOutputSize();
+	int getInputSize();
 	ChunkRenderOutput* popOutputChunk();
 
 private:

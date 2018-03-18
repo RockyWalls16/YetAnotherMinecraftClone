@@ -106,8 +106,8 @@ FontVAO * FontRenderer::makeVao(Font& font, std::string text)
 		}
 
 		// Update vertex builder
-		vb.setLastIndice(lastIndice + 6);
-		vb.addVertices(charVertices, charIndices, 6);
+		vb.setLastIndice(lastIndice + 4);
+		vb.addVertices(charVertices, 4, charIndices, 6);
 
 		// Update offset
 		currentWidth += chInfo->xAdvance;

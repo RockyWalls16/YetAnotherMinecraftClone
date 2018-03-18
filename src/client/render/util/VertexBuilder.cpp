@@ -21,7 +21,7 @@ VertexBuilder::~VertexBuilder()
 	free(indicesBuffer);
 }
 
-void VertexBuilder::addVertices(float* vertices, unsigned int* indices, unsigned int indicesAmount)
+void VertexBuilder::addVertices(float* vertices, unsigned int vertexAmount, unsigned int* indices, unsigned int indicesAmount)
 {
 	// Check buffer is large enough to write new data
 	if(indicesAmount + indicesWriteIndex >= indicesBufferSize)
@@ -41,7 +41,7 @@ void VertexBuilder::addVertices(float* vertices, unsigned int* indices, unsigned
 	}
 
 	// Add new values to buffers
-	unsigned int verticesAmount = indicesAmount * dataPerIndices;
+	unsigned int verticesAmount = vertexAmount * dataPerIndices;
 
 	std::copy(vertices, vertices + verticesAmount, vertexBuffer + vertexWriteIndex);
 	std::copy(indices, indices + indicesAmount, indicesBuffer + indicesWriteIndex);

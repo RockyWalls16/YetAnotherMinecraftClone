@@ -16,6 +16,7 @@
 #include <client/render/font/FontVAO.h>
 #include <client/render/font/FontRenderer.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <math/MathUtil.h>
 #include <util/TimeManager.h>
 #include <Game.h>
 
@@ -31,7 +32,7 @@ void GameRenderer::clearGameRenderer()
 
 	// Destroy renderers
 	delete(worldRenderer);
-	delete(frameBuffer);
+	delete(gBuffer);
 }
 
 void GameRenderer::renderGame()
@@ -55,9 +56,10 @@ void GameRenderer::renderGame()
 	{
 		delete(coords);
 	}
-	//coords = FontRenderer::makeVao(testFont, "X: " + std::to_string((int) gameCamera->getLocation().x) + " Y: " + std::to_string((int)gameCamera->getLocation().y) + " Z: " + std::to_string((int)gameCamera->getLocation().z));
+	//coords = FontRenderer::makeVao(*testFont, "X: " + std::to_string((int) gameCamera.getLocation().x) + " Y: " + std::to_string((int)gameCamera.getLocation().y) + " Z: " + std::to_string((int)gameCamera.getLocation().z));
+	coords = FontRenderer::makeVao(*testFont, "G: " + std::to_string(Game::getInstance().getWorld()->getChunkGeneratorQueue().getInputSize()) + " R: " + std::to_string(worldRenderer->getChunkRenderer().getChunkRenderQueue().getInputSize()));
 
-	frameBuffer->bind();
+	gBuffer->bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -73,7 +75,7 @@ void GameRenderer::renderGame()
 	worldRenderer->render(RenderLayer::RL_OPAQUE);
 	
 	// Unbind framebuffer
-	frameBuffer->unbind();
+	gBuffer->unbind();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -83,20 +85,40 @@ void GameRenderer::renderGame()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	worldRenderer->render(RenderLayer::RL_PRE_PP);
-
 	glDisable(GL_DEPTH_TEST);
-	ShaderCache::postShader->use();
-	frameBuffer->bindTexture(0);
-	frameBuffer->bindTexture(1);
-	frameBuffer->bindTexture(2);
-	frameBuffer->bindTexture(3);
-	frameBuffer->bindTexture(4);
-	frameBuffer->drawOverlay();
 	
+	// SSAO
+	ssaoBuffer->bind();
+	ShaderCache::ssaoShader->use();
+	gBuffer->bindTexture(0); // Bind position buffer
+	gBuffer->bindTexture(1); // Bind normal buffer
+	ShaderCache::ssaoShader->getNoiseTexture()->bind(2);
+	ssaoBuffer->drawOverlay();
+	ssaoBuffer->unbind();
+
+	// SSAO blur
+	blurSSAOBuffer->bind();
+	ShaderCache::ssaoBlurShader->use();
+	ssaoBuffer->bindTexture(0);
+	blurSSAOBuffer->drawOverlay();
+
+	blurSSAOBuffer->unbind();
+
+	// Light calculation
+	ShaderCache::deferredLightingShader->use();
+	gBuffer->bindTexture(0);
+	gBuffer->bindTexture(1);
+	gBuffer->bindTexture(2);
+	gBuffer->bindTexture(3);
+	blurSSAOBuffer->bindTexture(4, 0);
+	gBuffer->bindTexture(5, 4);
+	gBuffer->drawOverlay();
+	
+	// Forward rendering
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
-	frameBuffer->blitFrameBuffer(frameWidth, frameHeight);
+	gBuffer->blitFrameBuffer(frameWidth, frameHeight);
+	worldRenderer->render(RenderLayer::RL_PRE_PP);
 	gameCamera.getCameraRay().tick();
 	worldRenderer->render(RenderLayer::RL_TRANSPARENT);
 
@@ -105,9 +127,11 @@ void GameRenderer::renderGame()
 
 	glDisable(GL_DEPTH_TEST);
 	fvao->render2D(4, 28);
-	//coords->render2D(4, 58);
+	coords->render2D(4, 58);
 
 	//checkGLError("Frame");
+
+	LightCache::cleanLights();
 
 	windowManager.swapBuffers();
 	
@@ -147,13 +171,23 @@ int GameRenderer::initGameRenderer()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_PROGRAM_POINT_SIZE);
 
-		frameBuffer = new FrameBuffer();
-		frameBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
-		frameBuffer->attachColorTexture(width, height, 1, GL_RGBA8_SNORM, GL_RGB, GL_FLOAT); // Normals buffer
-		frameBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
-		frameBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
-		frameBuffer->attachDepthTexture(width, height);
-		frameBuffer->checkAndUnbind();
+		gBuffer = new FrameBuffer();
+		gBuffer->attachColorTexture(width, height, 0, GL_RGB16F, GL_RGB, GL_FLOAT); // Position buffer
+		gBuffer->attachColorTexture(width, height, 1, GL_RGBA8_SNORM, GL_RGB, GL_FLOAT); // Normals buffer
+		gBuffer->attachColorTexture(width, height, 2, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // Albedo buffer
+		gBuffer->attachColorTexture(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Light info buffer (spec, spec damper)
+		gBuffer->attachDepthTexture(width, height);
+		gBuffer->checkAndUnbind();
+
+		// SSAO buffer
+		ssaoBuffer = new FrameBuffer();
+		ssaoBuffer->attachColorTexture(width, height, 0, GL_RED, GL_RGB, GL_FLOAT);
+		ssaoBuffer->checkAndUnbind();
+
+		// Blur SSAO buffer
+		blurSSAOBuffer = new FrameBuffer();
+		blurSSAOBuffer->attachColorTexture(width, height, 0, GL_RED, GL_RGB, GL_FLOAT);
+		blurSSAOBuffer->checkAndUnbind();
 
 		worldRenderer = new WorldRenderer(*Game::getInstance().getWorld());
 
@@ -178,11 +212,13 @@ void GameRenderer::onResize(int width, int height)
 		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
 		gameCamera.setCameraPerspective(60.0F, width, height);
 		
-		ShaderCache::postShader->onResize(width, height);
+		ShaderCache::onResize(width, height);
 
-		if (frameBuffer)
+		if (gBuffer)
 		{
-			frameBuffer->resizeAttachedTexture(width, height);
+			gBuffer->resizeAttachedTexture(width, height);
+			ssaoBuffer->resizeAttachedTexture(width, height);
+			blurSSAOBuffer->resizeAttachedTexture(width, height);
 		}
 	}
 }

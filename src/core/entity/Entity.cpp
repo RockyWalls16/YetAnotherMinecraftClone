@@ -20,8 +20,8 @@ Entity::Entity(World& world) : entityWorld(world), hitbox(AABB(glm::vec3(0.1F, 0
 
 void Entity::tick()
 {
-	shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos(position.x, position.y, position.z);
-	if (chunk == nullptr || (chunk != nullptr && !chunk->isGenerated()))
+	shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos((int) position.x, (int) position.y, (int) position.z);
+	if (chunk == nullptr)
 	{
 		return;
 	}

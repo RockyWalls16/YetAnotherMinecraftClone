@@ -30,7 +30,9 @@ private:
 	WindowManager windowManager;
 	Camera gameCamera;
 	WorldRenderer* worldRenderer;
-	FrameBuffer* frameBuffer;
+	FrameBuffer* gBuffer;
+	FrameBuffer* ssaoBuffer;
+	FrameBuffer* blurSSAOBuffer;
 	glm::mat4 orthoProjectionMatrix;
 	bool wireframe;
 

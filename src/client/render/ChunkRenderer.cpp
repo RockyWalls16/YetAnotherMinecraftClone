@@ -71,7 +71,7 @@ void ChunkRenderer::renderChunkLayer(RenderLayer renderLayer)
 		int chunkZ = column->chunkZ * CHUNK_SIZE;
 
 		// Check column is in frustum
-		if (Frustum::columnInFrustum(chunkX, cameraY - CHUNK_SIZE * 10, chunkZ, CHUNK_SIZE, cameraY + CHUNK_SIZE * 10, CHUNK_SIZE))
+		if (Frustum::columnInFrustum(chunkX, (int) cameraY - CHUNK_SIZE * 10, chunkZ, CHUNK_SIZE, (int) cameraY + CHUNK_SIZE * 10, CHUNK_SIZE))
 		{
 			for (ChunkRenderIndex* cri : column->column)
 			{
@@ -164,9 +164,9 @@ void ChunkRenderer::addChunkToRenderQueue(const shared_ptr<AirChunk>& chunk)
 VertexBuilder** ChunkRenderer::prepareChunkMesh(const shared_ptr<AirChunk>& chunk)
 {
 	// Add chunks to FBO, array index [0] opaque [1] transparent
-	VertexBuilder** vertexBuilders = new VertexBuilder*[2]{ new VertexBuilder(11, 12000), new VertexBuilder(11, 12000) };
+	VertexBuilder** vertexBuilders = new VertexBuilder*[2]{ new VertexBuilder(11, 24000), new VertexBuilder(11, 6000) };
 
-	applyGreedyMeshing(vertexBuilders, chunk);
+	applyStandardMesh(vertexBuilders, chunk);
 
 	// No vertices to render
 	if (vertexBuilders[0]->getEOBSize() == 0 && vertexBuilders[1]->getEOBSize() == 0)
@@ -212,13 +212,24 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 			for (z = 0; z < CHUNK_SIZE; z++)
 			{
 				Block* block = Block::getBlock(ch->getBlockAt(x, y, z));
-				if (block->isVisible()) // Check block is visible
+
+				if (!block->isVisible()) // Check block is visible
+				{
+					for (side = 0; side < 6; side++)
+					{
+						mask[x][y][z][side] = true;
+					}
+					continue;
+				}
+				RenderType renderType = block->getRenderType();
+				int renderLayer = block->getRenderLayer();
+
+				if (renderType == RenderType::BLOCK) // Check block is visible
 				{
 					AABB blockAABB = block->getRenderHitbox();
-					int renderLayer = block->getRenderLayer();
 					for (side = 0; side < 6; side++) // For eachs side
 					{
-						if (!mask[x][y][z][side] && BlockRenderer::isSideVisible(ch, neighbours, block, x, y, z, (Side) side)) // Check not already meshed and side is visible
+						if (!mask[x][y][z][side] && BlockRenderer::isSideVisible(ch, neighbours, block, x, y, z, (Side)side)) // Check not already meshed and side is visible
 						{
 							if (side == Side::TOP || side == Side::BOTTOM) // Check for near top then bottom face
 							{
@@ -229,7 +240,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 									{
 										for (z2 = z; z2 < CHUNK_SIZE; z2++)
 										{
-											if (!mask[x2][y][z2][side] && ch->getBlockAt(x2, y, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side) side))
+											if (!mask[x2][y][z2][side] && ch->getBlockAt(x2, y, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side)side))
 											{
 												mask[x2][y][z2][side] = true;
 											}
@@ -245,7 +256,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										l = z + width;
 										for (z2 = z; z2 < l; z2++)
 										{
-											if (mask[x2][y][z2][side] || ch->getBlockAt(x2, y, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side) side))
+											if (mask[x2][y][z2][side] || ch->getBlockAt(x2, y, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y, z2, (Side)side))
 											{
 												goto mainLoopTB;
 											}
@@ -258,9 +269,9 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										}
 									}
 								}
-								mainLoopTB:
+							mainLoopTB:
 
-								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, x2 - x, 1, width, (Side) side);
+								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, x2 - x, 1, width, (Side)side);
 							}
 							else if (side == Side::EAST || side == Side::WEST)
 							{
@@ -271,13 +282,14 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 									{
 										for (z2 = z; z2 < CHUNK_SIZE; z2++)
 										{
-											if (!mask[x][y2][z2][side] && ch->getBlockAt(x, y2, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side) side))
+											if (!mask[x][y2][z2][side] && ch->getBlockAt(x, y2, z2) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side)side))
 											{
 												mask[x][y2][z2][side] = true;
 
 												// Block is not full height, no need to check for further Y neighbours
 												if (blockAABB.startPos.y != 0.0 || blockAABB.endPos.y != 1.0)
 												{
+													z2++;
 													break;
 												}
 											}
@@ -293,7 +305,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										l = z + width;
 										for (z2 = z; z2 < l; z2++)
 										{
-											if (mask[x][y2][z2][side] || ch->getBlockAt(x, y2, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side) side))
+											if (mask[x][y2][z2][side] || ch->getBlockAt(x, y2, z2) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x, y2, z2, (Side)side))
 											{
 												goto mainLoopNS;
 											}
@@ -306,7 +318,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										}
 									}
 								}
-								mainLoopNS:
+							mainLoopNS:
 
 								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, 1, y2 - y, width, (Side)side);
 							}
@@ -319,13 +331,14 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 									{
 										for (y2 = y; y2 < CHUNK_SIZE; y2++)
 										{
-											if (!mask[x2][y2][z][side] && ch->getBlockAt(x2, y2, z) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side) side))
+											if (!mask[x2][y2][z][side] && ch->getBlockAt(x2, y2, z) == block->getId() && BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side)side))
 											{
 												mask[x2][y2][z][side] = true;
 
 												// Block is not full height, no need to check for further Y neighbours
 												if (blockAABB.startPos.y != 0.0 || blockAABB.endPos.y != 1.0)
 												{
+													y2++;
 													break;
 												}
 											}
@@ -341,7 +354,7 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										l = y + height;
 										for (y2 = y; y2 < l; y2++)
 										{
-											if (mask[x2][y2][z][side] || ch->getBlockAt(x2, y2, z) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side) side))
+											if (mask[x2][y2][z][side] || ch->getBlockAt(x2, y2, z) != block->getId() || !BlockRenderer::isSideVisible(ch, neighbours, block, x2, y2, z, (Side)side))
 											{
 												goto mainLoopWE;
 											}
@@ -354,11 +367,71 @@ void ChunkRenderer::applyGreedyMeshing(VertexBuilder** builders, const shared_pt
 										}
 									}
 								}
-								mainLoopWE:
+							mainLoopWE:
 
 								BlockRenderer::renderFace(builders[renderLayer], block, blockAABB, x, y, z, x2 - x, height, 1, (Side)side);
 							}
 						}
+					}
+				}
+				else
+				{
+					// Mark all faces as masked
+					for (side = 0; side < 6; side++)
+					{
+						mask[x][y][z][side] = true;
+					}
+
+					BlockRenderer::renderBlock(builders[renderLayer], block, renderType, x, y, z);
+				}
+			}
+		}
+	}
+}
+
+void ChunkRenderer::applyStandardMesh(VertexBuilder ** builders, const shared_ptr<AirChunk>& ch)
+{
+	int side;
+	int x, y, z;
+
+	shared_ptr<AirChunk> neighbours[6];
+	for (int i = 0; i < 6; i++)
+	{
+		neighbours[i] = ch->getNeighbour((Side)i).lock();
+		if (!neighbours[i])
+		{
+			return;
+		}
+	}
+
+	for (y = 0; y < CHUNK_SIZE; y++)
+	{
+		for (x = 0; x < CHUNK_SIZE; x++)
+		{
+			for (z = 0; z < CHUNK_SIZE; z++)
+			{
+				Block* block = Block::getBlock(ch->getBlockAt(x, y, z));
+
+				if (block->isVisible()) // Check block is visible
+				{
+					RenderType renderType = block->getRenderType();
+					int renderLayer = block->getRenderLayer();
+
+					if (renderType == RenderType::BLOCK) // Check block is visible
+					{
+						AABB blockAABB = block->getRenderHitbox();
+
+						for (side = 0; side < 6; side++)
+						{
+							if (BlockRenderer::isSideVisible(ch, neighbours, block, x, y, z, (Side)side))
+							{
+								BlockRenderer::renderSimpleFace(builders[renderLayer], block, blockAABB, x, y, z, (Side)side);
+							}
+						}
+					}
+					else
+					{
+						BlockRenderer::renderBlock(builders[renderLayer], block, renderType, x, y, z);
 					}
 				}
 			}
@@ -437,4 +510,9 @@ long long ChunkRenderer::getColumnIndex(int chunkX, int chunkZ)
 {
 	// Generate Hashcode for column
 	return (((long long)chunkX << (sizeof(int) * 8)) | (chunkZ & 0xffffffff));
+}
+
+ChunkRenderQueue & ChunkRenderer::getChunkRenderQueue()
+{
+	return chunkRenderQueue;
 }

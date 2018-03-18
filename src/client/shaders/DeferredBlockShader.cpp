@@ -23,6 +23,7 @@ void DeferredBlockShader::bindAttributesAndUniforms()
 	bindAttribute(3, "aAtlasPos");
 
 	bindUniformLocation("uModel", &uniformModelLocation);
+	bindUniformLocation("uViewMat", &uniformViewLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);
 	bindUniformLocation("uNormalMat", &uniformNormalLocation);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
@@ -39,6 +40,7 @@ void DeferredBlockShader::use()
 	Shader::use();
 
 	Camera& camera = GameRenderer::getInstance().getGameCamera();
+	glUniformMatrix4fv(uniformViewLocation, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera.getViewProjMatrix()));
 }
 

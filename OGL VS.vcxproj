@@ -154,10 +154,33 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD.cpp" />
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_avx2.cpp">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_avx512.cpp" />
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_internal.cpp" />
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_neon.cpp" />
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_sse2.cpp">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD_sse41.cpp">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
     <ClCompile Include="external\glad.c" />
     <ClCompile Include="external\glm\detail\dummy.cpp" />
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
+    <ClCompile Include="include\client\shaders\BlurShader.h" />
+    <ClCompile Include="src\client\shaders\BlurShader.cpp" />
+    <ClCompile Include="src\client\shaders\SSAOShader.cpp" />
+    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
     <ClCompile Include="src\util\Color.cpp" />
     <ClCompile Include="src\client\input\CameraRay.cpp" />
     <ClCompile Include="src\client\render\font\Font.cpp" />
@@ -181,7 +204,7 @@
     <ClCompile Include="src\client\render\WindowManager.cpp" />
     <ClCompile Include="src\client\render\WorldRenderer.cpp" />
     <ClCompile Include="src\client\shaders\ForwardBlockShader.cpp" />
-    <ClCompile Include="src\client\shaders\PostProcessShader.cpp" />
+    <ClCompile Include="src\client\shaders\DeferredLightingShader.cpp" />
     <ClCompile Include="src\client\shaders\Shader.cpp" />
     <ClCompile Include="src\client\shaders\Shader2D.cpp" />
     <ClCompile Include="src\client\shaders\ShaderCache.cpp" />
@@ -199,7 +222,6 @@
     <ClCompile Include="src\core\world\AirChunk.cpp" />
     <ClCompile Include="src\core\world\ChunkColumn.cpp" />
     <ClCompile Include="src\core\world\ChunkGenerator.cpp" />
-    <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
     <ClCompile Include="src\core\world\ChunkManager.cpp" />
     <ClCompile Include="src\core\world\ComplexChunk.cpp" />
     <ClCompile Include="src\core\world\World.cpp" />
@@ -213,6 +235,8 @@
     <ClCompile Include="src\util\TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\FastNoiseSIMD\FastNoiseSIMD.h" />
+    <ClInclude Include="external\FastNoiseSIMD\FastNoiseSIMD_internal.h" />
     <ClInclude Include="external\glad\glad.h" />
     <ClInclude Include="external\glm\common.hpp" />
     <ClInclude Include="external\glm\detail\func_common.hpp" />
@@ -394,12 +418,13 @@
     <ClInclude Include="include\client\render\WorldRenderer.h" />
     <ClInclude Include="include\client\shaders\ForwardBlockShader.h" />
     <ClInclude Include="include\client\shaders\Shader2D.h" />
-    <ClInclude Include="include\client\shaders\PostProcessShader.h" />
+    <ClInclude Include="include\client\shaders\DeferredLightingShader.h" />
     <ClInclude Include="include\client\shaders\Shader.h" />
     <ClInclude Include="include\client\shaders\ShaderCache.h" />
     <ClInclude Include="include\client\shaders\ShaderLoader.h" />
     <ClInclude Include="include\client\shaders\SkySphereShader.h" />
     <ClInclude Include="include\client\shaders\DeferredBlockShader.h" />
+    <ClInclude Include="include\client\shaders\SSAOShader.h" />
     <ClInclude Include="include\client\shaders\StarShader.h" />
     <ClInclude Include="include\client\shaders\UnlitShader.h" />
     <ClInclude Include="include\client\textures\Texture.h" />
@@ -409,6 +434,8 @@
     <ClInclude Include="include\core\block\BlockAir.h" />
     <ClInclude Include="include\core\block\BlockGrass.h" />
     <ClInclude Include="include\core\block\BlockLeaves.h" />
+    <ClInclude Include="include\core\block\BlockLog.h" />
+    <ClInclude Include="include\core\block\BlockPlant.h" />
     <ClInclude Include="include\core\block\BlockWater.h" />
     <ClInclude Include="include\core\entity\Entity.h" />
     <ClInclude Include="include\core\world\AirChunk.h" />

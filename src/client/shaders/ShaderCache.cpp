@@ -13,7 +13,9 @@ std::vector<Shader*> ShaderCache::shaderCache;
 
 DeferredBlockShader* ShaderCache::deferredBlockShader = ShaderLoader::registerShader<DeferredBlockShader>("deferred_block");
 ForwardBlockShader* ShaderCache::forwardBlockShader = ShaderLoader::registerShader<ForwardBlockShader>("forward_block");
-PostProcessShader* ShaderCache::postShader = ShaderLoader::registerShader<PostProcessShader>("post_process");
+DeferredLightingShader* ShaderCache::deferredLightingShader = ShaderLoader::registerShader<DeferredLightingShader>("PP/deferred_light");
+SSAOShader* ShaderCache::ssaoShader = ShaderLoader::registerShader<SSAOShader>("PP/ssao");
+BlurShader* ShaderCache::ssaoBlurShader = ShaderLoader::registerShader<BlurShader>("PP/blur");
 Shader2D* ShaderCache::shader2d = ShaderLoader::registerShader<Shader2D>("2d");
 SkySphereShader* ShaderCache::skyShader = ShaderLoader::registerShader<SkySphereShader>("skySphere");
 StarShader* ShaderCache::starShader = ShaderLoader::registerShader<StarShader>("stars");
@@ -42,6 +44,14 @@ void ShaderCache::emptyShaderCache()
 		delete(shader);
 	}
 	ShaderCache::shaderCache.clear();
+}
+
+void ShaderCache::onResize(int width, int height)
+{
+	for (Shader* shader : ShaderCache::shaderCache)
+	{
+		shader->onResize(width, height);
+	}
 }
 
 void ShaderCache::addShader(Shader& shader)

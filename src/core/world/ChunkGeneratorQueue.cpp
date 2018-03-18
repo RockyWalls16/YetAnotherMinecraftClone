@@ -7,8 +7,7 @@
 ChunkGeneratorQueue::ChunkGeneratorQueue(World& world) : world(world)
 {
 	shallStop = false;
-	chunkInputQueue = vector<weak_ptr<AirChunk>>();
-	chunkOutputQueue = queue<shared_ptr<AirChunk>>();
+	workingChunkMap.reserve(4096);
 }
 
 ChunkGeneratorQueue::~ChunkGeneratorQueue()
@@ -40,14 +39,47 @@ void ChunkGeneratorQueue::onThreadStart()
 	while (!shallStop)
 	{
 		// Prepare chunk mesh
-		shared_ptr<AirChunk> inputChunk = popInputChunk();
+		ChunkGeneratorInput* inputChunk = popInputChunk();
 		if (inputChunk != nullptr)
 		{
-			shared_ptr<AirChunk> outputChunk = world.getChunkGenerator().generateChunk(inputChunk);
-			pushOutputChunk(outputChunk);
+			bool shallSendAsOutput = false;
+
+			// Not already generated ?
+			shared_ptr<AirChunk> actualChunk = world.getChunkManager().getChunkAt(inputChunk->x, inputChunk->y, inputChunk->z);
+			if (!actualChunk)
+			{
+				actualChunk = world.getChunkManager().getLoadingChunkAt(inputChunk->x, inputChunk->y, inputChunk->z);
+				shallSendAsOutput = true;
+			}
+
+			if (!actualChunk)
+			{
+				shared_ptr<AirChunk> outputChunk = world.getChunkGenerator().generateChunk(inputChunk->x, inputChunk->y, inputChunk->z);
+
+				// Is air chunk ?
+				if (outputChunk->getChunkType() == AIR)
+				{
+					outputChunk->setDecorated();
+				}
+
+				pushOutputChunk(outputChunk);
+			}
+			else if(!actualChunk->isDecorated()) // Already generated check decorated
+			{
+				world.getChunkGenerator().decorateChunk(std::dynamic_pointer_cast<ComplexChunk>(actualChunk));
+				actualChunk->setDecorated();
+
+				if (true || shallSendAsOutput)
+				{
+					pushOutputChunk(actualChunk);
+				}
+			}
+
+			delete(inputChunk);
 		}
 		else
 		{
+			world.getChunkManager().clearLoadingChunkMap();
 			cv.wait(waitLock);
 		}
 	}
@@ -55,7 +87,7 @@ void ChunkGeneratorQueue::onThreadStart()
 	Info("Chunk Generator Queue stopped !");
 }
 
-shared_ptr<AirChunk> ChunkGeneratorQueue::popInputChunk()
+ChunkGeneratorInput* ChunkGeneratorQueue::popInputChunk()
 {
 	// Lock input queue
 	lock_guard<mutex> lock(inputMutex);
@@ -68,25 +100,17 @@ shared_ptr<AirChunk> ChunkGeneratorQueue::popInputChunk()
 	// Pop nearest chunk to player
 	float minDist = numeric_limits<float>::max();
 
-	shared_ptr<AirChunk> nearestChunk;
-	vector<weak_ptr<AirChunk>>::iterator itNearest;
-	vector<weak_ptr<AirChunk>>::iterator it = chunkInputQueue.begin();
+	ChunkGeneratorInput* nearestChunk;
+	vector<ChunkGeneratorInput*>::iterator itNearest;
+	vector<ChunkGeneratorInput*>::iterator it = chunkInputQueue.begin();
 	glm::vec3 pos = Game::getInstance().getPlayer()->getPosition();
 	while (it != chunkInputQueue.end())
 	{
 		// Check nearest chunk
-		shared_ptr<AirChunk> chunk = it->lock();
-		
-		// Null chunk remove it (out of player area)
-		if (!chunk)
-		{
-			it = chunkInputQueue.erase(it);
-			continue;
-		}
-
-		float x = (pos.x - chunk->getChunkX() * CHUNK_SIZE + CHUNK_HALF);
-		float y = (pos.y - chunk->getChunkY() * CHUNK_SIZE + CHUNK_HALF);
-		float z = (pos.z - chunk->getChunkZ() * CHUNK_SIZE + CHUNK_HALF);
+		ChunkGeneratorInput* chunk = *it;
+		float x = (pos.x - chunk->x * CHUNK_SIZE + CHUNK_HALF);
+		float y = (pos.y - chunk->y * CHUNK_SIZE + CHUNK_HALF);
+		float z = (pos.z - chunk->z * CHUNK_SIZE + CHUNK_HALF);
 		float distance = x * x + y * y + z * z;
 
 		if (distance < minDist)
@@ -100,6 +124,7 @@ shared_ptr<AirChunk> ChunkGeneratorQueue::popInputChunk()
 	}
 
 	chunkInputQueue.erase(itNearest);
+
 	return nearestChunk;
 }
 
@@ -116,18 +141,27 @@ shared_ptr<AirChunk> ChunkGeneratorQueue::popOutputChunk()
 
 	// Pop input queue
 	shared_ptr<AirChunk> outputChunk = chunkOutputQueue.front();
+	workingChunkMap.erase(ChunkCoordKey(outputChunk->getChunkX(), outputChunk->getChunkY(), outputChunk->getChunkZ()));
 	chunkOutputQueue.pop();
+
 	return outputChunk;
 }
 
-void ChunkGeneratorQueue::pushInputChunk(const shared_ptr<AirChunk>& chunk)
+void ChunkGeneratorQueue::pushInputChunk(int x, int y, int z, bool toDecorate)
 {
 	// Lock input queue
 	lock_guard<mutex> lock(inputMutex);
-	chunkInputQueue.push_back(chunk);
 
-	// Notify thread
-	cv.notify_all();
+	ChunkCoordKey key(x, y, z);
+	if (!workingChunkMap.contains(key))
+	{
+		ChunkGeneratorInput* cgi = new ChunkGeneratorInput(x, y, z);
+		chunkInputQueue.push_back(cgi);
+		workingChunkMap[key] = cgi;
+
+		// Notify thread
+		cv.notify_all();
+	}
 }
 
 int ChunkGeneratorQueue::getOutputSize() const
@@ -136,11 +170,22 @@ int ChunkGeneratorQueue::getOutputSize() const
 	return chunkOutputQueue.size();
 }
 
+int ChunkGeneratorQueue::getInputSize() const
+{
+	// Fast non synchronized method (executed every frame)
+	return chunkInputQueue.size();
+}
+
 void ChunkGeneratorQueue::pushOutputChunk(shared_ptr<AirChunk> chunk)
 {
 	// Lock output queue
 	lock_guard<mutex> lock(outputMutex);
 	chunkOutputQueue.push(chunk);
+}
+
+bool ChunkGeneratorQueue::isGeneratorThread()
+{
+	return std::this_thread::get_id() == generatorQueueThread->get_id();
 }
 
 

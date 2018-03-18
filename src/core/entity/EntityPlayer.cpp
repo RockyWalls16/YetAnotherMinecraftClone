@@ -12,6 +12,6 @@ void EntityPlayer::tick()
 
 	if (TimeManager::isMajorTick())
 	{
-		entityWorld.keepAreaAlive(position.x, position.y, position.z, 5);
+		entityWorld.keepAreaAlive((int) position.x, (int) position.y, (int) position.z, 6);
 	}
 }

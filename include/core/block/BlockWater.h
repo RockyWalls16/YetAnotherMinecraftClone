@@ -12,7 +12,12 @@ public:
 
 	virtual bool isSideVisible(Block* neighbour, Side faceSide) override
 	{
-		return faceSide == Side::TOP && neighbour != Block::WATER;
+		return neighbour != Block::WATER;
+	}
+
+	virtual bool hideNeighbourFace(Block* neighbour, Side neighbourSide) override
+	{
+		return false;
 	}
 
 	virtual RenderLayer getRenderLayer() override

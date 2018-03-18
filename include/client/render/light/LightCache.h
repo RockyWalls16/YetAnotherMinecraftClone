@@ -17,6 +17,8 @@ public:
 	static void addDirectionalLight(DirectionalLight* light);
 
 	static std::vector<DirectionalLight*>& getDirectionalLights();
+
+	static void cleanLights();
 };
 
 #endif

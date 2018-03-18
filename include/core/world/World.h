@@ -29,8 +29,7 @@ class World
 private:
 	ChunkManager chunkManager;
 	ChunkGenerator chunkGenerator;
-	ChunkGeneratorQueue chunkGeneratorQueue;
-	std::vector<shared_ptr<AirChunk>> deadChunkQueue;
+	ChunkGeneratorQueue generatorQueue;
 	std::vector<Entity*> entityList;
 	long time = 0;
 
@@ -42,16 +41,16 @@ public:
 
 	void keepAreaAlive(int x, int y, int z, int size);
 
+	// Chunk management
 	shared_ptr<AirChunk> getChunkAt(int x, int y, int z);
-	void replaceChunkAt(shared_ptr<AirChunk> chunk);
 	shared_ptr<AirChunk> getChunkAtBlockPos(int x, int y, int z);
+	void replaceChunkAt(shared_ptr<AirChunk> chunk);
 
 	Block* getBlockAt(int x, int y, int z);
 	void setBlockAt(Block* block, int x, int y, int z, bool redrawChunk = true);
 
-	void addChunkToUnload(const shared_ptr<AirChunk>& chunk);
-
-	void onChunkUnReady(const shared_ptr<AirChunk>& chunk);
+	void fetchReadyChunks();
+	void onChunkUnloaded(const shared_ptr<AirChunk>& chunk);
 	void onChunkDirty(const shared_ptr<AirChunk>& chunk);
 
 	ChunkGenerator& getChunkGenerator();
@@ -62,15 +61,10 @@ public:
 	void notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotification type);
 
 	ChunkManager& getChunkManager();
+	ChunkGeneratorQueue& getChunkGeneratorQueue();
 
 private:
-
 	void notifySingleNeighbour(const shared_ptr<AirChunk>& sender, const shared_ptr<AirChunk>& chunk, NeighbourNotification type, Side fromSide);
-
-	void unloadChunk(const shared_ptr<AirChunk>& chunk);
-
-	void fetchReadyChunks();
-
 };
 
 #endif /* CORE_WORLD_WORLD_H_ */

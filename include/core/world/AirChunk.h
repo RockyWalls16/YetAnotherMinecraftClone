@@ -17,6 +17,7 @@
 #include <util/Side.h>
 #include <memory>
 #include <util/Logger.h>
+#include <sparsepp/spp_utils.h>
 
 using namespace std;
 
@@ -48,7 +49,8 @@ protected:
 	int neighbourCount;
 	weak_ptr<AirChunk> neighbours[6];
 	int timeToLive;
-	bool generated;
+	bool decorated;
+	bool surfaceChunk;
 
 public:
 	AirChunk(World& world, int chX, int chY, int chZ);
@@ -67,21 +69,55 @@ public:
 
 	virtual ChunkType getChunkType();
 
-	bool isReady();
+	bool isRenderReady();
+	bool isDecorated();
+	bool isSurfaceChunk();
+	void setDecorated();
+	void setSurfaceChunk();
 
 	weak_ptr<AirChunk> getNeighbour(Side fromSide);
-
 	void onNotifiedByNeighbour(NeighbourNotification loaded, shared_ptr<AirChunk> sender, Side fromSide);
-
-	bool isGenerated();
-
-	void setGenerated();
 
 	void setDirty(Block* block, int x, int y, int z);
 
 	void refreshChunk();
 
-	static int getFlatIndex(int x, int z);
+	static int getFlatIndex(int x, int y, int z);
 };
+
+class ChunkCoordKey
+{
+public:
+	int x;
+	int y;
+	int z;
+
+	ChunkCoordKey(int x, int y, int z) : x(x), y(y), z(z) {}
+
+	bool operator==(const ChunkCoordKey &other) const
+	{
+		return x == other.x && y == other.y && z == other.z;
+	}
+};
+
+
+namespace std
+{
+	// inject specialization of std::hash for Person into namespace std
+	// ----------------------------------------------------------------
+	template<>
+	struct hash<ChunkCoordKey>
+	{
+		std::size_t operator()(ChunkCoordKey const &p) const
+		{
+			std::size_t seed = 0;
+			spp::hash_combine(seed, p.x);
+			spp::hash_combine(seed, p.y);
+			spp::hash_combine(seed, p.z);
+			return seed;
+		}
+	};
+}
+
 
 #endif /* CORE_WORLD_AIRCHUNK_H_ */

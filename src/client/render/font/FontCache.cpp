@@ -130,7 +130,7 @@ Font * FontCache::loadFont(std::string name)
 		}
 		catch (std::ifstream::failure& e)
 		{
-			Error("Failed to load font from: " + path);
+			Error("Failed to load font from: " + path + " " + e.what());
 		}
 	}
 	else

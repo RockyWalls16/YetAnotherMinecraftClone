@@ -39,7 +39,7 @@ void ForwardBlockShader::use()
 	Camera& camera = GameRenderer::getInstance().getGameCamera();
 	glUniformMatrix4fv(uniformViewProjLocation, 1, GL_FALSE, glm::value_ptr(camera.getViewProjMatrix()));
 
-	dirLightLocationArray.updateLights(true);
+	dirLightLocationArray.updateLights(false);
 
 	glm::vec3 camPos = camera.getLocation();
 	glUniform3f(uniformCameraPosLocation, camPos.x, camPos.y, camPos.z);

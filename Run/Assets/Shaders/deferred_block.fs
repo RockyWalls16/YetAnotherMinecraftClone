@@ -6,6 +6,7 @@ layout (location = 2) out vec4 gAlbedo;
 layout (location = 3) out vec3 gLightInfo;
 
 in vec3 outFragPos;
+in vec3 outFragPosView;
 in vec3 outColor;
 in vec3 outNormal;
 in vec3 outRawNormal;
@@ -42,7 +43,7 @@ void main()
 
 	vec4 texColor = vec4(texture(albedoMap, texCoords));
 
-	gPosition = outFragPos;
+	gPosition = outFragPosView;
 	gNormal = outNormal;
 	gAlbedo = texColor;
 

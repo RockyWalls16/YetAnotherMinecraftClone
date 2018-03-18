@@ -14,7 +14,7 @@
 #include <string>
 
 
-class PostProcessShader : public Shader
+class DeferredLightingShader : public Shader
 {
 private:
 	int screenSizeUniformLocation;
@@ -22,15 +22,16 @@ private:
 	int uniformSunColorLocation;
 	int uniformSunDirLocation;
 	int uniformCameraPosLocation;
+	int uniformViewMatrixLocation;
 	DirectionalLightLocationArray dirLightLocationArray;
 
 public:
-	PostProcessShader(std::string name) : Shader(name), dirLightLocationArray(this, MAX_DIR_LIGHT){}
+	DeferredLightingShader(std::string name) : Shader(name), dirLightLocationArray(this, MAX_DIR_LIGHT){}
 
 	virtual void use() override;
 	virtual void stop() override;
 	virtual void onDraw(glm::mat4& modelMatrix, glm::mat3 & normalMatrix) {}
-	void onResize(int width, int height);
+	virtual void onResize(int width, int height) override;
 
 private:
 	virtual void bindAttributesAndUniforms() override;

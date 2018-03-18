@@ -19,6 +19,8 @@ void SkySphereShader::use()
 
 void SkySphereShader::setColors(Color & topColor, Color & bottomColor)
 {
+	Shader::use();
+
 	glUniform3f(uniformTopColorLocation, topColor.r, topColor.g, topColor.b);
 	glUniform3f(uniformBottomColorLocation, bottomColor.r, bottomColor.g, bottomColor.b);
 }

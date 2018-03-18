@@ -66,7 +66,7 @@ unsigned int ShaderLoader::loadShaderFile(ShaderType type, std::string path)
 
 		} catch (std::ifstream::failure& e)
 		{
-			Error("Failed to load shader from: " + path);
+			Error("Failed to load shader from: " + path + " " + e.what());
 		}
 	}
 	else

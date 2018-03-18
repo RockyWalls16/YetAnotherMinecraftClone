@@ -9,12 +9,24 @@
 #include <core/world/AirChunk.h>
 #include <client/render/util/VertexBuilder.h>
 #include <core/entity/Entity.h>
+#include <sparsepp/spp.h>
+
+class ChunkGeneratorInput
+{
+public:
+	int x;
+	int y;
+	int z;
+
+	ChunkGeneratorInput(int x, int y, int z) : x(x), y(y), z(z) {}
+};
 
 class ChunkGeneratorQueue
 {
 private:
 	World & world;
-	std::vector<weak_ptr<AirChunk>> chunkInputQueue;
+	std::vector<ChunkGeneratorInput*> chunkInputQueue;
+	spp::sparse_hash_map<ChunkCoordKey, ChunkGeneratorInput*> workingChunkMap;
 	std::queue<shared_ptr<AirChunk>> chunkOutputQueue;
 
 	//Thread management
@@ -31,14 +43,18 @@ public:
 
 	void start();
 
-	void pushInputChunk(const shared_ptr<AirChunk>& chunk);
+	void pushInputChunk(int x, int y, int z, bool toDecorate);
+	int getInputSize() const;
 	int getOutputSize() const;
 	shared_ptr<AirChunk> popOutputChunk();
+
+
+	bool isGeneratorThread();
 
 private:
 	void onThreadStart();
 
-	shared_ptr<AirChunk> popInputChunk();
+	ChunkGeneratorInput* popInputChunk();
 
 	void pushOutputChunk(shared_ptr<AirChunk> chunk);
 };

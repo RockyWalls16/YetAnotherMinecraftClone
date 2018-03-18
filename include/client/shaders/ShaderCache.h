@@ -10,7 +10,9 @@
 
 #include <client/shaders/Shader.h>
 #include <client/shaders/DeferredBlockShader.h>
-#include <client/shaders/PostProcessShader.h>
+#include <client/shaders/DeferredLightingShader.h>
+#include <client/shaders/SSAOShader.h>
+#include <client/shaders/BlurShader.h>
 #include <client/shaders/SkySphereShader.h>
 #include <client/shaders/StarShader.h>
 #include <client/shaders/Shader2D.h>
@@ -23,7 +25,9 @@ class ShaderCache
 public:
 	static DeferredBlockShader* deferredBlockShader;
 	static ForwardBlockShader* forwardBlockShader;
-	static PostProcessShader* postShader;
+	static DeferredLightingShader* deferredLightingShader;
+	static SSAOShader* ssaoShader;
+	static BlurShader* ssaoBlurShader;
 	static Shader2D* shader2d;
 	static SkySphereShader* skyShader;
 	static StarShader* starShader;
@@ -36,6 +40,7 @@ public:
 
 	static void initShaderCache();
 	static void emptyShaderCache();
+	static void onResize(int width, int height);
 
 	static void addShader(Shader& shader);
 };

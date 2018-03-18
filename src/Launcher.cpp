@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 {
 	Info("Launching game...");
 
-	std::srand(std::time(nullptr));
+	std::srand((unsigned int) std::time(nullptr));
 
 	int statusCode = Game::getInstance().initGame();
 	if(statusCode)

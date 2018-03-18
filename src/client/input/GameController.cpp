@@ -63,7 +63,7 @@ void GameController::processInput()
 	static KeyBind* LEFT_KEY = new KeyBind(GLFW_KEY_LEFT, KEYBOARD);
 	static KeyBind* RIGHT_KEY = new KeyBind(GLFW_KEY_RIGHT, KEYBOARD);
 
-	static int selectedBlock = 1;
+	static unsigned int selectedBlock = 1;
 
 	Camera& camera = GameRenderer::getInstance().getGameCamera();
 	glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
@@ -149,6 +149,9 @@ void GameController::processInput()
 	if (F9_KEY->isPressed())
 	{
 		ShaderCache::initShaderCache();
+		int width, height;
+		WindowManager::getMainInstance().getFramebufferSize(&width, &height);
+		ShaderCache::onResize(width, height);
 	}
 
 	// Capture mouse

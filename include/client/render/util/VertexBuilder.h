@@ -24,7 +24,7 @@ public:
 	VertexBuilder(int dataPerIndices, int defaultSize = 10000, float increaseRatio = 1.5F);
 	~VertexBuilder();
 	void rewind();
-	void addVertices(float* vertices, unsigned int* indices, unsigned int vertexAmount);
+	void addVertices(float* vertices, unsigned int vertexAmount, unsigned int* indices, unsigned int indicesAmount);
 
 	unsigned int* getIndicesBuffer() const;
 	float* getVertexBuffer() const;

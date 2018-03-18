@@ -18,7 +18,7 @@ public:
 
 	void init(std::string dirLightAmount, std::string arrayName, std::string directionVariableName, std::string colorVariableName, std::string ambiantVariableName);
 
-	void updateLights(bool cleanDirty);
+	void updateLights(bool viewSpace);
 };
 
 #endif

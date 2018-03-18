@@ -78,9 +78,9 @@ void CameraRay::processLookingBlock(RaycastResult& raycastResult)
 	}
 
 	raycastResult.blockInfo = nearestBlock;
-	raycastResult.nX = nearestNormal.x;
-	raycastResult.nY = nearestNormal.y;
-	raycastResult.nZ = nearestNormal.z;
+	raycastResult.nX = (int) nearestNormal.x;
+	raycastResult.nY = (int) nearestNormal.y;
+	raycastResult.nZ = (int) nearestNormal.z;
 }
 
 void CameraRay::createCubeHoverMesh()

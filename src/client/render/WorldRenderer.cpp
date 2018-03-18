@@ -33,6 +33,11 @@ void WorldRenderer::render(RenderLayer renderLayer)
 	}
 
 	// Render chunks
+	if (renderLayer <= RenderLayer::RL_OPAQUE)
+	{
+		skyRenderer.updateLights();
+	}
+
 	if (renderLayer <= RenderLayer::RL_TRANSPARENT)
 	{
 		chunkRenderer.render(renderLayer);

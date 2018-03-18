@@ -19,11 +19,13 @@ uniform DirLight uDirLights[NB_DIR_LIGHTS];
 uniform int uDirLightAmount;
 
 uniform vec3 uCameraPos;
+uniform mat4 uViewMatrix;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gLightInfo;
+uniform sampler2D ssaoTex;
 uniform sampler2D gDepth;
 
 const float ambiant = 0.1F;
@@ -49,6 +51,7 @@ void main()
 	vec3 lightInfo = texture(gLightInfo, outTex).rgb;
 	vec3 fragPos = texture(gPosition, outTex).rgb;
     vec3 normal = texture(gNormal, outTex).rgb;
+	float ambiantOcclusion = texture(ssaoTex, outTex).r;
 
 	/// Directional lights
 	vec3 finalColor = vec3(0.0, 0.0, 0.0);
@@ -56,13 +59,14 @@ void main()
 	for(int i = 0; i < uDirLightAmount; i++)
 	{
 		// Diffuse
-		float diff = max(dot(normal, uDirLights[i].direction), 0.0);
+		vec3 toLight = normalize(-uDirLights[i].direction);
+		float diff = max(dot(normal, toLight), 0.0);
 		vec3 diffuse = albedo.rgb * diff * uDirLights[i].color;
-		vec3 ambiant = albedo.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff); 
+		vec3 ambiant = albedo.rgb * uDirLights[i].color * uDirLights[i].minAmbiant * (1.0 - diff) * ambiantOcclusion; 
 
 		// Specular
 		vec3 unitToCamera = normalize(uCameraPos - fragPos);
-		vec3 reflectDir = reflect(-uDirLights[i].direction, normal);
+		vec3 reflectDir = reflect(-toLight, normal);
 	
 		float specAmount = pow(max(dot(unitToCamera, reflectDir), 0.0), lightInfo.r * 255.0);
 		vec3 specular = lightInfo.g * specAmount * uDirLights[i].color;

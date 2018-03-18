@@ -44,7 +44,7 @@ void ChunkRenderQueue::onThreadStart()
 		if(inputChunk != nullptr)
 		{
 			// Chunk is not ready anymore remove thread lock
-			if (!inputChunk->isReady())
+			if (!inputChunk->isRenderReady())
 			{
 				continue;
 			}
@@ -126,6 +126,21 @@ void ChunkRenderQueue::pushInputChunk(shared_ptr<AirChunk> chunk)
 {
 	// Lock input queue
 	lock_guard<mutex> lock(inputMutex);
+
+	// Remove potentials duplicates
+	std::vector<shared_ptr<AirChunk>>::iterator it;
+	for (it = chunkInputQueue.begin(); it != chunkInputQueue.end();)
+	{
+		if (chunk == *it)
+		{
+			it = chunkInputQueue.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+
 	chunkInputQueue.push_back(chunk);
 
 	// Notify thread
@@ -136,6 +151,11 @@ int ChunkRenderQueue::getOutputSize()
 {
 	// Fast non synchronized method (executed every frame)
 	return chunkOutputQueue.size();
+}
+
+int ChunkRenderQueue::getInputSize()
+{
+	return chunkInputQueue.size();
 }
 
 void ChunkRenderQueue::pushOutputChunk(ChunkRenderOutput * chunkRenderOutput)

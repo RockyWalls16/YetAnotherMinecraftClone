@@ -11,13 +11,12 @@
 #include <core/block/Block.h>
 #include <util/Logger.h>
 #include <util/TimeManager.h>
-#include <core/world/ChunkGeneratorQueue.h>
 #include <math/MathUtil.h>
 
-World::World() : chunkGenerator(ChunkGenerator(*this)), chunkGeneratorQueue(*this)
+World::World() : chunkManager(*this), chunkGenerator(*this), generatorQueue(*this)
 {
-	chunkGeneratorQueue.start();
-	time = 900;
+	generatorQueue.start();
+	time = 3000;
 }
 
 void World::tick()
@@ -27,16 +26,8 @@ void World::tick()
 	if (TimeManager::isMajorTick())
 	{
 		fetchReadyChunks();
-
 		// Update chunks columns
 		chunkManager.tickChunks();
-
-		// Remove dead chunks
-		for (shared_ptr<AirChunk> chunk : deadChunkQueue)
-		{
-			unloadChunk(chunk);
-		}
-		deadChunkQueue.clear();
 	}
 
 	// Update all entities
@@ -63,23 +54,26 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 
 	for (int i = x - size; i < xLimit; i++)
 	{
-		ChunkLineZ& lineZ = chunkManager.loadZLineFromX(i);
 		for (int k = z - size; k < zLimit; k++)
 		{
-			ChunkLineY& lineY = chunkManager.loadYLineFromZ(lineZ, k);
 			for (int j = y - size; j < yLimit; j++)
 			{
-				shared_ptr<AirChunk>& chunk = chunkManager.getChunkFromY(lineY, j);
-				if (chunk == nullptr)
+				shared_ptr<AirChunk>& chunk = chunkManager.getChunkAt(i, j, k);
+
+				// Chunk exists
+				if(chunk)
 				{
-					// Generate new chunk & and add it to manager
-					shared_ptr<AirChunk> newChunk = make_shared<AirChunk>(*this, i, j, k);
-					chunkManager.setChunkAt(newChunk, lineY);
-					chunkGeneratorQueue.pushInputChunk(newChunk);
-					continue;
+					if (!chunk->isDecorated())
+					{
+						generatorQueue.pushInputChunk(i, j, k, true);
+					}
+
+					chunk->resetTTL();
 				}
-				
-				chunk->resetTTL();
+				else
+				{
+					generatorQueue.pushInputChunk(i, j, k, false);
+				}
 			}
 		}
 	}
@@ -87,70 +81,44 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 
 shared_ptr<AirChunk> World::getChunkAt(int x, int y, int z)
 {
-	return chunkManager.getChunkAt(x, y, z);
+	return chunkManager.provideChunkAt(x, y, z);
+}
+
+shared_ptr<AirChunk> World::getChunkAtBlockPos(int x, int y, int z)
+{
+	return chunkManager.provideChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
 }
 
 void World::replaceChunkAt(shared_ptr<AirChunk> chunk)
 {
 	chunkManager.setChunkAt(chunk);
-}
-
-shared_ptr<AirChunk> World::getChunkAtBlockPos(int x, int y, int z)
-{
-	return getChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
+	notifyNeighbours(chunk, NeighbourNotification::REPLACED);
 }
 
 Block * World::getBlockAt(int x, int y, int z)
 {
-	shared_ptr<AirChunk> theChunk = getChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
-	if (!theChunk)
-	{
-		return Block::AIR;
-	}
-
-	return Block::getBlock(theChunk->getBlockAt(MathUtil::getChunkTilePosFromWorld(x), MathUtil::getChunkTilePosFromWorld(y), MathUtil::getChunkTilePosFromWorld(z)));
+	shared_ptr<AirChunk> theChunk = getChunkAtBlockPos(x, y, z);
+	return Block::getBlock(theChunk->getBlockAt(x & (CHUNK_SIZE - 1), y & (CHUNK_SIZE - 1), z & (CHUNK_SIZE - 1)));
 }
 
 void World::setBlockAt(Block * block, int x, int y, int z, bool redrawChunk)
 {
-	shared_ptr<AirChunk> theChunk = getChunkAt(x >> CHUNK_SHIFT, y >> CHUNK_SHIFT, z >> CHUNK_SHIFT);
-	if (!theChunk)
-	{
-		return;
-	}
-
-	theChunk->setBlockAt(block, MathUtil::getChunkTilePosFromWorld(x), MathUtil::getChunkTilePosFromWorld(y), MathUtil::getChunkTilePosFromWorld(z), redrawChunk);
-}
-
-void World::addChunkToUnload(const shared_ptr<AirChunk>& chunk)
-{
-	deadChunkQueue.push_back(chunk);
-}
-
-void World::unloadChunk(const shared_ptr<AirChunk>& chunk)
-{
-	// Get chunk column
-	chunkManager.removeChunk(chunk);
-
-	// Notify neighbour and delete chunk
-	notifyNeighbours(chunk, NeighbourNotification::UNLOADED);
-	onChunkUnReady(chunk);
+	shared_ptr<AirChunk> theChunk = getChunkAtBlockPos(x, y, z);
+	theChunk->setBlockAt(block, x & (CHUNK_SIZE - 1), y & (CHUNK_SIZE - 1), z & (CHUNK_SIZE - 1), redrawChunk);
 }
 
 void World::fetchReadyChunks()
 {
-	int chunkAmount = chunkGeneratorQueue.getOutputSize();
+	int chunkAmount = generatorQueue.getOutputSize();
 	for (int i = 0; i < chunkAmount; i++)
 	{
-		shared_ptr<AirChunk> chunk = chunkGeneratorQueue.popOutputChunk();
-		
-		chunk->setGenerated();
-		chunkManager.setChunkAt(chunk);
-		notifyNeighbours(chunk, NeighbourNotification::LOADED);
+		shared_ptr<AirChunk> chunk = generatorQueue.popOutputChunk();
+		chunkManager.insertChunkAt(chunk);
+		//notifyNeighbours(chunk, LOADED);
 	}
 }
 
-void World::onChunkUnReady(const shared_ptr<AirChunk>& chunk)
+void World::onChunkUnloaded(const shared_ptr<AirChunk>& chunk)
 {
 	if (chunk->getChunkType() == ChunkType::LAYERED)
 	{
@@ -178,12 +146,12 @@ void World::notifyNeighbours(const shared_ptr<AirChunk>& chunk, NeighbourNotific
 	int y = chunk->getChunkY();
 	int z = chunk->getChunkZ();
 
-	notifySingleNeighbour(chunk, getChunkAt(x, y + 1, z), type, Side::BOTTOM);
-	notifySingleNeighbour(chunk, getChunkAt(x, y - 1, z), type, Side::TOP);
-	notifySingleNeighbour(chunk, getChunkAt(x + 1, y, z), type, Side::WEST);
-	notifySingleNeighbour(chunk, getChunkAt(x - 1, y, z), type, Side::EAST);
-	notifySingleNeighbour(chunk, getChunkAt(x, y, z + 1), type, Side::NORTH);
-	notifySingleNeighbour(chunk, getChunkAt(x, y, z - 1), type, Side::SOUTH);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x, y + 1, z), type, Side::BOTTOM);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x, y - 1, z), type, Side::TOP);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x + 1, y, z), type, Side::WEST);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x - 1, y, z), type, Side::EAST);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x, y, z + 1), type, Side::NORTH);
+	notifySingleNeighbour(chunk, chunkManager.getChunkAt(x, y, z - 1), type, Side::SOUTH);
 }
 
 ChunkManager & World::getChunkManager()
@@ -191,9 +159,14 @@ ChunkManager & World::getChunkManager()
 	return chunkManager;
 }
 
+ChunkGeneratorQueue & World::getChunkGeneratorQueue()
+{
+	return generatorQueue;
+}
+
 void World::notifySingleNeighbour(const shared_ptr<AirChunk>& sender, const shared_ptr<AirChunk>& chunk, NeighbourNotification type, Side fromSide)
 {
-	if (chunk != nullptr && chunk->isGenerated())
+	if (chunk != nullptr && chunk->isDecorated())
 	{
 		chunk->onNotifiedByNeighbour(type, sender, fromSide);
 	}
