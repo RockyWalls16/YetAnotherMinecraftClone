@@ -216,6 +216,9 @@
     <ClCompile Include="src\client\shaders\BlurShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\client\audio\AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\stb_image.h">
@@ -879,6 +882,45 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\util\GameSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_asio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_jack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_linux_alsa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_mac_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_win_ds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_win_wasapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_win_waveformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_win_wdmks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\pa_win_wmme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\portaudio\portaudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\audio\AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\libsndfile\sndfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\libsndfile\sndfile.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,7 @@
 #include <core/entity/EntityPlayer.h>
 #include <client/render/GameRenderer.h>
 #include <client/input/GameController.h>
+#include <client/audio/AudioManager.h>
 #include <util/TimeManager.h>
 #include <util/Logger.h>
 #include <string>
@@ -37,6 +38,7 @@ int Game::initGame()
 		}
 
 		GameRenderer::getInstance().getGameCamera().setTrackedEntity(*player);
+		AudioManager::getInstance().init();
 
 		return 0;
 	}
@@ -78,6 +80,7 @@ void Game::clearGame()
 {
 	Info("Game closing. Cleaning up...");
 	GameRenderer::getInstance().clearGameRenderer();
+	AudioManager::getInstance().cleanup();
 }
 
 bool Game::shouldExit()

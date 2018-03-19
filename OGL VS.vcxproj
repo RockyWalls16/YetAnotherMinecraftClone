@@ -116,7 +116,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;glm_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;glm_static.lib;portaudio.lib;libsndfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,7 +133,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;glm_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;glm_static.lib;portaudio.lib;libsndfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,6 +152,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">
+    <Link>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;glm_static.lib;portaudio.lib;libsndfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="external\FastNoiseSIMD\FastNoiseSIMD.cpp" />
@@ -178,6 +183,7 @@
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
     <ClCompile Include="include\client\shaders\BlurShader.h" />
+    <ClCompile Include="src\client\audio\AudioManager.cpp" />
     <ClCompile Include="src\client\shaders\BlurShader.cpp" />
     <ClCompile Include="src\client\shaders\SSAOShader.cpp" />
     <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
@@ -383,7 +389,19 @@
     <ClInclude Include="external\glm\vec4.hpp" />
     <ClInclude Include="external\glm\vector_relational.hpp" />
     <ClInclude Include="external\khr\khrplatform.h" />
+    <ClInclude Include="external\libsndfile\sndfile.h" />
+    <ClInclude Include="external\libsndfile\sndfile.hh" />
     <ClInclude Include="external\PerlinNoise.hpp" />
+    <ClInclude Include="external\portaudio\pa_asio.h" />
+    <ClInclude Include="external\portaudio\pa_jack.h" />
+    <ClInclude Include="external\portaudio\pa_linux_alsa.h" />
+    <ClInclude Include="external\portaudio\pa_mac_core.h" />
+    <ClInclude Include="external\portaudio\pa_win_ds.h" />
+    <ClInclude Include="external\portaudio\pa_win_wasapi.h" />
+    <ClInclude Include="external\portaudio\pa_win_waveformat.h" />
+    <ClInclude Include="external\portaudio\pa_win_wdmks.h" />
+    <ClInclude Include="external\portaudio\pa_win_wmme.h" />
+    <ClInclude Include="external\portaudio\portaudio.h" />
     <ClInclude Include="external\sparsepp\spp.h" />
     <ClInclude Include="external\sparsepp\spp_config.h" />
     <ClInclude Include="external\sparsepp\spp_dlalloc.h" />
@@ -394,6 +412,7 @@
     <ClInclude Include="external\sparsepp\spp_traits.h" />
     <ClInclude Include="external\sparsepp\spp_utils.h" />
     <ClInclude Include="external\stb_image.h" />
+    <ClInclude Include="include\client\audio\AudioManager.h" />
     <ClInclude Include="include\client\input\CameraRay.h" />
     <ClInclude Include="include\client\input\GameController.h" />
     <ClInclude Include="include\client\render\font\FontVAO.h" />
