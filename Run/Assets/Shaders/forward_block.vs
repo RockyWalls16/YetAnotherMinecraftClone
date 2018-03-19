@@ -15,7 +15,6 @@ out vec3 toCamera;
 uniform mat4 uModel;
 uniform mat4 uViewMat;
 uniform mat4 uViewProj;
-uniform mat3 uNormalMat;
 
 uniform vec3 uCameraPos;
 
@@ -26,7 +25,7 @@ void main()
     gl_Position = uViewProj * worldPosition;
 	outFragPos = vec3(uModel * vec4(aPos, 1.0));
 
-	outNormal = uNormalMat * aNormal;
+	outNormal = normalize(aNormal);
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;

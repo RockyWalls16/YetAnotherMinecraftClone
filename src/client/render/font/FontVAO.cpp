@@ -1,23 +1,41 @@
 #include <client/render/font/FontVAO.h>
 #include <client/shaders/ShaderCache.h>
+#include <util/Logger.h>
 
-
-FontVAO::FontVAO(Font& font, VertexArray * fontVao, int vertexAmount, int width, int height) : font(font), fontVao(fontVao), vertexAmount(vertexAmount), width(width), height(height)
+FontVAO::FontVAO(Font& font) : font(font), vertexAmount(0)
 {
-
+	fontVao.disableNormals();
+	fontVao.addVBO(NULL, 0, GL_DYNAMIC_DRAW);
+	fontVao.enableEBO(NULL, 0, GL_DYNAMIC_DRAW);
+	fontVao.assignPositionAttrib(0, 0, sizeof(float) * 5);
+	fontVao.assignUVAttrib(0, 1, sizeof(float) * 5, (void*)(3 * sizeof(float)));
+	fontVao.scale(glm::vec3(0.1F, 0.1F, 0.1F));
 }
 
 FontVAO::~FontVAO()
 {
-	delete(fontVao);
+	
+}
+
+void FontVAO::updateVAO(VertexBuilder& vb, int width, int height)
+{
+	fontVao.updateVBO(0, vb.getVertexBuffer(), vb.getVBOSize(), GL_DYNAMIC_DRAW);
+	fontVao.updateEBO(vb.getIndicesBuffer(), vb.getEOBSize(), GL_DYNAMIC_DRAW);
+
+	vertexAmount = vb.getEOBSize();
+	this->width = width;
+	this->height = height;
 }
 
 void FontVAO::render2D(int x, int y)
 {
-	fontVao->setIdentity();
-	fontVao->translate(glm::vec3(x, y, 0));
+	if (vertexAmount > 0)
+	{
+		fontVao.setIdentity();
+		fontVao.translate(glm::vec3(x, y, 0));
 
-	font.bind();
-	ShaderCache::shader2d->use();
-	fontVao->drawEBO(vertexAmount);
+		font.bind();
+		ShaderCache::shader2d->use();
+		fontVao.drawEBO(vertexAmount);
+	}
 }

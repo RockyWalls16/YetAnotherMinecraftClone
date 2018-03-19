@@ -11,7 +11,6 @@ class ForwardBlockShader : public Shader
 private:
 	int uniformModelLocation;
 	int uniformViewProjLocation;
-	int uniformNormalLocation;
 	int uniformAtlasCellSizeLocation;
 	int uniformAlbedoTexture;
 	int uniformSpecularTexture;

@@ -4,7 +4,7 @@
 #include <client/render/util/VertexArray.h>
 #include <util/Logger.h>
 
-FontVAO * FontRenderer::makeVao(Font& font, std::string text)
+void FontRenderer::makeVao(FontVAO& fontVao, Font& font, std::string text)
 {
 	static unsigned int indices[] =
 	{
@@ -125,14 +125,5 @@ FontVAO * FontRenderer::makeVao(Font& font, std::string text)
 	totalHeight += currentHeight;
 
 	// Generate Vertex data
-	VertexArray* vao = new VertexArray();
-	vao->disableNormals();
-	vao->addVBO(vb.getVertexBuffer(), vb.getVBOSize(), GL_STATIC_DRAW);
-	vao->enableEBO(vb.getIndicesBuffer(), vb.getEOBSize(), GL_STATIC_DRAW);
-	vao->assignPositionAttrib(0, 0, sizeof(float) * 5);
-	vao->assignUVAttrib(0, 1, sizeof(float) * 5, (void*)(3 * sizeof(float)));
-	vao->scale(glm::vec3(0.1F, 0.1F, 0.1F));
-	FontVAO* fvao = new FontVAO(font, vao, vb.getEOBSize(), totalWidth, totalHeight);
-
-	return fvao;
+	fontVao.updateVAO(vb, totalWidth, totalHeight);
 }

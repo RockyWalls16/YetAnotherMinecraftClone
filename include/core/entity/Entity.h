@@ -10,6 +10,8 @@
 
 #include <glm/vec3.hpp>
 #include <math/AABB.h>
+#include <memory>
+#include <core/world/AirChunk.h>
 
 class World;
 
@@ -28,6 +30,7 @@ protected:
 	bool onGround;
 
 	World& entityWorld;
+	shared_ptr<AirChunk> currentChunk;
 
 public:
 	Entity(World& world);
@@ -41,6 +44,7 @@ public:
 	const glm::vec3& getRotation() const;
 	const glm::vec3& getVelocity() const;
 	World& getWorld();
+	shared_ptr<AirChunk> getCurrentChunk();
 	void setPosition(const glm::vec3& position);
 	void setRotation(const glm::vec3& rotation, bool updateLast = false);
 	float getEyeHeight();

@@ -25,7 +25,6 @@ void DeferredBlockShader::bindAttributesAndUniforms()
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uViewMat", &uniformViewLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);
-	bindUniformLocation("uNormalMat", &uniformNormalLocation);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
 	bindUniformLocation("albedoMap", &uniformAlbedoTexture);
 	bindUniformLocation("specularMap", &uniformSpecularTexture);
@@ -60,5 +59,4 @@ void DeferredBlockShader::setAtlasCellSize(float cellW, float cellH)
 void DeferredBlockShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	glUniformMatrix3fv(uniformNormalLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 }

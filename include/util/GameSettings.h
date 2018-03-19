@@ -1,0 +1,6 @@
+#ifndef _UTIL_GAMESETTINGS_H_
+#define _UTIL_GAMESETTINGS_H_
+
+#define RENDER_DISTANCE 6
+
+#endif

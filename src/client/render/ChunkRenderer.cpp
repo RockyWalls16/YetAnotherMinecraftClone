@@ -516,3 +516,13 @@ ChunkRenderQueue & ChunkRenderer::getChunkRenderQueue()
 {
 	return chunkRenderQueue;
 }
+
+int ChunkRenderer::getDrawnedChunk()
+{
+	return chunkDrawed;
+}
+
+int ChunkRenderer::getChunkAmount()
+{
+	return chunkCount;
+}

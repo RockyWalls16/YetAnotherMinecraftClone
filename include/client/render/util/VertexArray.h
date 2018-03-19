@@ -34,7 +34,9 @@ public:
 	void drawVAO(int vertexAmount, int offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
 	void drawEBO(int vertexAmount, GLvoid* offset = 0, int drawShape = GL_TRIANGLES, bool addModelMatrix = true);
 	void addVBO(void* buffer, unsigned int bufferSize, int drawType);
+	void updateVBO(unsigned int vboId, void* buffer, unsigned int bufferSize, int drawType);
 	void enableEBO(unsigned int* indices, unsigned int indicesSize, int drawType);
+	void updateEBO(unsigned int* indices, unsigned int indicesSize, int drawType);
 	void assignVertexAttrib(unsigned int vboId, unsigned int attribIndex, int componentAmount, int componentType, unsigned int stride, GLvoid* offset = 0, bool normalized = false);
 	void assignPositionAttrib(unsigned int vboId, unsigned int attribIndex, unsigned int stride, GLvoid* offset = 0);
 	void assign2DPositionAttrib(unsigned int vboId, unsigned int attribIndex, unsigned int stride, GLvoid* offset = 0);

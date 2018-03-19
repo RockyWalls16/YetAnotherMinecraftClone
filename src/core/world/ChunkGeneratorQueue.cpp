@@ -1,5 +1,6 @@
 #include "core/world/ChunkGeneratorQueue.h"
 #include <util/Logger.h>
+#include <util/GameSettings.h>
 #include <client/render/GameRenderer.h>
 #include <Game.h>
 #include <limits>
@@ -103,11 +104,35 @@ ChunkGeneratorInput* ChunkGeneratorQueue::popInputChunk()
 	ChunkGeneratorInput* nearestChunk;
 	vector<ChunkGeneratorInput*>::iterator itNearest;
 	vector<ChunkGeneratorInput*>::iterator it = chunkInputQueue.begin();
-	glm::vec3 pos = Game::getInstance().getPlayer()->getPosition();
+	
 	while (it != chunkInputQueue.end())
 	{
 		// Check nearest chunk
 		ChunkGeneratorInput* chunk = *it;
+
+		// Check chunk not out of player range
+		shared_ptr<AirChunk>& playerChunk = chunk->player.getCurrentChunk();
+		if (playerChunk)
+		{
+			if (abs(playerChunk->getChunkX() - chunk->x) > RENDER_DISTANCE || abs(playerChunk->getChunkZ() - chunk->z) > RENDER_DISTANCE || abs(playerChunk->getChunkY() - chunk->y) > RENDER_DISTANCE)
+			{
+				workingChunkMap.erase(ChunkCoordKey(chunk->x, chunk->y, chunk->z));
+				it = chunkInputQueue.erase(it);
+				delete(chunk);
+
+				if (!chunkInputQueue.empty())
+				{
+					continue;
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+		}
+
+
+		glm::vec3 pos = chunk->player.getPosition();
 		float x = (pos.x - chunk->x * CHUNK_SIZE + CHUNK_HALF);
 		float y = (pos.y - chunk->y * CHUNK_SIZE + CHUNK_HALF);
 		float z = (pos.z - chunk->z * CHUNK_SIZE + CHUNK_HALF);
@@ -132,6 +157,7 @@ shared_ptr<AirChunk> ChunkGeneratorQueue::popOutputChunk()
 {
 	// Lock input queue
 	lock_guard<mutex> lock(outputMutex);
+	lock_guard<mutex> lock2(inputMutex);
 
 	// Check is not empty
 	if (chunkOutputQueue.size() == 0)
@@ -147,7 +173,7 @@ shared_ptr<AirChunk> ChunkGeneratorQueue::popOutputChunk()
 	return outputChunk;
 }
 
-void ChunkGeneratorQueue::pushInputChunk(int x, int y, int z, bool toDecorate)
+void ChunkGeneratorQueue::pushInputChunk(EntityPlayer& player, int x, int y, int z)
 {
 	// Lock input queue
 	lock_guard<mutex> lock(inputMutex);
@@ -155,7 +181,7 @@ void ChunkGeneratorQueue::pushInputChunk(int x, int y, int z, bool toDecorate)
 	ChunkCoordKey key(x, y, z);
 	if (!workingChunkMap.contains(key))
 	{
-		ChunkGeneratorInput* cgi = new ChunkGeneratorInput(x, y, z);
+		ChunkGeneratorInput* cgi = new ChunkGeneratorInput(player, x, y, z);
 		chunkInputQueue.push_back(cgi);
 		workingChunkMap[key] = cgi;
 

@@ -21,6 +21,7 @@ using namespace std;
 #define DAY_DURATION 1000
 
 class Entity;
+class EntityPlayer;
 class Block;
 class ChunkGeneratorQueue;
 
@@ -39,7 +40,7 @@ public:
 	void tick();
 	void addEntity(Entity* entity);
 
-	void keepAreaAlive(int x, int y, int z, int size);
+	void keepAreaAlive(EntityPlayer& player, int x, int y, int z, int size);
 
 	// Chunk management
 	shared_ptr<AirChunk> getChunkAt(int x, int y, int z);

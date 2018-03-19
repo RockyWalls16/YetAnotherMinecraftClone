@@ -71,11 +71,28 @@ void VertexArray::addVBO(void* buffer, unsigned int bufferSize, int drawType)
 	vbos.push_back(vboId);
 }
 
+void VertexArray::updateVBO(unsigned int vboId, void * buffer, unsigned int bufferSize, int drawType)
+{
+	bind();
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[vboId]);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, buffer, drawType);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void VertexArray::enableEBO(unsigned int* indices, unsigned int indicesSize, int drawType)
 {
 	bind();
 
 	glGenBuffers(1, &idEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, drawType);
+}
+
+void VertexArray::updateEBO(unsigned int * indices, unsigned int indicesSize, int drawType)
+{
+	bind();
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, drawType);
 }

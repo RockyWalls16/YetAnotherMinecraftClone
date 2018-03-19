@@ -8,6 +8,7 @@
 #include <core/world/World.h>
 #include <client/render/GameRenderer.h>
 #include <core/entity/Entity.h>
+#include <core/entity/EntityPlayer.h>
 #include <core/block/Block.h>
 #include <util/Logger.h>
 #include <util/TimeManager.h>
@@ -42,7 +43,7 @@ void World::addEntity(Entity* entity)
 	entityList.push_back(entity);
 }
 
-void World::keepAreaAlive(int x, int y, int z, int size)
+void World::keepAreaAlive(EntityPlayer& player, int x, int y, int z, int size)
 {
 	x = x >> CHUNK_SHIFT;
 	y = y >> CHUNK_SHIFT;
@@ -65,14 +66,14 @@ void World::keepAreaAlive(int x, int y, int z, int size)
 				{
 					if (!chunk->isDecorated())
 					{
-						generatorQueue.pushInputChunk(i, j, k, true);
+						generatorQueue.pushInputChunk(player, i, j, k);
 					}
 
 					chunk->resetTTL();
 				}
 				else
 				{
-					generatorQueue.pushInputChunk(i, j, k, false);
+					generatorQueue.pushInputChunk(player, i, j, k);
 				}
 			}
 		}

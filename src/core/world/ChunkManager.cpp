@@ -87,7 +87,16 @@ void ChunkManager::insertChunkAt(shared_ptr<AirChunk> chunk)
 
 void ChunkManager::setChunkAt(shared_ptr<AirChunk> chunk)
 {
-	// TODO REPLACE IN LOADED CHUNKS VECTOR
+	// Replace in loaded chunk vector
+	for (int i = 0, length = loadedChunks.size(); i < length; i++)
+	{
+		shared_ptr<AirChunk>& oldChunk = loadedChunks[i];
+		if (oldChunk->getChunkX() == chunk->getChunkX() && oldChunk->getChunkY() == chunk->getChunkY() && oldChunk->getChunkZ() == chunk->getChunkZ())
+		{
+			loadedChunks[i] = chunk;
+		}
+	}
+
 	chunkMap[ChunkCoordKey(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())] = chunk;
 }
 

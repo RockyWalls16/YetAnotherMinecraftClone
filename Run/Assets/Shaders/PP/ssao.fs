@@ -35,14 +35,17 @@ void main()
 
 		vec4 offset = vec4(sample, 1.0);
 		offset = uProjection * offset;
-		offset.xyz /= offset.w; // To ndc
-		offset.xyz  = offset.xyz * 0.5 + 0.5; // To [0.0-1.0]
+		offset.xy /= offset.w; // To ndc
+		offset.xy  = offset.xy * 0.5 + 0.5; // To [0.0-1.0]
 
 		float sampleDepth = texture(gPosition, offset.xy).z;
-		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
-		occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;
+		if(sampleDepth >= sample.z + bias)
+		{
+			float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
+			occlusion += rangeCheck;
+		}
 	}  
 
 	occlusion = 1.0 - (occlusion / samplesAmount);
-	gl_Color = pow(occlusion, 2);
+	gl_Color = occlusion;
 } 

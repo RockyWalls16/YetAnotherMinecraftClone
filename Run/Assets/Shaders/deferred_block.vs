@@ -14,7 +14,6 @@ out vec2 outAtlasPos;
 uniform mat4 uModel;
 uniform mat4 uViewMat;
 uniform mat4 uViewProj;
-uniform mat3 uNormalMat;
 
 void main()
 {
@@ -24,7 +23,7 @@ void main()
 	outFragPosView = (uViewMat * worldPosition).xyz;
 	gl_Position = uViewProj * worldPosition;
 
-	outNormal = normalize(mat3(uViewMat * uModel) * normalize(aNormal));
+	outNormal = normalize(aNormal);
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;

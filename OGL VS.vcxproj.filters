@@ -878,6 +878,9 @@
     <ClInclude Include="include\client\shaders\SSAOShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\util\GameSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="external\glm\detail\func_common.inl">

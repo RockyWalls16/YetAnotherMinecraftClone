@@ -94,6 +94,9 @@ public:
 
 	ChunkRenderQueue& getChunkRenderQueue();
 
+	int getDrawnedChunk();
+	int getChunkAmount();
+
 private:
 	void configureVAO(const shared_ptr<AirChunk>& chunk, VertexBuilder* builder, VertexArray* vertexArray);
 };

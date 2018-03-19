@@ -40,24 +40,22 @@ void GameRenderer::renderGame()
 	static Font* testFont;
 	static FontVAO* fvao;
 	static FontVAO* coords;
+
 	if (testFont == nullptr)
 	{
 		testFont = FontCache::loadFont("default");
-		fvao = FontRenderer::makeVao(*testFont, "FPS: ");
+		
+		fvao = new FontVAO(*testFont);
+		coords = new FontVAO(*testFont);
+		FontRenderer::makeVao(*fvao, *testFont, "FPS: ");
 	}
 
 	if (TimeManager::fps == 0)
 	{ 
-		delete(fvao);
-		fvao = FontRenderer::makeVao(*testFont, "FPS: " + std::to_string(TimeManager::lastFps));
+		FontRenderer::makeVao(*fvao, *testFont, "FPS: " + std::to_string(TimeManager::lastFps));
 	}
 
-	if (coords != nullptr)
-	{
-		delete(coords);
-	}
 	//coords = FontRenderer::makeVao(*testFont, "X: " + std::to_string((int) gameCamera.getLocation().x) + " Y: " + std::to_string((int)gameCamera.getLocation().y) + " Z: " + std::to_string((int)gameCamera.getLocation().z));
-	coords = FontRenderer::makeVao(*testFont, "G: " + std::to_string(Game::getInstance().getWorld()->getChunkGeneratorQueue().getInputSize()) + " R: " + std::to_string(worldRenderer->getChunkRenderer().getChunkRenderQueue().getInputSize()));
 
 	gBuffer->bind();
 	glEnable(GL_DEPTH_TEST);
@@ -74,8 +72,21 @@ void GameRenderer::renderGame()
 	glDisable(GL_BLEND);
 	worldRenderer->render(RenderLayer::RL_OPAQUE);
 	
-	// Unbind framebuffer
-	gBuffer->unbind();
+	// SSAO
+	ssaoBuffer->bind();
+	ShaderCache::ssaoShader->use();
+	gBuffer->bindTexture(0); // Bind position buffer
+	gBuffer->bindTexture(1); // Bind normal buffer
+	ShaderCache::ssaoShader->getNoiseTexture()->bind(2); // Bind noise texture
+	ssaoBuffer->drawOverlay();
+
+	// SSAO blur
+	blurSSAOBuffer->bind();
+	ShaderCache::ssaoBlurShader->use();
+	ssaoBuffer->bindTexture(0);
+	blurSSAOBuffer->drawOverlay();
+
+	blurSSAOBuffer->unbind();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -86,23 +97,6 @@ void GameRenderer::renderGame()
 	}
 
 	glDisable(GL_DEPTH_TEST);
-	
-	// SSAO
-	ssaoBuffer->bind();
-	ShaderCache::ssaoShader->use();
-	gBuffer->bindTexture(0); // Bind position buffer
-	gBuffer->bindTexture(1); // Bind normal buffer
-	ShaderCache::ssaoShader->getNoiseTexture()->bind(2);
-	ssaoBuffer->drawOverlay();
-	ssaoBuffer->unbind();
-
-	// SSAO blur
-	blurSSAOBuffer->bind();
-	ShaderCache::ssaoBlurShader->use();
-	ssaoBuffer->bindTexture(0);
-	blurSSAOBuffer->drawOverlay();
-
-	blurSSAOBuffer->unbind();
 
 	// Light calculation
 	ShaderCache::deferredLightingShader->use();
@@ -127,9 +121,12 @@ void GameRenderer::renderGame()
 
 	glDisable(GL_DEPTH_TEST);
 	fvao->render2D(4, 28);
-	coords->render2D(4, 58);
 
-	//checkGLError("Frame");
+	FontRenderer::makeVao(*coords, *testFont, "G: " + std::to_string(Game::getInstance().getWorld()->getChunkGeneratorQueue().getInputSize()) + " R: " + std::to_string(worldRenderer->getChunkRenderer().getChunkRenderQueue().getInputSize()) + "\n" +
+		"(" + std::to_string(worldRenderer->getChunkRenderer().getDrawnedChunk()) + "/" + std::to_string(worldRenderer->getChunkRenderer().getChunkAmount()) + ")");
+	coords->render2D(4, 88);
+
+	checkGLError("Frame");
 
 	LightCache::cleanLights();
 

@@ -448,6 +448,7 @@
     <ClInclude Include="include\math\AABB.h" />
     <ClInclude Include="include\math\Frustum.h" />
     <ClInclude Include="include\util\Color.h" />
+    <ClInclude Include="include\util\GameSettings.h" />
     <ClInclude Include="include\util\GLHeader.h" />
     <ClInclude Include="include\util\Logger.h" />
     <ClInclude Include="include\math\MathUtil.h" />

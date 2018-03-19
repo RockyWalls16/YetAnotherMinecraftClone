@@ -17,7 +17,6 @@ private:
 	int uniformModelLocation;
 	int uniformViewLocation;
 	int uniformViewProjLocation;
-	int uniformNormalLocation;
 	int uniformAtlasCellSizeLocation;
 	int uniformAlbedoTexture;
 	int uniformSpecularTexture;

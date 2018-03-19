@@ -53,9 +53,9 @@ shared_ptr<AirChunk> ChunkGenerator::generateChunk(int cX, int cY, int cZ)
 	int surfaceBlock = 0;
 
 	static FastNoiseSIMD* elevationNoise = FastNoiseSIMD::NewFastNoiseSIMD();
+	static float elevationNoiseSet[CHUNK_SIZE * (CHUNK_SIZE + 4) * CHUNK_SIZE];
 
-	float* elevationNoiseSet = elevationNoise->GetPerlinFractalSet(rX, rY, rZ, CHUNK_SIZE, CHUNK_SIZE + 4, CHUNK_SIZE);
-	//elevationNoise->FillPerlinFractalSet()
+	elevationNoise->FillPerlinFractalSet(elevationNoiseSet, rX, rY, rZ, CHUNK_SIZE, CHUNK_SIZE + 4, CHUNK_SIZE);
 	int index = 0;
 
 	for (int y = 0; y < CHUNK_SIZE + 4; y++)
@@ -128,8 +128,6 @@ shared_ptr<AirChunk> ChunkGenerator::generateChunk(int cX, int cY, int cZ)
 	{
 		chunk->setSurfaceChunk();
 	}
-
-	FastNoiseSIMD::FreeNoiseSet(elevationNoiseSet);
 
 	// Empty chunk
 	if (blockAmount == 0)

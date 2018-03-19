@@ -8,17 +8,18 @@
 #include <condition_variable>
 #include <core/world/AirChunk.h>
 #include <client/render/util/VertexBuilder.h>
-#include <core/entity/Entity.h>
+#include <core/entity/EntityPlayer.h>
 #include <sparsepp/spp.h>
 
 class ChunkGeneratorInput
 {
 public:
+	EntityPlayer & player;
 	int x;
 	int y;
 	int z;
 
-	ChunkGeneratorInput(int x, int y, int z) : x(x), y(y), z(z) {}
+	ChunkGeneratorInput(EntityPlayer & player, int x, int y, int z) : player(player), x(x), y(y), z(z) {}
 };
 
 class ChunkGeneratorQueue
@@ -43,7 +44,7 @@ public:
 
 	void start();
 
-	void pushInputChunk(int x, int y, int z, bool toDecorate);
+	void pushInputChunk(EntityPlayer& player, int x, int y, int z);
 	int getInputSize() const;
 	int getOutputSize() const;
 	shared_ptr<AirChunk> popOutputChunk();

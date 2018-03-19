@@ -18,7 +18,6 @@ void ForwardBlockShader::bindAttributesAndUniforms()
 
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uViewProj", &uniformViewProjLocation);
-	bindUniformLocation("uNormalMat", &uniformNormalLocation);
 	bindUniformLocation("uAtlasCellSize", &uniformAtlasCellSizeLocation);
 	bindUniformLocation("albedoMap", &uniformAlbedoTexture);
 	bindUniformLocation("specularMap", &uniformSpecularTexture);
@@ -61,5 +60,4 @@ void ForwardBlockShader::setAtlasCellSize(float cellW, float cellH)
 void ForwardBlockShader::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 {
 	glUniformMatrix4fv(uniformModelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	glUniformMatrix3fv(uniformNormalLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 }

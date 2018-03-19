@@ -20,8 +20,8 @@ Entity::Entity(World& world) : entityWorld(world), hitbox(AABB(glm::vec3(0.1F, 0
 
 void Entity::tick()
 {
-	shared_ptr<AirChunk> chunk = entityWorld.getChunkAtBlockPos((int) position.x, (int) position.y, (int) position.z);
-	if (chunk == nullptr)
+	currentChunk = entityWorld.getChunkAtBlockPos((int) position.x, (int) position.y, (int) position.z);
+	if (currentChunk == nullptr)
 	{
 		return;
 	}
@@ -131,6 +131,11 @@ const glm::vec3& Entity::getRotation() const
 World& Entity::getWorld()
 {
 	return entityWorld;
+}
+
+shared_ptr<AirChunk> Entity::getCurrentChunk()
+{
+	return currentChunk;
 }
 
 void Entity::setPosition(const glm::vec3& position)
