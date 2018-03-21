@@ -4,6 +4,7 @@
 #include <portaudio/portaudio.h>
 #include <libsndfile/sndfile.h>
 #include <util/Logger.h>
+#include <thread>
 
 struct BufferData
 {
@@ -13,14 +14,19 @@ struct BufferData
 
 class AudioManager
 {
+private:
+	std::thread* audioThread;
+
 public:
-	void init();
+	void start();
 	void cleanup();
 
 	void loadAudioFile(const std::string& filePath);
 
 	static AudioManager& getInstance();
 
+private:
+	void onThreadStart();
 	static int bufferCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 };
 

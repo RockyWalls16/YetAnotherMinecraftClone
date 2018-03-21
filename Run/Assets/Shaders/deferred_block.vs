@@ -23,7 +23,7 @@ void main()
 	outFragPosView = (uViewMat * worldPosition).xyz;
 	gl_Position = uViewProj * worldPosition;
 
-	outNormal = normalize(aNormal);
+	outNormal = normalize(mat3(uViewMat * uModel) * normalize(aNormal));
 	outRawNormal = aNormal;
     outColor = aColor;
 	outAtlasPos = aAtlasPos;

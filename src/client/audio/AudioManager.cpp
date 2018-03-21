@@ -1,6 +1,14 @@
 #include <client/audio/AudioManager.h>
+#include <math/MathUtil.h>
+#include <ctime>
 
-void AudioManager::init()
+void AudioManager::start()
+{
+	audioThread = new std::thread(&AudioManager::onThreadStart, this);
+}
+
+
+void AudioManager::onThreadStart()
 {
 	Info("Audio manager initializing...");
 
@@ -11,8 +19,10 @@ void AudioManager::init()
 		Error("Reason: " + std::string(Pa_GetErrorText(error)));
 	}
 
-	loadAudioFile("Assets/Audio/music.ogg");
+	std::srand((unsigned int)std::time(nullptr));
+	loadAudioFile("Assets/Audio/music-" + std::to_string(MathUtil::rand(0, 12)) + ".ogg");
 }
+
 
 void AudioManager::cleanup()
 {
@@ -22,6 +32,8 @@ void AudioManager::cleanup()
 
 void AudioManager::loadAudioFile(const std::string& filePath)
 {
+	Info("Playing " + filePath);
+
 	BufferData fileData;
 
 	fileData.file = sf_open(filePath.c_str(), SFM_READ, &fileData.info);
