@@ -182,7 +182,6 @@
     <ClCompile Include="external\glm\detail\dummy.cpp" />
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
-    <ClCompile Include="include\client\shaders\BlurShader.h" />
     <ClCompile Include="src\client\audio\AudioFile.cpp" />
     <ClCompile Include="src\client\audio\AudioManager.cpp" />
     <ClCompile Include="src\client\shaders\BlurShader.cpp" />
@@ -437,6 +436,7 @@
     <ClInclude Include="include\client\render\util\VertexBuilder.h" />
     <ClInclude Include="include\client\render\WindowManager.h" />
     <ClInclude Include="include\client\render\WorldRenderer.h" />
+    <ClInclude Include="include\client\shaders\BlurShader.h" />
     <ClInclude Include="include\client\shaders\ForwardBlockShader.h" />
     <ClInclude Include="include\client\shaders\Shader2D.h" />
     <ClInclude Include="include\client\shaders\DeferredLightingShader.h" />

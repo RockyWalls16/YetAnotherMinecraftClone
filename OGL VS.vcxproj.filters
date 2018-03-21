@@ -210,9 +210,6 @@
     <ClCompile Include="src\client\shaders\SSAOShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\client\shaders\BlurShader.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\client\shaders\BlurShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -927,6 +924,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\audio\AudioFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\shaders\BlurShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

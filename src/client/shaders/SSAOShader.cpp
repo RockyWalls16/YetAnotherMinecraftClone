@@ -57,7 +57,6 @@ void SSAOShader::bindAttributesAndUniforms()
 	// Buffer textures
 	int positionGBuffer;
 	int normalGBuffer;
-	int depthGBuffer;
 	int noiseTextureLocation;
 	bindUniformLocation("gPosition", &positionGBuffer);
 	bindUniformLocation("gNormal", &normalGBuffer);
