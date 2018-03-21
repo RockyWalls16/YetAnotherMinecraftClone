@@ -5,6 +5,13 @@
 #include <libsndfile/sndfile.h>
 #include <util/Logger.h>
 #include <thread>
+#include <vector>
+#include <mutex>
+
+#define NB_CHANNEL 2
+#define SAMPLE_COUNT 512
+
+class AudioFile;
 
 struct BufferData
 {
@@ -16,12 +23,16 @@ class AudioManager
 {
 private:
 	std::thread* audioThread;
+	PaStream* opennedStream;
+	std::vector<BufferData> playingAudio;
+	std::mutex inputMutex;
+	bool shallStop;
 
 public:
 	void start();
-	void cleanup();
+	void stop();
 
-	void loadAudioFile(const std::string& filePath);
+	void playSound(AudioFile& audioFile);
 
 	static AudioManager& getInstance();
 

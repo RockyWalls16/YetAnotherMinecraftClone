@@ -183,6 +183,7 @@
     <ClCompile Include="external\glm\detail\glm.cpp" />
     <ClCompile Include="external\stb_image.c" />
     <ClCompile Include="include\client\shaders\BlurShader.h" />
+    <ClCompile Include="src\client\audio\AudioFile.cpp" />
     <ClCompile Include="src\client\audio\AudioManager.cpp" />
     <ClCompile Include="src\client\shaders\BlurShader.cpp" />
     <ClCompile Include="src\client\shaders\SSAOShader.cpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="external\sparsepp\spp_traits.h" />
     <ClInclude Include="external\sparsepp\spp_utils.h" />
     <ClInclude Include="external\stb_image.h" />
+    <ClInclude Include="include\client\audio\AudioFile.h" />
     <ClInclude Include="include\client\audio\AudioManager.h" />
     <ClInclude Include="include\client\input\CameraRay.h" />
     <ClInclude Include="include\client\input\GameController.h" />
