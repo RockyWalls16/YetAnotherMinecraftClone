@@ -14,10 +14,11 @@
 #include <client/render/util/VertexArray.h>
 #include <client/render/font/FontCache.h>
 #include <client/render/font/FontVAO.h>
-#include <client/render/font/FontRenderer.h>
+#include <client/gui/GuiIngame.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <math/MathUtil.h>
 #include <util/TimeManager.h>
+#include <util/GameSettings.h>
 #include <Game.h>
 
 GameRenderer::GameRenderer()
@@ -37,26 +38,6 @@ void GameRenderer::clearGameRenderer()
 
 void GameRenderer::renderGame()
 {
-	static Font* testFont;
-	static FontVAO* fvao;
-	static FontVAO* coords;
-
-	if (testFont == nullptr)
-	{
-		testFont = FontCache::loadFont("default");
-		
-		fvao = new FontVAO(*testFont);
-		coords = new FontVAO(*testFont);
-		FontRenderer::makeVao(*fvao, *testFont, "FPS: ");
-	}
-
-	if (TimeManager::fps == 0)
-	{ 
-		FontRenderer::makeVao(*fvao, *testFont, "FPS: " + std::to_string(TimeManager::lastFps));
-	}
-
-	//coords = FontRenderer::makeVao(*testFont, "X: " + std::to_string((int) gameCamera.getLocation().x) + " Y: " + std::to_string((int)gameCamera.getLocation().y) + " Z: " + std::to_string((int)gameCamera.getLocation().z));
-
 	gBuffer->bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,11 +101,11 @@ void GameRenderer::renderGame()
 	// UI
 
 	glDisable(GL_DEPTH_TEST);
-	fvao->render2D(4, 28);
-
-	FontRenderer::makeVao(*coords, *testFont, "G: " + std::to_string(Game::getInstance().getWorld()->getChunkGeneratorQueue().getInputSize()) + " R: " + std::to_string(worldRenderer->getChunkRenderer().getChunkRenderQueue().getInputSize()) + "\n" +
-		"(" + std::to_string(worldRenderer->getChunkRenderer().getDrawnedChunk()) + "/" + std::to_string(worldRenderer->getChunkRenderer().getChunkAmount()) + ")");
-	coords->render2D(4, 88);
+	// Render guis
+	for (Gui* gui : openGuis)
+	{
+		gui->render();
+	}
 
 	checkGLError("Frame");
 
@@ -151,6 +132,7 @@ int GameRenderer::initGameRenderer()
 		
 		// Load Shaders
 		ShaderCache::initShaderCache();
+		FontCache::init();
 
 		gameCamera.initCamera();
 
@@ -187,6 +169,11 @@ int GameRenderer::initGameRenderer()
 		blurSSAOBuffer->checkAndUnbind();
 
 		worldRenderer = new WorldRenderer(*Game::getInstance().getWorld());
+		
+		Gui::initTextures();
+
+		GuiIngame* ingameGui = new GuiIngame();
+		ingameGui->open();
 
 		return 0;
 	}
@@ -206,7 +193,7 @@ void GameRenderer::onResize(int width, int height)
 		frameHeight = height;
 
 		// Update matrices
-		orthoProjectionMatrix = glm::ortho(0.0F, (float) width, 0.0F, (float)height, -1.0F, 1.0F);
+		orthoProjectionMatrix = glm::ortho(0.0F, (float) width / GUI_SCALE, 0.0F, (float)height / GUI_SCALE, -1.0F, 1.0F);
 		gameCamera.setCameraPerspective(60.0F, width, height);
 		
 		ShaderCache::onResize(width, height);
@@ -216,6 +203,12 @@ void GameRenderer::onResize(int width, int height)
 			gBuffer->resizeAttachedTexture(width, height);
 			ssaoBuffer->resizeAttachedTexture(width, height);
 			blurSSAOBuffer->resizeAttachedTexture(width, height);
+		}
+
+		for (Gui* gui : openGuis)
+		{
+			gui->onResize(width, height);
+			gui->prepareLayout(false);
 		}
 	}
 }
@@ -243,6 +236,11 @@ bool GameRenderer::isWireframeMode()
 void GameRenderer::setWireFrame(bool wireframe)
 {
 	this->wireframe = wireframe;
+}
+
+std::vector<Gui*>& GameRenderer::getOpenGuis()
+{
+	return openGuis;
 }
 
 glm::mat4 GameRenderer::getOrthoMatrix()

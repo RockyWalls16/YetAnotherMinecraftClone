@@ -9,7 +9,7 @@ class FontVAO;
 class FontRenderer
 {
 public:
-	static void makeVao(FontVAO& fontVao, Font& font, std::string text);
+	static void makeVao(FontVAO& fontVao, Font& font, const std::string& text);
 };
 
 #endif

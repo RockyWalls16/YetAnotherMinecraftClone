@@ -11,7 +11,7 @@ void BlurShader::onResize(int width, int height)
 {
 	Shader::use();
 
-	glUniform2f(pixelSizeLocation, 1.0F / (float) width, 1.0F / (float) height);
+	glUniform2f(pixelSizeLocation, 1.0F / (float)width, 1.0F / (float)height);
 }
 
 void BlurShader::bindAttributesAndUniforms()

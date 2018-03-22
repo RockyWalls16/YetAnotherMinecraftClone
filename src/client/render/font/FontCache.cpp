@@ -8,6 +8,12 @@
 #define FONT_PATH "Assets/Fonts/"
 
 std::vector<Font*> FontCache::loadedFonts = std::vector<Font*>();
+Font* FontCache::defaultFont = nullptr;
+
+void FontCache::init()
+{
+	defaultFont = loadFont("default");
+}
 
 Font * FontCache::loadFont(std::string name)
 {

@@ -11,6 +11,9 @@ private:
 	static std::vector<Font*> loadedFonts;
 
 public:
+	static Font* defaultFont;
+
+	static void init();
 	static Font* loadFont(std::string name);
 
 	static void cleanUp();

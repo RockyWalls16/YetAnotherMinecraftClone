@@ -184,6 +184,11 @@
     <ClCompile Include="external\stb_image.c" />
     <ClCompile Include="src\client\audio\AudioFile.cpp" />
     <ClCompile Include="src\client\audio\AudioManager.cpp" />
+    <ClCompile Include="src\client\gui\components\GuiComponent.cpp" />
+    <ClCompile Include="src\client\gui\components\TextComponent.cpp" />
+    <ClCompile Include="src\client\gui\components\TextureComponent.cpp" />
+    <ClCompile Include="src\client\gui\Gui.cpp" />
+    <ClCompile Include="src\client\gui\GuiIngame.cpp" />
     <ClCompile Include="src\client\shaders\BlurShader.cpp" />
     <ClCompile Include="src\client\shaders\SSAOShader.cpp" />
     <ClCompile Include="src\core\world\ChunkGeneratorQueue.cpp" />
@@ -414,6 +419,11 @@
     <ClInclude Include="external\stb_image.h" />
     <ClInclude Include="include\client\audio\AudioFile.h" />
     <ClInclude Include="include\client\audio\AudioManager.h" />
+    <ClInclude Include="include\client\gui\components\TextComponent.h" />
+    <ClInclude Include="include\client\gui\components\TextureComponent.h" />
+    <ClInclude Include="include\client\gui\Gui.h" />
+    <ClInclude Include="include\client\gui\components\GuiComponent.h" />
+    <ClInclude Include="include\client\gui\GuiIngame.h" />
     <ClInclude Include="include\client\input\CameraRay.h" />
     <ClInclude Include="include\client\input\GameController.h" />
     <ClInclude Include="include\client\render\font\FontVAO.h" />

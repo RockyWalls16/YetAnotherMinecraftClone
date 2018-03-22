@@ -4,7 +4,7 @@
 #include <client/render/util/VertexArray.h>
 #include <util/Logger.h>
 
-void FontRenderer::makeVao(FontVAO& fontVao, Font& font, std::string text)
+void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text)
 {
 	static unsigned int indices[] =
 	{
@@ -14,20 +14,24 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, std::string text)
 
 	static float vertices[] =
 	{
-		0.0F, 1.0F, 0.0F, //p
-		0.0F, 1.0F,       //uv
+		0.0F, 1.0F, 0.0F,       //p
+		1.0F, 1.0F, 1.0F, 1.0F, //c
+		0.0F, 1.0F,             //uv
 
-		0.0F, 0.0F, 0.0F, //p
-		0.0F, 0.0F,       //uv
+		0.0F, 0.0F, 0.0F,       //p
+		1.0F, 1.0F, 1.0F, 1.0F, //c
+		0.0F, 0.0F,             //uv
 
-		1.0F, 1.0F, 0.0F, //p
-		1.0F, 1.0F,       //uv
+		1.0F, 1.0F, 0.0F,       //p
+		1.0F, 1.0F, 1.0F, 1.0F, //c
+		1.0F, 1.0F,             //uv
 
-		1.0F, 0.0F, 0.0F, //p
-		1.0F, 0.0F        //uv
+		1.0F, 0.0F, 0.0F,       //p
+		1.0F, 1.0F, 1.0F, 1.0F, //c
+		1.0F, 0.0F              //uv
 	};
 
-	static VertexBuilder vb(5, 1000);
+	static VertexBuilder vb(9, 1000);
 	vb.rewind();
 
 	int charAmount = text.size();
@@ -84,17 +88,23 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, std::string text)
 		int yOffset = (font.getBaseLine() - height) - chInfo->offsetY;
 
 		// Prepare vertices
-		float charVertices[20];
-		for (int j = 0; j < 20; j += 5)
+		float charVertices[36];
+		for (int j = 0; j < 36; j += 9)
 		{
 			// Positions
 			charVertices[j] = vertices[j] * width + currentWidth + chInfo->offsetX;
 			charVertices[j + 1] = vertices[j + 1] * height + yPos + yOffset;
 			charVertices[j + 2] = vertices[j + 2];
 
+			// Color
+			charVertices[j + 3] = vertices[j + 3];
+			charVertices[j + 4] = vertices[j + 4];
+			charVertices[j + 5] = vertices[j + 5];
+			charVertices[j + 6] = vertices[j + 6];
+
 			// UV
-			charVertices[j + 3] = vertices[j + 3] * u2 + u;
-			charVertices[j + 4] = vertices[j + 4] * v2 + v;
+			charVertices[j + 7] = vertices[j + 7] * u2 + u;
+			charVertices[j + 8] = vertices[j + 8] * v2 + v;
 		}
 
 		// Indices

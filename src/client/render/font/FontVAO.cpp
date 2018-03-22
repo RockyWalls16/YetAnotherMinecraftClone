@@ -7,9 +7,9 @@ FontVAO::FontVAO(Font& font) : font(font), vertexAmount(0)
 	fontVao.disableNormals();
 	fontVao.addVBO(NULL, 0, GL_DYNAMIC_DRAW);
 	fontVao.enableEBO(NULL, 0, GL_DYNAMIC_DRAW);
-	fontVao.assignPositionAttrib(0, 0, sizeof(float) * 5);
-	fontVao.assignUVAttrib(0, 1, sizeof(float) * 5, (void*)(3 * sizeof(float)));
-	fontVao.scale(glm::vec3(0.1F, 0.1F, 0.1F));
+	fontVao.assignPositionAttrib(0, 0, sizeof(float) * 9);
+	fontVao.assignRGBAAttrib(0, 1, sizeof(float) * 9, (void*)(3 * sizeof(float)));
+	fontVao.assignUVAttrib(0, 2, sizeof(float) * 9, (void*)(7 * sizeof(float)));
 }
 
 FontVAO::~FontVAO()

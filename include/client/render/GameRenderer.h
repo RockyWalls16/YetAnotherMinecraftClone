@@ -12,6 +12,8 @@
 #include <client/render/util/FrameBuffer.h>
 #include <client/render/WindowManager.h>
 #include <client/render/WorldRenderer.h>
+#include <client/gui/Gui.h>
+#include <vector>
 
 enum RenderLayer
 {
@@ -29,6 +31,7 @@ private:
 
 	WindowManager windowManager;
 	Camera gameCamera;
+	std::vector<Gui*> openGuis;
 	WorldRenderer* worldRenderer;
 	FrameBuffer* gBuffer;
 	FrameBuffer* ssaoBuffer;
@@ -52,12 +55,13 @@ public:
 	WorldRenderer* getWorldRenderer();
 
 	bool isWireframeMode();
-
 	void setWireFrame(bool wireframe);
 
+	std::vector<Gui*>& getOpenGuis();
 	glm::mat4 getOrthoMatrix();
 
-	static void checkGLError(std::string tag);
+
+	static void checkGLError(std::string tag); 
 };
 
 #endif /* GAMERENDERER_H_ */

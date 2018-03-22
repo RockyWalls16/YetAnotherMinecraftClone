@@ -14,7 +14,8 @@ void Shader2D::onDraw(glm::mat4& modelMatrix, glm::mat3& normalMatrix)
 void Shader2D::bindAttributesAndUniforms()
 {
 	bindAttribute(0, "aPos");
-	bindAttribute(1, "aTex");
+	bindAttribute(1, "aColor");
+	bindAttribute(2, "aTex");
 
 	bindUniformLocation("uModel", &uniformModelLocation);
 	bindUniformLocation("uProjection", &uniformOrthoLocation);
