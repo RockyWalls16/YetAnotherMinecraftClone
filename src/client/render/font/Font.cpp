@@ -1,6 +1,6 @@
 #include <client/render/font/Font.h>
 
-Font::Font(Texture * fntTex, CharInfo ** infos, int maxCh, int lineHeight, int baseLine) : fontTexture(fntTex), charInfos(infos), maxChar(maxCh), lineHeight(lineHeight), baseLine(baseLine)
+Font::Font(Texture * fntTex, int maxCh, int lineHeight, int baseLine) : fontTexture(fntTex), maxChar(maxCh), lineHeight(lineHeight), baseLine(baseLine)
 {
 }
 
@@ -13,10 +13,9 @@ Font::~Font()
 			delete(charInfos[i]);
 		}
 	}
-	delete(charInfos);
 }
 
-CharInfo * Font::getCharInfo(char ch)
+CharInfo * Font::getCharInfo(unsigned char ch)
 {
 	return charInfos[ch];
 }
@@ -44,4 +43,9 @@ int Font::getBaseLine()
 void Font::bind()
 {
 	fontTexture->bind();
+}
+
+CharInfo ** Font::getCharInfoArray()
+{
+	return charInfos;
 }

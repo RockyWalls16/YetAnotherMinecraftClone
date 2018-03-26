@@ -96,7 +96,7 @@ Font * FontCache::loadFont(std::string name)
 					}
 
 					// Register char
-					char charId = (char) std::atoi(((std::string) match[1]).c_str());
+					unsigned char charId = (unsigned char) std::atoi(((std::string) match[1]).c_str());
 					int x = std::atoi(((std::string) match[2]).c_str());
 					int y = std::atoi(((std::string) match[3]).c_str());
 					int w = std::atoi(((std::string) match[4]).c_str());
@@ -117,15 +117,16 @@ Font * FontCache::loadFont(std::string name)
 				}
 			}
 
+			// Create font & add to cache
+			Font* font = new Font(fontTexture, maxCharId + 1, lineHeight, baseLine);
+
 			// Reorganize array for faster access
-			CharInfo** charInfoSorted = new CharInfo*[maxCharId + 1]{nullptr};
 			for (int c = 0; c < charAmount; c++)
 			{
-				charInfoSorted[charInfos[c]->character] = charInfos[c];
+				font->getCharInfoArray()[charInfos[c]->character] = charInfos[c];
+				Info(std::to_string((int) charInfos[c]->character));
 			}
 
-			// Create font & add to cache
-			Font* font = new Font(fontTexture, charInfoSorted, maxCharId + 1, lineHeight, baseLine);
 			loadedFonts.push_back(font);
 
 			// Clean & close

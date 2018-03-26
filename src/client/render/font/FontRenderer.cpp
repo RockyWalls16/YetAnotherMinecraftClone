@@ -84,7 +84,7 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 		float u, v, u2, v2;
 		font.getUV(chInfo, &u, &v, &u2, &v2);
 
-		int yPos = - totalHeight - font.getBaseLine();
+		int yPos = - totalHeight - font.getBaseLine() + font.getLineHeight();
 		int yOffset = (font.getBaseLine() - height) - chInfo->offsetY;
 
 		// Prepare vertices
