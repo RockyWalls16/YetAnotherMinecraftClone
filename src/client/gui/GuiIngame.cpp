@@ -21,7 +21,7 @@ void GuiIngame::prepareLayout(bool onOpen)
 		addComponent(inventorySelected);
 	}
 
-	fpsCounter->setPosition(4, 4);
+	fpsCounter->setPosition(4, 0);
 	renderDebug->setPosition(4, 24);
 	cursor->setPosition(width / 2.0F - 8, height / 2.0F - 8);
 	inventoryHotbar->setPosition(width / 2.0F - (182 / 2.0F), 0.0F);
