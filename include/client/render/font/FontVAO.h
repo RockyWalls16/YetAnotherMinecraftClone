@@ -21,6 +21,9 @@ public:
 
 	void updateVAO(VertexBuilder& vb, int width, int height);
 	void render2D(int x, int y);
+
+	int getWidth();
+	int getHeight();
 };
 
 #endif

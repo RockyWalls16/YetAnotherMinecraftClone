@@ -39,3 +39,13 @@ void FontVAO::render2D(int x, int y)
 		fontVao.drawEBO(vertexAmount);
 	}
 }
+
+int FontVAO::getWidth()
+{
+	return width;
+}
+
+int FontVAO::getHeight()
+{
+	return height;
+}

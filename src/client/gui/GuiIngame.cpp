@@ -21,9 +21,9 @@ void GuiIngame::prepareLayout(bool onOpen)
 		addComponent(inventoryHotbar);
 		addComponent(inventorySelected);
 
-		/*ButtonComponent* button = new ButtonComponent("...", 200);
+		ButtonComponent* button = new ButtonComponent("Test button okay ?", 200);
 		addComponent(button);
-		button->setPosition(200, 200);*/
+		button->setPosition(width / 2 - 100, 200);
 	}
 
 	fpsCounter->setPosition(4, 0);
@@ -39,8 +39,7 @@ void GuiIngame::render()
 
 	if (TimeManager::fps == 0)
 	{
-		//fpsCounter->setText("FPS: " + std::to_string(TimeManager::lastFps));
-		fpsCounter->setText("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+<>&~é#\"{([-|è`\\_^ç@à)]}=");
+		fpsCounter->setText("FPS: " + std::to_string(TimeManager::lastFps));
 	}
 
 	renderDebug->setText("G: " + std::to_string(Game::getInstance().getWorld()->getChunkGeneratorQueue().getInputSize()) + " R: " + std::to_string(GameRenderer::getInstance().getWorldRenderer()->getChunkRenderer().getChunkRenderQueue().getInputSize()) + "\n" +

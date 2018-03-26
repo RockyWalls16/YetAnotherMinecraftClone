@@ -10,7 +10,8 @@ class ButtonComponent : public GuiComponent
 private:
 	TextComponent textComponent;
 	TextureComponent buttonBegin;
-	//TextureComponent buttonEnd;
+	TextureComponent buttonEnd;
+	int width;
 
 public:
 	ButtonComponent(const std::string & text, int width, Font& font);
@@ -19,6 +20,8 @@ public:
 	virtual void init() override;
 	virtual void render() override;
 	virtual void setPosition(int x, int y) override;
+
+	virtual void onInput(int mX, int mY) override;
 };
 
 #endif

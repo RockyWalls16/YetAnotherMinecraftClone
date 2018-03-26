@@ -28,6 +28,7 @@ public:
 	virtual void onResize(int width, int height);
 	void open();
 	void close();
+	void onInput(int mX, int mY);
 
 	static void initTextures();
 };

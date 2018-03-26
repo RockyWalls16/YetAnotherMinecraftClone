@@ -58,8 +58,15 @@ void Gui::close()
 	guis.erase(std::remove(guis.begin(), guis.end(), this), guis.end());
 }
 
+void Gui::onInput(int mX, int mY)
+{
+	for (GuiComponent* component : components)
+	{
+		component->onInput(mX, mY);
+	}
+}
+
 void Gui::initTextures()
 {
-	Info("LOADING");
 	widgetsTexture = TextureLoader::loadTexture("Gui/widgets");
 }

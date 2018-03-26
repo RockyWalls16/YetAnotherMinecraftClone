@@ -12,6 +12,8 @@ public:
 	virtual void render() = 0;
 
 	virtual void setPosition(int x, int y);
+
+	virtual void onInput(int mX, int mY) {};
 };
 
 #endif

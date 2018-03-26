@@ -20,6 +20,9 @@ public:
 	virtual void init() override;
 	virtual void render() override;
 	void setText(const std::string& newText);
+
+	int getWidth();
+	int getHeight();
 };
 
 #endif

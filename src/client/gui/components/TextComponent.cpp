@@ -30,3 +30,13 @@ void TextComponent::setText(const std::string & newText)
 		init();
 	}
 }
+
+int TextComponent::getWidth()
+{
+	return fontVao.getWidth();
+}
+
+int TextComponent::getHeight()
+{
+	return fontVao.getHeight();
+}

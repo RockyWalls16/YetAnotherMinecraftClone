@@ -6,6 +6,7 @@
  */
 
 #include <client/render/GameRenderer.h>
+#include <client/input/GameController.h>
 #include <client/render/util/FrameBuffer.h>
 #include <util/Logger.h>
 #include <client/shaders/ShaderCache.h>
@@ -101,9 +102,11 @@ void GameRenderer::renderGame()
 	// UI
 
 	glDisable(GL_DEPTH_TEST);
-	// Render guis
+	// Render guis & update input
+	GameController& controller = GameController::getInstance();
 	for (Gui* gui : openGuis)
 	{
+		gui->onInput(controller.getMouseX() / GUI_SCALE, (frameHeight - controller.getMouseY()) / GUI_SCALE);
 		gui->render();
 	}
 

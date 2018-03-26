@@ -41,7 +41,7 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 	int currentWidth = 0;
 	int currentHeight = 0;
 	int totalWidth = 0;
-	int totalHeight = 0;
+	int totalHeight = font.getLineHeight();
 	int currentMaxHeight = 0;
 
 	// Build vertex array
@@ -58,7 +58,6 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 		// Handle new line
 		else if (c == '\n')
 		{
-			currentHeight -= font.getLineHeight();
 			totalHeight += font.getLineHeight();
 
 			if (currentWidth > totalWidth)
@@ -121,10 +120,6 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 
 		// Update offset
 		currentWidth += chInfo->xAdvance;
-		if (height > currentMaxHeight)
-		{
-			currentHeight = height;
-		}
 	}
 
 	// Calculate text bounds
@@ -132,7 +127,7 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 	{
 		totalWidth = currentWidth;
 	}
-	totalHeight += currentHeight;
+	//totalHeight += currentHeight;
 
 	// Generate Vertex data
 	fontVao.updateVAO(vb, totalWidth, totalHeight);
