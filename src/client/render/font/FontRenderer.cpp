@@ -52,7 +52,7 @@ void FontRenderer::makeVao(FontVAO& fontVao, Font& font, const std::string& text
 		// Handle space
 		if (c == ' ')
 		{
-			currentWidth += 12;
+			currentWidth += 8;
 			continue;
 		}
 		// Handle new line

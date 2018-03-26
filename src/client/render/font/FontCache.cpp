@@ -83,7 +83,7 @@ Font * FontCache::loadFont(std::string name)
 					}
 
 					charAmount = std::atoi(((std::string) match[1]).c_str());
-					charInfos = new CharInfo*[charAmount];
+					charInfos = new CharInfo*[charAmount] {nullptr};
 				}
 				else if(i > 4)
 				{
