@@ -11,7 +11,7 @@ public:
 	virtual void init() = 0;
 	virtual void render() = 0;
 
-	void setPosition(int x, int y);
+	virtual void setPosition(int x, int y);
 };
 
 #endif

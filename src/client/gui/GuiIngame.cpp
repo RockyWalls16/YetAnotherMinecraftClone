@@ -4,6 +4,7 @@
 #include <client/render/GameRenderer.h>
 #include <core/world/World.h>
 #include <client/textures/TextureCache.h>
+#include <client/gui/components/ButtonComponent.h>
 
 void GuiIngame::prepareLayout(bool onOpen)
 {
@@ -19,6 +20,10 @@ void GuiIngame::prepareLayout(bool onOpen)
 		addComponent(cursor);
 		addComponent(inventoryHotbar);
 		addComponent(inventorySelected);
+
+		ButtonComponent* button = new ButtonComponent("...", 200, 20);
+		addComponent(button);
+		button->setPosition(200, 200);
 	}
 
 	fpsCounter->setPosition(4, 4);

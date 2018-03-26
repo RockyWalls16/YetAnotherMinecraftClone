@@ -234,6 +234,9 @@
     <ClCompile Include="src\client\gui\components\TextureComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\client\gui\components\ButtonComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\stb_image.h">
@@ -957,6 +960,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\gui\components\TextureComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\gui\components\ButtonComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

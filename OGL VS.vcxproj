@@ -184,6 +184,7 @@
     <ClCompile Include="external\stb_image.c" />
     <ClCompile Include="src\client\audio\AudioFile.cpp" />
     <ClCompile Include="src\client\audio\AudioManager.cpp" />
+    <ClCompile Include="src\client\gui\components\ButtonComponent.cpp" />
     <ClCompile Include="src\client\gui\components\GuiComponent.cpp" />
     <ClCompile Include="src\client\gui\components\TextComponent.cpp" />
     <ClCompile Include="src\client\gui\components\TextureComponent.cpp" />
@@ -419,6 +420,7 @@
     <ClInclude Include="external\stb_image.h" />
     <ClInclude Include="include\client\audio\AudioFile.h" />
     <ClInclude Include="include\client\audio\AudioManager.h" />
+    <ClInclude Include="include\client\gui\components\ButtonComponent.h" />
     <ClInclude Include="include\client\gui\components\TextComponent.h" />
     <ClInclude Include="include\client\gui\components\TextureComponent.h" />
     <ClInclude Include="include\client\gui\Gui.h" />

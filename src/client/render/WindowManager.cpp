@@ -39,7 +39,7 @@ int WindowManager::initWindow()
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Initialize windows
-	GLFWwindow* window = glfwCreateWindow(640, 640, "OGL", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1280, 640, "OGL", nullptr, nullptr);
 	if (!window)
 	{
 		Fatal("Failed to create the game window!");

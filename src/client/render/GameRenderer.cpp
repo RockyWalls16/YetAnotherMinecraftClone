@@ -207,7 +207,7 @@ void GameRenderer::onResize(int width, int height)
 
 		for (Gui* gui : openGuis)
 		{
-			gui->onResize(width, height);
+			gui->onResize(width / GUI_SCALE, height / GUI_SCALE);
 			gui->prepareLayout(false);
 		}
 	}
