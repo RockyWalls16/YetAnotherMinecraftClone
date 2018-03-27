@@ -48,6 +48,8 @@ public:
 
 	void clearGameRenderer();
 
+	bool updateGuiInput();
+
 	WindowManager& getWindowManager();
 	
 	static GameRenderer& getInstance();

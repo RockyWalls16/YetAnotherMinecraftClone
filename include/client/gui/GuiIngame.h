@@ -8,16 +8,19 @@
 class GuiIngame : public Gui
 {
 private:
-	TextComponent* fpsCounter;
-	TextComponent* renderDebug;
-	TextureComponent* cursor;
-	TextureComponent* inventoryHotbar;
-	TextureComponent* inventorySelected;
+	TextComponent fpsCounter;
+	TextComponent renderDebug;
+	TextureComponent cursor;
+	TextureComponent inventoryHotbar;
+	TextureComponent inventorySelected;
 
 public:
-	virtual void prepareLayout(bool onOpen) override;
+	GuiIngame();
 
+	virtual void prepareLayout() override;
 	virtual void render() override;
+	virtual bool blockInput() override { return false; }
+	virtual bool closeWithEscape() { return false; }
 };
 
 #endif

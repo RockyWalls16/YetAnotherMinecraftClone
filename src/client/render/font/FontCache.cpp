@@ -124,7 +124,6 @@ Font * FontCache::loadFont(std::string name)
 			for (int c = 0; c < charAmount; c++)
 			{
 				font->getCharInfoArray()[charInfos[c]->character] = charInfos[c];
-				Info(std::to_string((int) charInfos[c]->character));
 			}
 
 			loadedFonts.push_back(font);

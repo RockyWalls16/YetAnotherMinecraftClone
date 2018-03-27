@@ -37,6 +37,18 @@ void GameRenderer::clearGameRenderer()
 	delete(gBuffer);
 }
 
+bool GameRenderer::updateGuiInput()
+{
+	bool blockInput = false;
+	for (Gui* gui : openGuis)
+	{
+		gui->onInputUpdate(GameController::getInstance().getMouseX() / GUI_SCALE, (frameHeight - GameController::getInstance().getMouseY()) / GUI_SCALE);
+		blockInput = blockInput || gui->blockInput();
+	}
+
+	return blockInput;
+}
+
 void GameRenderer::renderGame()
 {
 	gBuffer->bind();
@@ -103,11 +115,20 @@ void GameRenderer::renderGame()
 
 	glDisable(GL_DEPTH_TEST);
 	// Render guis & update input
-	GameController& controller = GameController::getInstance();
-	for (Gui* gui : openGuis)
+
+	std::vector<Gui*>::iterator it;
+	for (it = openGuis.begin(); it != openGuis.end();)
 	{
-		gui->onInput(controller.getMouseX() / GUI_SCALE, (frameHeight - controller.getMouseY()) / GUI_SCALE);
-		gui->render();
+		if ((*it)->shallUiClose())
+		{
+			delete(*it);
+			it = openGuis.erase(it);
+		}
+		else
+		{
+			(*it)->render();
+			it++;
+		}
 	}
 
 	checkGLError("Frame");
@@ -211,7 +232,7 @@ void GameRenderer::onResize(int width, int height)
 		for (Gui* gui : openGuis)
 		{
 			gui->onResize(width / GUI_SCALE, height / GUI_SCALE);
-			gui->prepareLayout(false);
+			gui->prepareLayout();
 		}
 	}
 }

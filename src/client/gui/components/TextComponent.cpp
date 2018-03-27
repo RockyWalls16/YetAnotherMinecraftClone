@@ -3,12 +3,12 @@
 #include <client/render/font/FontCache.h>
 #include <util/Logger.h>
 
-TextComponent::TextComponent(const std::string & text, Font & font) : GuiComponent(), text(text), font(font), fontVao(FontVAO(font))
+TextComponent::TextComponent(const std::string & text, TextAlign horizontalAlign, Font & font) : GuiComponent(), text(text), horizontalAlign(horizontalAlign), font(font), fontVao(FontVAO(font))
 {
 
 }
 
-TextComponent::TextComponent(const std::string & text) : TextComponent(text, *FontCache::defaultFont)
+TextComponent::TextComponent(const std::string & text, TextAlign horizontalAlign) : TextComponent(text, horizontalAlign, *FontCache::defaultFont)
 {
 }
 
@@ -19,7 +19,19 @@ void TextComponent::init()
 
 void TextComponent::render()
 {
-	fontVao.render2D(x, y);
+	int rX = x;
+	int rY = y;
+
+	if (horizontalAlign == CENTER)
+	{
+		rX = x - (fontVao.getWidth() / 2);
+	}
+	else if (horizontalAlign == RIGHT)
+	{
+		rX = x - fontVao.getWidth();
+	}
+
+	fontVao.render2D(rX, rY);
 }
 
 void TextComponent::setText(const std::string & newText)

@@ -13,6 +13,7 @@ public:
 private:
 	std::vector<GuiComponent*> components;
 	bool initialized;
+	bool shallClose;
 
 protected:
 	int width;
@@ -20,15 +21,19 @@ protected:
 
 public:
 	Gui();
-	~Gui();
 
-	virtual void prepareLayout(bool onOpen) = 0;
+	virtual void prepareLayout() = 0;
 	void addComponent(GuiComponent* component);
 	virtual void render();
 	virtual void onResize(int width, int height);
+	virtual void onInputEvent(GuiComponent* component) {}
+	virtual bool blockInput() { return true; }
+	virtual bool closeWithEscape() { return true; }
+
 	void open();
 	void close();
-	void onInput(int mX, int mY);
+	bool shallUiClose();
+	virtual void onInputUpdate(int mX, int mY);
 
 	static void initTextures();
 };

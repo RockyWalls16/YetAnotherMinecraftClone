@@ -12,6 +12,11 @@ TextureComponent::TextureComponent(Texture * texture, float w, float h, float sX
 	vao.assignUVAttrib(0, 2, sizeof(float) * 9, (void*)(7 * sizeof(float)));
 }
 
+TextureComponent::TextureComponent(Texture * texture, float w, float h, int sX, int sY, int sX2, int sY2, int texWidth, int texHeight) :
+	TextureComponent(texture, w, h, sX / (float) texWidth, 1.0F - (sY2 / (float) texHeight), sX2 / (float) texWidth, 1.0F - (sY / (float)texHeight))
+{
+}
+
 void TextureComponent::init()
 {
 	static float quadVertices[] =
@@ -70,4 +75,19 @@ void TextureComponent::render()
 	texture->bind();
 	ShaderCache::shader2d->use();
 	vao.drawEBO(6);
+}
+
+void TextureComponent::setUV(float sX, float sY, float sX2, float sY2)
+{
+	this->sX = sX;
+	this->sY = sY;
+	this->sX2 = sX2;
+	this->sY2 = sY2;
+
+	init();
+}
+
+void TextureComponent::setUV(int sX, int sY, int sX2, int sY2, int texWidth, int texHeight)
+{
+	setUV(sX / (float)texWidth, 1.0F - (sY2 / (float)texHeight), sX2 / (float)texWidth, 1.0F - (sY / (float)texHeight));
 }

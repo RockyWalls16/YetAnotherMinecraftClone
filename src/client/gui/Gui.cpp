@@ -1,5 +1,6 @@
 #include <client/gui/Gui.h>
 #include <util/Logger.h>
+#include <client/input/GameController.h>
 #include <client/render/GameRenderer.h>
 #include <client/render/WindowManager.h>
 #include <client/textures/TextureLoader.h>
@@ -11,14 +12,6 @@ Texture* Gui::widgetsTexture = nullptr;
 Gui::Gui() : initialized(false)
 {
 	
-}
-
-Gui::~Gui()
-{
-	for (GuiComponent* component : components)
-	{
-		delete(component);
-	}
 }
 
 void Gui::addComponent(GuiComponent* component)
@@ -43,26 +36,37 @@ void Gui::onResize(int width, int height)
 
 void Gui::open()
 {
+	shallClose = false;
+
 	int width;
 	int height;
 	WindowManager::getMainInstance().getFramebufferSize(&width, &height);
 	onResize(width / GUI_SCALE, height / GUI_SCALE);
 
-	prepareLayout(!initialized);
+	prepareLayout();
 	GameRenderer::getInstance().getOpenGuis().push_back(this);
 }
 
 void Gui::close()
 {
-	std::vector<Gui*> guis = GameRenderer::getInstance().getOpenGuis();
-	guis.erase(std::remove(guis.begin(), guis.end(), this), guis.end());
+	shallClose = true;
 }
 
-void Gui::onInput(int mX, int mY)
+bool Gui::shallUiClose()
+{
+	return shallClose;
+}
+
+void Gui::onInputUpdate(int mX, int mY)
 {
 	for (GuiComponent* component : components)
 	{
 		component->onInput(mX, mY);
+	}
+
+	if (closeWithEscape() && GameController::ESCAPE_KEY->isPressed())
+	{
+		close();
 	}
 }
 

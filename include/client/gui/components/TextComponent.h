@@ -6,16 +6,24 @@
 #include <client/render/font/FontVAO.h>
 #include <string>
 
+enum TextAlign
+{
+	LEFT,
+	CENTER,
+	RIGHT
+};
+
 class TextComponent : public GuiComponent
 {
 private:
 	Font& font;
 	FontVAO fontVao;
 	std::string text;
+	TextAlign horizontalAlign;
 
 public:
-	TextComponent(const std::string& text, Font& font);
-	TextComponent(const std::string& text);
+	TextComponent(const std::string& text, TextAlign horizontalAlign, Font& font);
+	TextComponent(const std::string& text, TextAlign horizontalAlign = LEFT);
 
 	virtual void init() override;
 	virtual void render() override;

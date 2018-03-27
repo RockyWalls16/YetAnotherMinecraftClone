@@ -19,6 +19,26 @@
 #include <core/block/Block.h>
 #include <client/render/Camera.h>
 #include <client/input/CameraRay.h>
+#include <client/gui/GuiPause.h>
+
+KeyBind* GameController::MOUSE_1_KEY;
+KeyBind* GameController::MOUSE_2_KEY;
+KeyBind* GameController::F1_KEY;
+KeyBind* GameController::ESCAPE_KEY;
+KeyBind* GameController::F9_KEY;
+KeyBind* GameController::F10_KEY;
+KeyBind* GameController::F11_KEY;
+KeyBind* GameController::F12_KEY;
+
+KeyBind* GameController::W_KEY;
+KeyBind* GameController::A_KEY;
+KeyBind* GameController::S_KEY;
+KeyBind* GameController::D_KEY;
+KeyBind* GameController::SHIFT_KEY;
+KeyBind* GameController::SPACE_KEY;
+KeyBind* GameController::F2_KEY;
+KeyBind* GameController::LEFT_KEY;
+KeyBind* GameController::RIGHT_KEY;
 
 KeyBind::KeyBind(int keyId, InputType inputType) : keyId(keyId), inputType(inputType)
 {
@@ -40,155 +60,171 @@ GameController& GameController::getInstance()
 	return instance;
 }
 
+void GameController::init()
+{
+	MOUSE_1_KEY = new KeyBind(GLFW_MOUSE_BUTTON_1, MOUSE);
+	MOUSE_2_KEY = new KeyBind(GLFW_MOUSE_BUTTON_2, MOUSE);
+	F1_KEY = new KeyBind(GLFW_KEY_F1, KEYBOARD);
+	ESCAPE_KEY = new KeyBind(GLFW_KEY_ESCAPE, KEYBOARD);
+	F9_KEY = new KeyBind(GLFW_KEY_F9, KEYBOARD);
+	F10_KEY = new KeyBind(GLFW_KEY_F10, KEYBOARD);
+	F11_KEY = new KeyBind(GLFW_KEY_F11, KEYBOARD);
+	F12_KEY = new KeyBind(GLFW_KEY_F12, KEYBOARD);
+
+	W_KEY = new KeyBind(GLFW_KEY_W, KEYBOARD);
+	A_KEY = new KeyBind(GLFW_KEY_A, KEYBOARD);
+	S_KEY = new KeyBind(GLFW_KEY_S, KEYBOARD);
+	D_KEY = new KeyBind(GLFW_KEY_D, KEYBOARD);
+	SHIFT_KEY = new KeyBind(GLFW_KEY_LEFT_SHIFT, KEYBOARD);
+	SPACE_KEY = new KeyBind(GLFW_KEY_SPACE, KEYBOARD);
+	F2_KEY = new KeyBind(GLFW_KEY_F2, KEYBOARD);
+	LEFT_KEY = new KeyBind(GLFW_KEY_LEFT, KEYBOARD);
+	RIGHT_KEY = new KeyBind(GLFW_KEY_RIGHT, KEYBOARD);
+}
+
 void GameController::processInput()
 {
-	updateCameraRotation();
+	bool blockInput = GameRenderer::getInstance().updateGuiInput();
 
-	static KeyBind* MOUSE_1_KEY = new KeyBind(GLFW_MOUSE_BUTTON_1, MOUSE);
-	static KeyBind* MOUSE_2_KEY = new KeyBind(GLFW_MOUSE_BUTTON_2, MOUSE);
-	static KeyBind* F1_KEY = new KeyBind(GLFW_KEY_F1, KEYBOARD);
-	static KeyBind* ESCAPE_KEY = new KeyBind(GLFW_KEY_ESCAPE, KEYBOARD);
-	static KeyBind* F9_KEY = new KeyBind(GLFW_KEY_F9, KEYBOARD);
-	static KeyBind* F10_KEY = new KeyBind(GLFW_KEY_F10, KEYBOARD);
-	static KeyBind* F11_KEY = new KeyBind(GLFW_KEY_F11, KEYBOARD);
-	static KeyBind* F12_KEY = new KeyBind(GLFW_KEY_F12, KEYBOARD);
-
-	static KeyBind* W_KEY = new KeyBind(GLFW_KEY_W, KEYBOARD);
-	static KeyBind* A_KEY = new KeyBind(GLFW_KEY_A, KEYBOARD);
-	static KeyBind* S_KEY = new KeyBind(GLFW_KEY_S, KEYBOARD);
-	static KeyBind* D_KEY = new KeyBind(GLFW_KEY_D, KEYBOARD);
-	static KeyBind* SHIFT_KEY = new KeyBind(GLFW_KEY_LEFT_SHIFT, KEYBOARD);
-	static KeyBind* SPACE_KEY = new KeyBind(GLFW_KEY_SPACE, KEYBOARD);
-	static KeyBind* F2_KEY = new KeyBind(GLFW_KEY_F2, KEYBOARD);
-	static KeyBind* LEFT_KEY = new KeyBind(GLFW_KEY_LEFT, KEYBOARD);
-	static KeyBind* RIGHT_KEY = new KeyBind(GLFW_KEY_RIGHT, KEYBOARD);
-
-	static unsigned int selectedBlock = 1;
-
-	Camera& camera = GameRenderer::getInstance().getGameCamera();
-	glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
-
-	if(W_KEY->isHeld())
+	if (!blockInput)
 	{
-		inputVec.x += 1.0F;
-	}
+		updateCameraRotation();
 
-	if(S_KEY->isHeld())
-	{
-		inputVec.x -= 1.0F;
-	}
+		static unsigned int selectedBlock = 1;
 
-	if(A_KEY->isHeld())
-	{
-		inputVec.z -= 1.0F;
-	}
+		Camera& camera = GameRenderer::getInstance().getGameCamera();
+		glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
 
-	if(D_KEY->isHeld())
-	{
-		inputVec.z += 1.0F;
-	}
-
-	if(SHIFT_KEY->isHeld())
-	{
-		inputVec.y -= 1.0F;
-	}
-
-	if((!camera.canRepeatJump() && SPACE_KEY->isPressed()) || (camera.canRepeatJump() && SPACE_KEY->isHeld()))
-	{
-		inputVec.y += 1.0F;
-	}
-	camera.inputMove(inputVec);
-
-
-	// Toggle wireframe
-	if(F2_KEY->isPressed())
-	{
-		GameRenderer::getInstance().setWireFrame(!GameRenderer::getInstance().isWireframeMode());
-	}
-
-
-	// Quit game
-	if (ESCAPE_KEY->isPressed())
-	{
-		Game::getInstance().closeGame();
-	}
-
-	if (LEFT_KEY->isPressed())
-	{
-		selectedBlock--;
-		if (selectedBlock < 1)
+		if (W_KEY->isHeld())
 		{
-			selectedBlock = 1;
+			inputVec.x += 1.0F;
 		}
-	}
 
-	if (RIGHT_KEY->isPressed())
-	{
-		selectedBlock++;
-		if (selectedBlock >= Block::getBlockList().size())
+		if (S_KEY->isHeld())
 		{
-			selectedBlock = Block::getBlockList().size() - 1;
+			inputVec.x -= 1.0F;
 		}
-	}
 
-	// Vsync key
-	if (F10_KEY->isPressed())
-	{
-		WindowManager& wm = GameRenderer::getInstance().getWindowManager();
-		wm.setVsync(!wm.isVsync());
-	}
-
-	// Toggle Fullscreen
-	if (F11_KEY->isPressed())
-	{
-		WindowManager& wm = GameRenderer::getInstance().getWindowManager();
-		wm.setFullScreen(!wm.isFullScreen());
-	}
-
-	// Reload shaders
-	if (F9_KEY->isPressed())
-	{
-		ShaderCache::initShaderCache();
-		int width, height;
-		WindowManager::getMainInstance().getFramebufferSize(&width, &height);
-		ShaderCache::onResize(width, height);
-	}
-
-	// Capture mouse
-	if (MOUSE_1_KEY->isPressed())
-	{
-		if (isMouseCaptured())
+		if (A_KEY->isHeld())
 		{
-			const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
+			inputVec.z -= 1.0F;
+		}
 
-			if (lookingBlock.blockInfo)
+		if (D_KEY->isHeld())
+		{
+			inputVec.z += 1.0F;
+		}
+
+		if (SHIFT_KEY->isHeld())
+		{
+			inputVec.y -= 1.0F;
+		}
+
+		if ((!camera.canRepeatJump() && SPACE_KEY->isPressed()) || (camera.canRepeatJump() && SPACE_KEY->isHeld()))
+		{
+			inputVec.y += 1.0F;
+		}
+		camera.inputMove(inputVec);
+
+
+		// Toggle wireframe
+		if (F2_KEY->isPressed())
+		{
+			GameRenderer::getInstance().setWireFrame(!GameRenderer::getInstance().isWireframeMode());
+		}
+
+
+		// Quit game
+		if (ESCAPE_KEY->isPressed())
+		{
+			GuiPause* pause = new GuiPause();
+			pause->open();
+		}
+
+		if (LEFT_KEY->isPressed())
+		{
+			selectedBlock--;
+			if (selectedBlock < 1)
 			{
-				Game::getInstance().getWorld()->setBlockAt(Block::AIR, lookingBlock.blockInfo->x, lookingBlock.blockInfo->y, lookingBlock.blockInfo->z);
+				selectedBlock = 1;
 			}
 		}
 
-		setMouseCaptured(true);
-	}
-
-	if (MOUSE_2_KEY->isPressed())
-	{
-		if (isMouseCaptured())
+		if (RIGHT_KEY->isPressed())
 		{
-			const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
-
-			if (lookingBlock.blockInfo)
+			selectedBlock++;
+			if (selectedBlock >= Block::getBlockList().size())
 			{
-				Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock.blockInfo->x + lookingBlock.nX, lookingBlock.blockInfo->y + lookingBlock.nY, lookingBlock.blockInfo->z + lookingBlock.nZ);
+				selectedBlock = Block::getBlockList().size() - 1;
 			}
 		}
 
-		setMouseCaptured(true);
-	}
+		// Vsync key
+		if (F10_KEY->isPressed())
+		{
+			WindowManager& wm = GameRenderer::getInstance().getWindowManager();
+			wm.setVsync(!wm.isVsync());
+		}
 
-	// Release mouse
-	if (F1_KEY->isPressed())
+		// Toggle Fullscreen
+		if (F11_KEY->isPressed())
+		{
+			WindowManager& wm = GameRenderer::getInstance().getWindowManager();
+			wm.setFullScreen(!wm.isFullScreen());
+		}
+
+		// Reload shaders
+		if (F9_KEY->isPressed())
+		{
+			ShaderCache::initShaderCache();
+			int width, height;
+			WindowManager::getMainInstance().getFramebufferSize(&width, &height);
+			ShaderCache::onResize(width, height);
+		}
+
+		// Capture mouse
+		if (MOUSE_1_KEY->isPressed())
+		{
+			if (isMouseCaptured())
+			{
+				const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
+
+				if (lookingBlock.blockInfo)
+				{
+					Game::getInstance().getWorld()->setBlockAt(Block::AIR, lookingBlock.blockInfo->x, lookingBlock.blockInfo->y, lookingBlock.blockInfo->z);
+				}
+			}
+
+			setMouseCaptured(true);
+		}
+
+		if (MOUSE_2_KEY->isPressed())
+		{
+			if (isMouseCaptured())
+			{
+				const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
+
+				if (lookingBlock.blockInfo)
+				{
+					Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock.blockInfo->x + lookingBlock.nX, lookingBlock.blockInfo->y + lookingBlock.nY, lookingBlock.blockInfo->z + lookingBlock.nZ);
+				}
+			}
+
+			setMouseCaptured(true);
+		}
+
+		// Release mouse
+		if (F1_KEY->isPressed())
+		{
+			setMouseCaptured(false);
+		}
+	}
+	else
 	{
-		setMouseCaptured(false);
+		if (isMouseCaptured())
+		{
+			setMouseCaptured(false);
+		}
 	}
 
 	updateInputs();

@@ -39,6 +39,7 @@ int Game::initGame()
 			return rendererStatus;
 		}
 
+		GameController::getInstance().init();
 		GameRenderer::getInstance().getGameCamera().setTrackedEntity(*player);
 		AudioManager::getInstance().start();
 

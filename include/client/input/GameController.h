@@ -72,10 +72,29 @@ private:
 	const unsigned char* gamepadButtonsStates;*/
 
 public:
+
+	static KeyBind* MOUSE_1_KEY;
+	static KeyBind* MOUSE_2_KEY;
+	static KeyBind* F1_KEY;
+	static KeyBind* ESCAPE_KEY;
+	static KeyBind* F9_KEY;
+	static KeyBind* F10_KEY;
+	static KeyBind* F11_KEY;
+	static KeyBind* F12_KEY;
+
+	static KeyBind* W_KEY;
+	static KeyBind* A_KEY;
+	static KeyBind* S_KEY;
+	static KeyBind* D_KEY;
+	static KeyBind* SHIFT_KEY;
+	static KeyBind* SPACE_KEY;
+	static KeyBind* F2_KEY;
+	static KeyBind* LEFT_KEY;
+	static KeyBind* RIGHT_KEY;
+
 	GameController();
 
-	static GameController& getInstance();
-
+	void init();
 	void processInput();
 	void updateCameraRotation();
 	void setMouseCaptured(bool captured);
@@ -83,6 +102,8 @@ public:
 	int getMouseX() const;
 	int getMouseY() const;
 	void registerKeybind(KeyBind* keybind);
+
+	static GameController& getInstance();
 
 private:
 	void updateInputs();
