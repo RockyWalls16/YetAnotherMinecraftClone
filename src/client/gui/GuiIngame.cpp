@@ -23,8 +23,8 @@ inventorySelected(Gui::widgetsTexture, 24, 24, 0, 22, 24, 46, 256, 256)
 void GuiIngame::prepareLayout()
 {
 	// Set positions
-	fpsCounter.setPosition(4, 0);
-	renderDebug.setPosition(4, 24);
+	fpsCounter.setPosition(4, 12);
+	renderDebug.setPosition(4, 32);
 	cursor.setPosition(width / 2.0F - 8, height / 2.0F - 8);
 	inventoryHotbar.setPosition(width / 2.0F - (182 / 2.0F), 0.0F);
 	inventorySelected.setPosition(width / 2.0F - (24 / 2.0F), -1.0F);

@@ -114,7 +114,7 @@ ChunkGeneratorInput* ChunkGeneratorQueue::popInputChunk()
 		shared_ptr<AirChunk>& playerChunk = chunk->player.getCurrentChunk();
 		if (playerChunk)
 		{
-			if (abs(playerChunk->getChunkX() - chunk->x) > RENDER_DISTANCE || abs(playerChunk->getChunkZ() - chunk->z) > RENDER_DISTANCE || abs(playerChunk->getChunkY() - chunk->y) > RENDER_DISTANCE)
+			if (abs(playerChunk->getChunkX() - chunk->x) > GameSettings::renderDistance || abs(playerChunk->getChunkZ() - chunk->z) > GameSettings::renderDistance || abs(playerChunk->getChunkY() - chunk->y) > GameSettings::renderDistance)
 			{
 				workingChunkMap.erase(ChunkCoordKey(chunk->x, chunk->y, chunk->z));
 				it = chunkInputQueue.erase(it);

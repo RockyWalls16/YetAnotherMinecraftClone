@@ -1,21 +1,22 @@
-#ifndef CLIENT_GUI_GUIPAUSE_H_
-#define CLIENT_GUI_GUIPAUSE_H_
+#ifndef CLIENT_GUI_GUISETTINGS_H_
+#define CLIENT_GUI_GUISETTINGS_H_
 
 #include <client/gui/Gui.h>
 #include <client/gui/components/TextComponent.h>
 #include <client/gui/components/ButtonComponent.h>
 #include <client/gui/components/SliderComponent.h>
 
-class GuiPause : public Gui
+class GuiSettings : public Gui
 {
 private:
-	TextComponent pauseTitle;
-	ButtonComponent resumeButton;
-	ButtonComponent settingsButton;
-	ButtonComponent quitButton;
+	TextComponent settingsTitle;
+	SliderComponent fovSlider;
+	SliderComponent renderDistanceSlider;
+	SliderComponent volumeSlider;
+	ButtonComponent backButton;
 
 public:
-	GuiPause();
+	GuiSettings();
 
 	virtual void prepareLayout() override;
 

@@ -41,7 +41,7 @@ void Gui::open()
 	int width;
 	int height;
 	WindowManager::getMainInstance().getFramebufferSize(&width, &height);
-	onResize(width / GUI_SCALE, height / GUI_SCALE);
+	onResize(width / GameSettings::guiScale, height / GameSettings::guiScale);
 
 	prepareLayout();
 	GameRenderer::getInstance().getOpenGuis().push_back(this);

@@ -1,4 +1,5 @@
 #include <client/gui/GuiPause.h>
+#include <client/gui/GuiSettings.h>
 #include <client/input/GameController.h>
 #include <util/Logger.h>
 #include <Game.h>
@@ -17,16 +18,24 @@ GuiPause::GuiPause() :
 
 void GuiPause::prepareLayout()
 {
-	pauseTitle.setPosition(width / 2, height - height / 4);
-	resumeButton.setPosition(width / 2 - 100, height - height / 4 - 40);
-	settingsButton.setPosition(width / 2 - 100, height - height / 4 - 65);
-	quitButton.setPosition(width / 2 - 100, height - height / 4 - 90);
+	pauseTitle.setPosition(width / 2, height / 2 + 50);
+	resumeButton.setPosition(width / 2 - 100, height / 2 + 10);
+	settingsButton.setPosition(width / 2 - 100, height / 2 - 15);
+	quitButton.setPosition(width / 2 - 100, height / 2 - 40);
 }
 
 void GuiPause::onInputEvent(GuiComponent * component)
 {
 	if (&resumeButton == component)
 	{
+		close();
+	}
+
+	if (&settingsButton == component)
+	{
+		GuiSettings* settings = new GuiSettings();
+		settings->open();
+
 		close();
 	}
 

@@ -58,6 +58,7 @@ public:
 
 	bool isWireframeMode();
 	void setWireFrame(bool wireframe);
+	void setFov(float fov);
 
 	std::vector<Gui*>& getOpenGuis();
 	glm::mat4 getOrthoMatrix();

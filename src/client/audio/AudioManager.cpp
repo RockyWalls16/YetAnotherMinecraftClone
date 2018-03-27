@@ -1,6 +1,7 @@
 #include <client/audio/AudioManager.h>
 #include <client/audio/AudioFile.h>
 #include <math/MathUtil.h>
+#include <util/GameSettings.h>
 #include <ctime>
 
 void AudioManager::start()
@@ -102,7 +103,7 @@ int AudioManager::bufferCallback(const void * input, void * output, unsigned lon
 		sf_count_t sampleRead = sf_read_float(it->file, audioBuffer, SAMPLE_COUNT * it->info.channels);
 		for (int i = 0; i < sampleRead; i++)
 		{
-			out[i] += audioBuffer[i];
+			out[i] += audioBuffer[i] * GameSettings::volume;
 		}
 
 		// If file is readed entirely

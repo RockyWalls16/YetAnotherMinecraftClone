@@ -16,7 +16,7 @@
 #include <math/Frustum.h>
 #include <client/input/CameraRay.h>
 
-Camera::Camera() : cameraRay(CameraRay(*this))
+Camera::Camera() : cameraRay(CameraRay(*this)), fov(60.0F)
 {
 
 }
@@ -30,6 +30,12 @@ void Camera::setCameraPerspective(float fov, int width, int height)
 {
 	this->fov = fov;
 	this->aspect = (float)width / (float)height;
+
+	updateMatrices();
+}
+
+void Camera::updateMatrices()
+{
 	projectionMatrix = glm::perspective(glm::radians(fov), aspect, NEAR_PLANE, FAR_PLANE);
 	viewProjMatrix = projectionMatrix * viewMatrix;
 
@@ -139,6 +145,11 @@ void Camera::setRotation(const glm::vec3& nRotation)
 	}
 
 	updateVectors();
+}
+
+void Camera::setFov(float fov)
+{
+	this->fov = fov;
 }
 
 CameraRay& Camera::getCameraRay()

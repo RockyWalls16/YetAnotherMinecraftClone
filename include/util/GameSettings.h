@@ -1,7 +1,12 @@
 #ifndef _UTIL_GAMESETTINGS_H_
 #define _UTIL_GAMESETTINGS_H_
 
-#define RENDER_DISTANCE 6
-#define GUI_SCALE 2
+class GameSettings
+{
+public:
+	static int renderDistance;
+	static float guiScale;
+	static float volume;
+};
 
 #endif

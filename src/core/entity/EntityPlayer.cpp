@@ -13,6 +13,6 @@ void EntityPlayer::tick()
 
 	if (TimeManager::isMajorTick())
 	{
-		entityWorld.keepAreaAlive(*this, (int) position.x, (int) position.y, (int) position.z, RENDER_DISTANCE);
+		entityWorld.keepAreaAlive(*this, (int) position.x, (int) position.y, (int) position.z, GameSettings::renderDistance);
 	}
 }

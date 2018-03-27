@@ -3,11 +3,13 @@
 #include <client/render/font/FontCache.h>
 #include <client/gui/Gui.h>
 #include <client/input/GameController.h>
+#include <client/audio/AudioFile.h>
+#include <client/audio/AudioManager.h>
 
 ButtonComponent::ButtonComponent(Gui& parent, const std::string & text, int width, Font& font) : parent(parent),
 textComponent(text, CENTER, font),
 buttonBegin(Gui::widgetsTexture, width, 20, 0, 66, (width - 32), 86, 256, 256),
-buttonEnd(Gui::widgetsTexture, 32, 20, (width - 32), 66, width, 86, 256, 256), width(width), hovered(false)
+buttonEnd(Gui::widgetsTexture, 32, 20, (width - 32), 66, width, 86, 256, 256), width(width), hovered(false), disabled(false)
 {
 }
 
@@ -39,10 +41,16 @@ void ButtonComponent::setPosition(int x, int y)
 
 void ButtonComponent::onInput(int mX, int mY)
 {
+	if (disabled)
+	{
+		return;
+	}
+
 	if (mX >= x && mY >= y && mX <= x + width && mY <= y + 20)
 	{
 		if (GameController::MOUSE_1_KEY->isPressed())
 		{
+			AudioManager::getInstance().playSound(AudioFile("Gui/click.ogg"));
 			parent.onInputEvent(this);
 		}
 
@@ -75,7 +83,9 @@ void ButtonComponent::setDisabled(bool disabled)
 	}
 	else
 	{
-
+		hovered = false;
+		buttonBegin.setUV(0, 66, width - 32, 86, 256, 256);
+		buttonEnd.setUV(width - 32, 66, width, 86, 256, 256);
 	}
 }
 

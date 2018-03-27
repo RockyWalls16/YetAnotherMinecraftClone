@@ -45,6 +45,7 @@ public:
 	float pitch;
 
 	void setCameraPerspective(float fov, int width, int height);
+	void updateMatrices();
 	void updateCameraRender();
 	void updateVectors();
 
@@ -69,6 +70,7 @@ public:
 	Entity* getTrackedEntity();
 	void setTrackedEntity(Entity& trackedEntity);
 	void setRotation(const glm::vec3& nRotation);
+	void setFov(float fov);
 
 	CameraRay& getCameraRay();
 };

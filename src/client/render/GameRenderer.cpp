@@ -42,7 +42,7 @@ bool GameRenderer::updateGuiInput()
 	bool blockInput = false;
 	for (Gui* gui : openGuis)
 	{
-		gui->onInputUpdate(GameController::getInstance().getMouseX() / GUI_SCALE, (frameHeight - GameController::getInstance().getMouseY()) / GUI_SCALE);
+		gui->onInputUpdate(GameController::getInstance().getMouseX() / GameSettings::guiScale, (frameHeight - GameController::getInstance().getMouseY()) / GameSettings::guiScale);
 		blockInput = blockInput || gui->blockInput();
 	}
 
@@ -108,12 +108,24 @@ void GameRenderer::renderGame()
 	gBuffer->blitFrameBuffer(frameWidth, frameHeight);
 	worldRenderer->render(RenderLayer::RL_PRE_PP);
 	gameCamera.getCameraRay().tick();
+
+	// Reenable wireframe
+	if (wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
 	worldRenderer->render(RenderLayer::RL_TRANSPARENT);
 
+	// Re disable wireframe
+	if (wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 
 	// UI
-
 	glDisable(GL_DEPTH_TEST);
+
 	// Render guis & update input
 
 	std::vector<Gui*>::iterator it;
@@ -217,8 +229,8 @@ void GameRenderer::onResize(int width, int height)
 		frameHeight = height;
 
 		// Update matrices
-		orthoProjectionMatrix = glm::ortho(0.0F, (float) width / GUI_SCALE, 0.0F, (float)height / GUI_SCALE, -1.0F, 1.0F);
-		gameCamera.setCameraPerspective(60.0F, width, height);
+		orthoProjectionMatrix = glm::ortho(0.0F, (float) width / GameSettings::guiScale, 0.0F, (float)height / GameSettings::guiScale, -1.0F, 1.0F);
+		gameCamera.setCameraPerspective(gameCamera.getFov(), width, height);
 		
 		ShaderCache::onResize(width, height);
 
@@ -231,7 +243,7 @@ void GameRenderer::onResize(int width, int height)
 
 		for (Gui* gui : openGuis)
 		{
-			gui->onResize(width / GUI_SCALE, height / GUI_SCALE);
+			gui->onResize(width / GameSettings::guiScale, height / GameSettings::guiScale);
 			gui->prepareLayout();
 		}
 	}
@@ -260,6 +272,12 @@ bool GameRenderer::isWireframeMode()
 void GameRenderer::setWireFrame(bool wireframe)
 {
 	this->wireframe = wireframe;
+}
+
+void GameRenderer::setFov(float fov)
+{
+	gameCamera.setFov(fov);
+	onResize(frameWidth, frameHeight);
 }
 
 std::vector<Gui*>& GameRenderer::getOpenGuis()
