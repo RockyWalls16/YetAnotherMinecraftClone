@@ -86,6 +86,7 @@ public:
 	static KeyBind* A_KEY;
 	static KeyBind* S_KEY;
 	static KeyBind* D_KEY;
+	static KeyBind* E_KEY;
 	static KeyBind* SHIFT_KEY;
 	static KeyBind* SPACE_KEY;
 	static KeyBind* F2_KEY;

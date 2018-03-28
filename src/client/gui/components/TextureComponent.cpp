@@ -91,3 +91,8 @@ void TextureComponent::setUV(int sX, int sY, int sX2, int sY2, int texWidth, int
 {
 	setUV(sX / (float)texWidth, 1.0F - (sY2 / (float)texHeight), sX2 / (float)texWidth, 1.0F - (sY / (float)texHeight));
 }
+
+void TextureComponent::setTexture(Texture * newTexture)
+{
+	texture = newTexture;
+}

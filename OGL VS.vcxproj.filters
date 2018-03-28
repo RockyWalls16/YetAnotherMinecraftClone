@@ -249,6 +249,12 @@
     <ClCompile Include="src\util\GameSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\client\gui\GuiInventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\client\gui\components\SlotComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\stb_image.h">
@@ -984,6 +990,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\client\gui\GuiSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\gui\GuiInventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client\gui\components\SlotComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,6 +16,7 @@ private:
 protected:
 	unsigned short id;
 	unsigned int textureId;
+	std::string name;
 
 public:
 
@@ -39,6 +40,9 @@ public:
 	Block(unsigned short id, int textureId);
 
 	short getId();
+
+	Block* setName(const std::string& name);
+	std::string getName();
 
 	virtual int getTexture(Side faceSide);
 

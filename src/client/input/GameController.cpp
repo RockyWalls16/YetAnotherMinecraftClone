@@ -20,6 +20,7 @@
 #include <client/render/Camera.h>
 #include <client/input/CameraRay.h>
 #include <client/gui/GuiPause.h>
+#include <client/gui/GuiInventory.h>
 
 KeyBind* GameController::MOUSE_1_KEY;
 KeyBind* GameController::MOUSE_2_KEY;
@@ -34,6 +35,7 @@ KeyBind* GameController::W_KEY;
 KeyBind* GameController::A_KEY;
 KeyBind* GameController::S_KEY;
 KeyBind* GameController::D_KEY;
+KeyBind* GameController::E_KEY;
 KeyBind* GameController::SHIFT_KEY;
 KeyBind* GameController::SPACE_KEY;
 KeyBind* GameController::F2_KEY;
@@ -75,6 +77,7 @@ void GameController::init()
 	A_KEY = new KeyBind(GLFW_KEY_A, KEYBOARD);
 	S_KEY = new KeyBind(GLFW_KEY_S, KEYBOARD);
 	D_KEY = new KeyBind(GLFW_KEY_D, KEYBOARD);
+	E_KEY = new KeyBind(GLFW_KEY_E, KEYBOARD);
 	SHIFT_KEY = new KeyBind(GLFW_KEY_LEFT_SHIFT, KEYBOARD);
 	SPACE_KEY = new KeyBind(GLFW_KEY_SPACE, KEYBOARD);
 	F2_KEY = new KeyBind(GLFW_KEY_F2, KEYBOARD);
@@ -139,6 +142,13 @@ void GameController::processInput()
 		{
 			GuiPause* pause = new GuiPause();
 			pause->open();
+		}
+
+		// Open inventory
+		if (E_KEY->isPressed())
+		{
+			GuiInventory* inventory = new GuiInventory();
+			inventory->open();
 		}
 
 		if (LEFT_KEY->isPressed())

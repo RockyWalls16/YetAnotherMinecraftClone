@@ -10,22 +10,22 @@
 
 std::vector<Block*> Block::blockList = std::vector<Block*>();
 
-Block* Block::AIR = new BlockAir(0);
-Block* Block::STONE = new Block(1, 1);
-Block* Block::DIRT = new Block(2, 2);
-Block* Block::GRASS = new BlockGrass(3);
-Block* Block::SAND = new Block(4, 18);
-Block* Block::WATER = new BlockWater(5, 205);
-Block* Block::LEAVES_OAK = new BlockLeaves(6, 52);
-Block* Block::LEAVES_BIRCH = new BlockLeaves(7, 26);
-Block* Block::WOOD_OAK_LOG = new BlockLog(8, 20, 21);
-Block* Block::WOOD_BIRCH_LOG = new BlockLog(9, 117, 21);
-Block* Block::TALL_GRASS = new BlockPlant(10, 39);
-Block* Block::FLOWER_ROSE = new BlockPlant(11, 12);
-Block* Block::FLOWER_DANDELION = new BlockPlant(12, 13);
-Block* Block::SUGAR_CANE = new  BlockPlant(13, 73);
-Block* Block::RED_MUSHROOM = new BlockPlant(14, 28);
-Block* Block::BROWN_MUSHROOM = new BlockPlant(15, 29);
+Block* Block::AIR = (new BlockAir(0))->setName("Air");
+Block* Block::STONE = (new Block(1, 1))->setName("Stone");
+Block* Block::DIRT = (new Block(2, 2))->setName("Dirt");
+Block* Block::GRASS = (new BlockGrass(3))->setName("Grass");
+Block* Block::SAND = (new Block(4, 18))->setName("Sand");
+Block* Block::WATER = (new BlockWater(5, 205))->setName("Water");
+Block* Block::LEAVES_OAK = (new BlockLeaves(6, 52))->setName("Oak Leaves");
+Block* Block::LEAVES_BIRCH = (new BlockLeaves(7, 26))->setName("Birhc Leaves");
+Block* Block::WOOD_OAK_LOG = (new BlockLog(8, 20, 21))->setName("Oak Log");
+Block* Block::WOOD_BIRCH_LOG = (new BlockLog(9, 117, 21))->setName("Birch Log");
+Block* Block::TALL_GRASS = (new BlockPlant(10, 39))->setName("Tall Grass");
+Block* Block::FLOWER_ROSE = (new BlockPlant(11, 12))->setName("Rose");
+Block* Block::FLOWER_DANDELION = (new BlockPlant(12, 13))->setName("Dandelion");
+Block* Block::SUGAR_CANE = (new  BlockPlant(13, 73))->setName("Sugar Cane");
+Block* Block::RED_MUSHROOM = (new BlockPlant(14, 28))->setName("Red mushroom");
+Block* Block::BROWN_MUSHROOM = (new BlockPlant(15, 29))->setName("Brown mushroom");
 
 Block::Block(unsigned short id, int textureId)
 {
@@ -47,6 +47,17 @@ std::vector<Block*>& Block::getBlockList()
 short Block::getId()
 {
 	return id;
+}
+
+Block * Block::setName(const std::string & name)
+{
+	this->name = name;
+	return this;
+}
+
+std::string Block::getName()
+{
+	return name;
 }
 
 int Block::getTexture(Side faceSide)

@@ -187,10 +187,12 @@
     <ClCompile Include="src\client\gui\components\ButtonComponent.cpp" />
     <ClCompile Include="src\client\gui\components\GuiComponent.cpp" />
     <ClCompile Include="src\client\gui\components\SliderComponent.cpp" />
+    <ClCompile Include="src\client\gui\components\SlotComponent.cpp" />
     <ClCompile Include="src\client\gui\components\TextComponent.cpp" />
     <ClCompile Include="src\client\gui\components\TextureComponent.cpp" />
     <ClCompile Include="src\client\gui\Gui.cpp" />
     <ClCompile Include="src\client\gui\GuiIngame.cpp" />
+    <ClCompile Include="src\client\gui\GuiInventory.cpp" />
     <ClCompile Include="src\client\gui\GuiPause.cpp" />
     <ClCompile Include="src\client\gui\GuiSettings.cpp" />
     <ClCompile Include="src\client\shaders\BlurShader.cpp" />
@@ -426,11 +428,13 @@
     <ClInclude Include="include\client\audio\AudioManager.h" />
     <ClInclude Include="include\client\gui\components\ButtonComponent.h" />
     <ClInclude Include="include\client\gui\components\SliderComponent.h" />
+    <ClInclude Include="include\client\gui\components\SlotComponent.h" />
     <ClInclude Include="include\client\gui\components\TextComponent.h" />
     <ClInclude Include="include\client\gui\components\TextureComponent.h" />
     <ClInclude Include="include\client\gui\Gui.h" />
     <ClInclude Include="include\client\gui\components\GuiComponent.h" />
     <ClInclude Include="include\client\gui\GuiIngame.h" />
+    <ClInclude Include="include\client\gui\GuiInventory.h" />
     <ClInclude Include="include\client\gui\GuiPause.h" />
     <ClInclude Include="include\client\gui\GuiSettings.h" />
     <ClInclude Include="include\client\input\CameraRay.h" />
