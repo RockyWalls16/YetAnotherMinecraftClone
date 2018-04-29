@@ -5,6 +5,8 @@
 #include <client/gui/components/GuiComponent.h>
 #include <client/textures/Texture.h>
 
+class SlotComponent;
+
 class Gui
 {
 public:
@@ -24,11 +26,15 @@ public:
 
 	virtual void prepareLayout() = 0;
 	void addComponent(GuiComponent* component);
+	void removeComponent(GuiComponent* component);
 	virtual void render();
 	virtual void onResize(int width, int height);
 	virtual void onInputEvent(GuiComponent* component) {}
 	virtual bool blockInput() { return true; }
 	virtual bool closeWithEscape() { return true; }
+
+	virtual void onSlotHoverChange(SlotComponent& slot) {}
+	virtual void onSlotChange(SlotComponent& slot) {}
 
 	void open();
 	void close();

@@ -6,6 +6,7 @@
 #include <client/textures/TextureLoader.h>
 #include <util/GameSettings.h>
 #include <algorithm>
+#include <client/gui/components/SlotComponent.h>
 
 Texture* Gui::widgetsTexture = nullptr;
 
@@ -18,6 +19,19 @@ void Gui::addComponent(GuiComponent* component)
 {
 	components.push_back(component);
 	component->init();
+}
+
+void Gui::removeComponent(GuiComponent * component)
+{
+	std::vector<GuiComponent*>::iterator it;
+	for (it = components.begin(); it != components.end(); it++)
+	{
+		if (*it == component)
+		{
+			components.erase(it);
+			break;
+		}
+	}
 }
 
 void Gui::render()
@@ -50,6 +64,12 @@ void Gui::open()
 void Gui::close()
 {
 	shallClose = true;
+	
+	if(SlotComponent::draggedSlot)
+	{
+		delete(SlotComponent::draggedSlot);
+		SlotComponent::draggedSlot = nullptr;
+	}
 }
 
 bool Gui::shallUiClose()

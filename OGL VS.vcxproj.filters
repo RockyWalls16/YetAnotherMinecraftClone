@@ -998,6 +998,9 @@
     <ClInclude Include="include\client\gui\components\SlotComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\client\gui\components\CreativeSlotComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="external\glm\detail\func_common.inl">

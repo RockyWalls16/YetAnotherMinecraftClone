@@ -8,14 +8,14 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-class Entity;
+class EntityPlayer;
 class World;
 
 class Game
 {
 private:
 	World* world;
-	Entity* player;
+	EntityPlayer* player;
 	bool closeAsked;
 
 public:
@@ -27,7 +27,7 @@ public:
 
 	static Game& getInstance();
 	World* getWorld();
-	Entity* getPlayer();
+	EntityPlayer* getPlayer();
 
 	bool shouldExit();
 };

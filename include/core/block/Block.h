@@ -28,14 +28,26 @@ public:
 	static Block* WATER;
 	static Block* LEAVES_OAK;
 	static Block* LEAVES_BIRCH;
+	static Block* LEAVES_PINE;
 	static Block* WOOD_OAK_LOG;
 	static Block* WOOD_BIRCH_LOG;
+	static Block* WOOD_PINE_LOG;
 	static Block* TALL_GRASS;
 	static Block* FLOWER_ROSE;
 	static Block* FLOWER_DANDELION;
 	static Block* SUGAR_CANE;
 	static Block* RED_MUSHROOM;
 	static Block* BROWN_MUSHROOM;
+	static Block* OAK_PLANKS;
+	static Block* BIRCH_PLANKS;
+	static Block* PINE_PLANKS;
+	static Block* GRAVEL;
+	static Block* COBBLESTONE;
+	static Block* MOSSY_COBBLESTONE;
+	static Block* OBSIDIAN;
+	static Block* COB_WEB;
+	static Block* GLASS;
+	static Block* BOOKSHELF;
 
 	Block(unsigned short id, int textureId);
 

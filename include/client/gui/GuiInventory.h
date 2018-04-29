@@ -4,7 +4,7 @@
 #include <client/gui/Gui.h>
 #include <client/gui/components/TextComponent.h>
 #include <client/gui/components/TextureComponent.h>
-#include <client/gui/components/SlotComponent.h>
+#include <client/gui/components/CreativeSlotComponent.h>
 
 class GuiInventory : public Gui
 {
@@ -14,7 +14,8 @@ public:
 private:
 	TextComponent inventoryTitle;
 	TextureComponent inventoryBackground;
-	SlotComponent** inventorySlots;
+	SlotComponent** creativeSlots;
+	SlotComponent** playerInventory;
 
 public:
 	GuiInventory();
@@ -22,7 +23,10 @@ public:
 
 	virtual void prepareLayout() override;
 
-	virtual void onInputEvent(GuiComponent* component);
+	virtual void onInputEvent(GuiComponent* component) override;
+	virtual void onInputUpdate(int mX, int mY) override;
+	virtual void onSlotHoverChange(SlotComponent& slot) override;
+	virtual void onSlotChange(SlotComponent& slot) override;
 };
 
 #endif

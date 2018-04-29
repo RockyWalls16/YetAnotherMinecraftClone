@@ -112,6 +112,7 @@ private:
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mousePosCallback(GLFWwindow* window, double x, double y);
 	static void mouseButtonCallback(GLFWwindow* window, int key, int action, int mods);
+	static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };
 
 #endif /* CLIENT_INPUT_GAMECONTROLLER_H_ */

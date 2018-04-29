@@ -10,13 +10,17 @@ class Gui;
 
 class SlotComponent : public GuiComponent
 {
-private:
+public:
+	static SlotComponent* draggedSlot;
 	Gui & parent;
-	Block* block;
+	int id;
+	TextureComponent slotTexture;
+	Block* slotBlock;
 	bool hovered;
 
 public:
-	SlotComponent(Gui& parent, Block* block);
+	SlotComponent(Gui& parent, int id, Block* block);
+	SlotComponent(const SlotComponent& other);
 
 	virtual void init() override;
 	virtual void render() override;
@@ -24,6 +28,10 @@ public:
 	virtual void onInput(int mX, int mY) override;
 	bool isHovered();
 	Block* getBlock();
+
+	virtual void Pick();
+	virtual void Swap();
+	virtual void Place();
 };
 
 #endif

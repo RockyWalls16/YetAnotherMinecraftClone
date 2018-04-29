@@ -54,6 +54,7 @@ GameController::GameController() : mouseCaptured(false)
 	glfwSetKeyCallback(window, keyCallBack);
 	glfwSetCursorPosCallback(window, mousePosCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetScrollCallback(window, mouseScrollCallback);
 }
 
 GameController& GameController::getInstance()
@@ -92,8 +93,6 @@ void GameController::processInput()
 	if (!blockInput)
 	{
 		updateCameraRotation();
-
-		static unsigned int selectedBlock = 1;
 
 		Camera& camera = GameRenderer::getInstance().getGameCamera();
 		glm::vec3 inputVec = glm::vec3(0.0F, 0.0F, 0.0F);
@@ -151,24 +150,6 @@ void GameController::processInput()
 			inventory->open();
 		}
 
-		if (LEFT_KEY->isPressed())
-		{
-			selectedBlock--;
-			if (selectedBlock < 1)
-			{
-				selectedBlock = 1;
-			}
-		}
-
-		if (RIGHT_KEY->isPressed())
-		{
-			selectedBlock++;
-			if (selectedBlock >= Block::getBlockList().size())
-			{
-				selectedBlock = Block::getBlockList().size() - 1;
-			}
-		}
-
 		// Vsync key
 		if (F10_KEY->isPressed())
 		{
@@ -214,9 +195,10 @@ void GameController::processInput()
 			{
 				const RaycastResult& lookingBlock = camera.getCameraRay().getLookingBlock();
 
-				if (lookingBlock.blockInfo)
+				EntityPlayer* player = Game::getInstance().getPlayer();
+				if (lookingBlock.blockInfo && player->getInventory()[player->getCursor()] != nullptr)
 				{
-					Game::getInstance().getWorld()->setBlockAt(Block::getBlock(selectedBlock), lookingBlock.blockInfo->x + lookingBlock.nX, lookingBlock.blockInfo->y + lookingBlock.nY, lookingBlock.blockInfo->z + lookingBlock.nZ);
+					Game::getInstance().getWorld()->setBlockAt(player->getInventory()[player->getCursor()], lookingBlock.blockInfo->x + lookingBlock.nX, lookingBlock.blockInfo->y + lookingBlock.nY, lookingBlock.blockInfo->z + lookingBlock.nZ);
 				}
 			}
 
@@ -346,6 +328,27 @@ void GameController::mouseButtonCallback(GLFWwindow * window, int key, int actio
 	if (keybind)
 	{
 		keybind->keyState = keybind->lastState = action == GLFW_PRESS ? PRESSED : (action == GLFW_RELEASE ? RELEASED : HELD);
+	}
+}
+
+void GameController::mouseScrollCallback(GLFWwindow * window, double xoffset, double yoffset)
+{
+	EntityPlayer* player = Game::getInstance().getPlayer();
+	if (player)
+	{
+		if (yoffset < 0)
+		{
+			player->setCursor(player->getCursor() - 1);
+
+			if (player->getCursor() < 0)
+			{
+				player->setCursor(8);
+			}
+		}
+		else if (yoffset > 0)
+		{
+			player->setCursor((player->getCursor() + 1) % 9);
+		}
 	}
 }
 

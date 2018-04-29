@@ -98,7 +98,7 @@ World* Game::getWorld()
 	return world;
 }
 
-Entity* Game::getPlayer()
+EntityPlayer* Game::getPlayer()
 {
 	return player;
 }

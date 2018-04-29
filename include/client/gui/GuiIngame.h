@@ -4,6 +4,7 @@
 #include <client/gui/Gui.h>
 #include <client/gui/components/TextComponent.h>
 #include <client/gui/components/TextureComponent.h>
+#include <client/gui/components/SlotComponent.h>
 
 class GuiIngame : public Gui
 {
@@ -13,9 +14,11 @@ private:
 	TextureComponent cursor;
 	TextureComponent inventoryHotbar;
 	TextureComponent inventorySelected;
+	SlotComponent** playerInventory;
 
 public:
 	GuiIngame();
+	~GuiIngame();
 
 	virtual void prepareLayout() override;
 	virtual void render() override;
